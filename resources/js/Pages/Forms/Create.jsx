@@ -8,49 +8,74 @@ import CheckboxInput from "@/Pages/Forms/Fields/CheckboxInput";
 import SelectInput from "@/Pages/Forms/Fields/SelectInput";
 import RadioInput from "@/Pages/Forms/Fields/RadioInput";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import { useForm } from "@inertiajs/inertia-react";
+import useToasts from "@/Hooks/Toasts";
 
 export default function Create(props) {
     const [option, setOption] = useState("");
-    const [fields, setFields] = useState([]);
-    const [tabs, setTabs] = useState([]);
     const [tab, setTab] = useState("");
+
+    const { success, error } = useToasts();
+
+    const { data, setData, post, processing, errors, reset } = useForm({
+        form_name: "",
+        tabs: [],
+        fields: [],
+    });
+
     const [field, setField] = useState({
         name: "",
         type: "text",
         required: false,
         size: "col-xs-12 col-sm-6 col-md-4 col-lg-3",
-        tab_id: tabs.length > 0 ? tabs[0].id : "1",
+        tab_id: data.tabs.length > 0 ? data.tabs[0].id : "1",
         options: [],
     });
 
-    const addTabToForm = () => {
-        setTabs((tabs) => [
-            ...tabs,
-            {
-                // Convert to integer to avoid duplicates
-                id:
-                    tabs.length > 0
-                        ? parseInt(tabs[tabs.length - 1].id) + 1
-                        : 1,
-                name: tab,
-                slug: tab.toLowerCase().replace(/ /g, "-"),
-                editMode: false,
-                order: tabs.length > 0 ? tabs[tabs.length - 1].order + 1 : 1,
+    const handleFormSubmit = (e) => {
+        post(route("forms.store"), {
+            onSuccess: () => {
+                success("Formulario creado correctamente");
             },
-        ]);
+            onError: () => {
+                error("Error al crear el formulario");
+            },
+        });
+    };
 
+    const addTabToForm = () => {
+        setData({
+            ...data,
+            tabs: [
+                ...data.tabs,
+                {
+                    id:
+                        data.tabs.length > 0
+                            ? parseInt(data.tabs[data.tabs.length - 1].id) + 1
+                            : 1,
+                    name: tab,
+                    slug: tab.toLowerCase().replace(/ /g, "-"),
+                    editMode: false,
+                    order:
+                        data.tabs.length > 0
+                            ? data.tabs[data.tabs.length - 1].order + 1
+                            : 1,
+                },
+            ],
+        });
         setTab("");
     };
 
     const toggleTabEditMode = (tabId) => {
-        setTabs((tabs) => {
-            return tabs.map((tab) => {
+        setData({
+            ...data,
+            tabs: data.tabs.map((tab) => {
                 if (tab.id === tabId) {
                     tab.editMode = !tab.editMode;
                 }
 
                 return tab;
-            });
+            }),
         });
     };
 
@@ -70,14 +95,15 @@ export default function Create(props) {
     };
 
     const handleTabEdit = (tabId, newName) => {
-        setTabs((tabs) => {
-            return tabs.map((tab) => {
+        setData({
+            ...data,
+            tabs: data.tabs.map((tab) => {
                 if (tab.id === tabId) {
                     tab.name = newName;
                 }
 
                 return tab;
-            });
+            }),
         });
     };
 
@@ -137,13 +163,23 @@ export default function Create(props) {
 
     const addFieldToForm = (e) => {
         let fieldSlug = field.name.toLowerCase().replace(/ /g, "_");
-        setFields([...fields, { ...field, slug: fieldSlug }]);
+        setData({
+            ...data,
+            fields: [
+                ...data.fields,
+                {
+                    ...field,
+                    slug: fieldSlug,
+                },
+            ],
+        });
+
         setField({
             name: "",
             type: "text",
             required: false,
             size: "col-xs-12 col-sm-6 col-md-4 col-lg-3",
-            tab_id: "",
+            tab_id: "1",
             options: [],
         });
     };
@@ -161,14 +197,15 @@ export default function Create(props) {
     };
 
     const removeTabFromForm = (tab) => {
-        setTabs(
-            tabs
+        setData({
+            ...data,
+            tabs: data.tabs
                 .filter((item) => item.id !== tab.id)
                 .map((item, index) => {
                     return { ...item, order: index + 1 };
                 })
-                .sort((a, b) => a.order - b.order)
-        );
+                .sort((a, b) => a.order - b.order),
+        });
     };
 
     const buttonEnabled = () => {
@@ -202,16 +239,17 @@ export default function Create(props) {
     const handleTabDrop = (droppedItem) => {
         if (!droppedItem.destination) return;
 
-        let updatedTabs = [...tabs];
+        let updatedTabs = [...data.tabs];
         const [removed] = updatedTabs.splice(droppedItem.source.index, 1);
 
         updatedTabs.splice(droppedItem.destination.index, 0, removed);
 
-        setTabs(
-            updatedTabs.map((item, index) => {
+        setData({
+            ...data,
+            tabs: updatedTabs.map((item, index) => {
                 return { ...item, order: index + 1 };
-            })
-        );
+            }),
+        });
     };
 
     return (
@@ -282,10 +320,10 @@ export default function Create(props) {
                                     name="tab_id"
                                     value={field.tab_id}
                                     onChange={handleFieldChange}
-                                    disabled={tabs.length === 0}
+                                    disabled={data.tabs.length === 0}
                                 >
-                                    {tabs.length > 0 &&
-                                        tabs.map((tab) => (
+                                    {data.tabs.length > 0 &&
+                                        data.tabs.map((tab) => (
                                             <option key={tab.id} value={tab.id}>
                                                 {tab.name}
                                             </option>
@@ -500,7 +538,7 @@ export default function Create(props) {
                                 </button>
                             </div>
                             <div className="col-lg-12 margin-bottom-10">
-                                {tabs.length > 0 && (
+                                {data.tabs.length > 0 && (
                                     <DragDropContext onDragEnd={handleTabDrop}>
                                         <Droppable droppableId="list-tab-group">
                                             {(provided) => (
@@ -509,85 +547,87 @@ export default function Create(props) {
                                                     {...provided.droppableProps}
                                                     ref={provided.innerRef}
                                                 >
-                                                    {tabs.map((tab, index) => (
-                                                        <Draggable
-                                                            key={tab.id}
-                                                            draggableId={tab.id.toString()}
-                                                            index={index}
-                                                        >
-                                                            {(provided) => (
-                                                                <div
-                                                                    className="list-group-item"
-                                                                    ref={
-                                                                        provided.innerRef
-                                                                    }
-                                                                    {...provided.draggableProps}
-                                                                    {...provided.dragHandleProps}
-                                                                >
-                                                                    <div className="row">
-                                                                        <div className="col-lg-9">
-                                                                            {tab.editMode ? (
-                                                                                <input
-                                                                                    type="text"
-                                                                                    className="form-control"
-                                                                                    placeholder="Nombre de la pestaña"
-                                                                                    id="tab_name"
-                                                                                    name="tab_name"
-                                                                                    value={
-                                                                                        tab.name
-                                                                                    }
-                                                                                    onChange={(
-                                                                                        e
-                                                                                    ) => {
-                                                                                        handleTabEdit(
-                                                                                            tab.id,
-                                                                                            e
-                                                                                                .target
-                                                                                                .value
-                                                                                        );
-                                                                                    }}
-                                                                                />
-                                                                            ) : (
-                                                                                tab.name
-                                                                            )}
-                                                                        </div>
-                                                                        <div className="col-lg-3">
-                                                                            <button
-                                                                                className="btn btn-danger btn-xs pull-right"
-                                                                                type="button"
-                                                                                onClick={() =>
-                                                                                    removeTabFromForm(
-                                                                                        tab
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                <i className="fa fa-trash" />
-                                                                            </button>
-                                                                            <button
-                                                                                className={`btn btn-xs pull-right ${
-                                                                                    tab.editMode
-                                                                                        ? "btn-success"
-                                                                                        : "btn-info"
-                                                                                }`}
-                                                                                type="button"
-                                                                                onClick={() =>
-                                                                                    toggleTabEditMode(
-                                                                                        tab.id
-                                                                                    )
-                                                                                }
-                                                                            >
+                                                    {data.tabs.map(
+                                                        (tab, index) => (
+                                                            <Draggable
+                                                                key={tab.id}
+                                                                draggableId={tab.id.toString()}
+                                                                index={index}
+                                                            >
+                                                                {(provided) => (
+                                                                    <div
+                                                                        className="list-group-item"
+                                                                        ref={
+                                                                            provided.innerRef
+                                                                        }
+                                                                        {...provided.draggableProps}
+                                                                        {...provided.dragHandleProps}
+                                                                    >
+                                                                        <div className="row">
+                                                                            <div className="col-lg-9">
                                                                                 {tab.editMode ? (
-                                                                                    <i className="fa fa-check" />
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        className="form-control"
+                                                                                        placeholder="Nombre de la pestaña"
+                                                                                        id="tab_name"
+                                                                                        name="tab_name"
+                                                                                        value={
+                                                                                            tab.name
+                                                                                        }
+                                                                                        onChange={(
+                                                                                            e
+                                                                                        ) => {
+                                                                                            handleTabEdit(
+                                                                                                tab.id,
+                                                                                                e
+                                                                                                    .target
+                                                                                                    .value
+                                                                                            );
+                                                                                        }}
+                                                                                    />
                                                                                 ) : (
-                                                                                    <i className="fa fa-pencil" />
+                                                                                    tab.name
                                                                                 )}
-                                                                            </button>
+                                                                            </div>
+                                                                            <div className="col-lg-3">
+                                                                                <button
+                                                                                    className="btn btn-danger btn-xs pull-right"
+                                                                                    type="button"
+                                                                                    onClick={() =>
+                                                                                        removeTabFromForm(
+                                                                                            tab
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    <i className="fa fa-trash" />
+                                                                                </button>
+                                                                                <button
+                                                                                    className={`btn btn-xs pull-right ${
+                                                                                        tab.editMode
+                                                                                            ? "btn-success"
+                                                                                            : "btn-info"
+                                                                                    }`}
+                                                                                    type="button"
+                                                                                    onClick={() =>
+                                                                                        toggleTabEditMode(
+                                                                                            tab.id
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    {tab.editMode ? (
+                                                                                        <i className="fa fa-check" />
+                                                                                    ) : (
+                                                                                        <i className="fa fa-pencil" />
+                                                                                    )}
+                                                                                </button>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                            )}
-                                                        </Draggable>
-                                                    ))}
+                                                                )}
+                                                            </Draggable>
+                                                        )
+                                                    )}
                                                     {provided.placeholder}
                                                 </div>
                                             )}
@@ -602,7 +642,7 @@ export default function Create(props) {
                     <div className="box-content">
                         <h4 className="box-title">Previsualización</h4>
                         <ul className="nav nav-tabs" id="myTabs" role="tablist">
-                            {tabs
+                            {data.tabs
                                 .sort((a, b) => a.order - b.order)
                                 .map((tab, index) => (
                                     <li
@@ -624,7 +664,7 @@ export default function Create(props) {
                                 ))}
                         </ul>
                         <div className="tab-content" id="myTabContent">
-                            {tabs
+                            {data.tabs
                                 .sort((a, b) => a.order - b.order)
                                 .map((tab, index) => (
                                     <>
@@ -639,7 +679,7 @@ export default function Create(props) {
                                             aria-labelledby={`tab-${tab.slug}-tab`}
                                         >
                                             <div className="row">
-                                                {fields
+                                                {data.fields
                                                     .filter(
                                                         (field) =>
                                                             parseInt(
@@ -717,15 +757,38 @@ export default function Create(props) {
                                     </>
                                 ))}
                         </div>
-                        <div className="row margin-top-15">
-                            <div className="col-lg-12">
+                        <div className="row margin-top-15 gap">
+                            <div className="col-lg-8">
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Nombre del Formulario"
+                                    onChange={(e) =>
+                                        setData({
+                                            ...data,
+                                            form_name: e.target.value,
+                                        })
+                                    }
+                                />
+                            </div>
+                            <div className="col-lg-4">
                                 <button
-                                    className="btn btn-primary pull-right"
+                                    className="btn btn-primary btn-block"
                                     type="button"
-                                    disabled={fields.length === 0}
-                                    onClick={() => {}}
+                                    disabled={
+                                        data.fields.length === 0 &&
+                                        data.form_name === ""
+                                    }
+                                    onClick={handleFormSubmit}
                                 >
-                                    Guardar formulario
+                                    {processing ? (
+                                        <>
+                                            Guardando{" "}
+                                            <i className="fa fa-spin fa-spinner" />
+                                        </>
+                                    ) : (
+                                        "Guardar Formulario"
+                                    )}
                                 </button>
                             </div>
                         </div>

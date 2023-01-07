@@ -28,8 +28,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 
+
+    // I'll later wrap this routes into a single route resource
     Route::get('/forms', [\App\Http\Controllers\Admin\FormController::class, 'index'])->name('forms.index');
+    Route::post('/forms', [\App\Http\Controllers\Admin\FormController::class, 'store'])->name('forms.store');
     Route::get('/forms/create', [\App\Http\Controllers\Admin\FormController::class, 'create'])->name('forms.create');
+    Route::get('/forms/{form}/edit', [\App\Http\Controllers\Admin\FormController::class, 'edit'])->name('forms.edit');
+    Route::get('/forms/{form}', [\App\Http\Controllers\Admin\FormController::class, 'show'])->name('forms.show');
 });
 
 require __DIR__.'/auth.php';

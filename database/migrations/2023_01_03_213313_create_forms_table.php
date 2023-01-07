@@ -15,7 +15,8 @@ return new class extends Migration
     {
         Schema::create('forms', function (Blueprint $table) {
             $table->id();
-            $table->json('fields');
+            $table->string('form_name');
+            $table->text('form_fields');
             $table->timestamps();
         });
     }
