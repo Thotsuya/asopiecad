@@ -170,6 +170,10 @@ export default function Create(props) {
                 {
                     ...field,
                     slug: fieldSlug,
+                    id:
+                        data.fields.length > 0
+                            ? data.fields[data.fields.length - 1].id + 1
+                            : 1,
                 },
             ],
         });
@@ -205,6 +209,13 @@ export default function Create(props) {
                     return { ...item, order: index + 1 };
                 })
                 .sort((a, b) => a.order - b.order),
+        });
+    };
+
+    const removeFieldFromForm = (field) => {
+        setData({
+            ...data,
+            fields: data.fields.filter((item) => item.id !== field.id),
         });
     };
 
@@ -697,6 +708,11 @@ export default function Create(props) {
                                                                     field={
                                                                         field
                                                                     }
+                                                                    onClick={() =>
+                                                                        removeFieldFromForm(
+                                                                            field
+                                                                        )
+                                                                    }
                                                                 />
                                                             );
                                                         }
@@ -710,6 +726,11 @@ export default function Create(props) {
                                                                     key={index}
                                                                     field={
                                                                         field
+                                                                    }
+                                                                    onClick={() =>
+                                                                        removeFieldFromForm(
+                                                                            field
+                                                                        )
                                                                     }
                                                                 />
                                                             );
@@ -727,6 +748,11 @@ export default function Create(props) {
                                                                     field={
                                                                         field
                                                                     }
+                                                                    onClick={() =>
+                                                                        removeFieldFromForm(
+                                                                            field
+                                                                        )
+                                                                    }
                                                                 />
                                                             );
                                                         }
@@ -741,6 +767,11 @@ export default function Create(props) {
                                                                     field={
                                                                         field
                                                                     }
+                                                                    onClick={() =>
+                                                                        removeFieldFromForm(
+                                                                            field
+                                                                        )
+                                                                    }
                                                                 />
                                                             );
                                                         }
@@ -749,6 +780,11 @@ export default function Create(props) {
                                                             <SmallInput
                                                                 key={index}
                                                                 field={field}
+                                                                onClick={() =>
+                                                                    removeFieldFromForm(
+                                                                        field
+                                                                    )
+                                                                }
                                                             />
                                                         );
                                                     })}

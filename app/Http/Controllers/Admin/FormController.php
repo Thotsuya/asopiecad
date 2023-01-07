@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FormsRequest;
+use App\Http\Resources\FormsResource;
 use App\Models\Form;
 use Inertia\Inertia;
 
@@ -21,7 +22,7 @@ class FormController extends Controller
 
     public function edit(Form $form){
         return Inertia::render('Forms/Edit',[
-            'form' => $form
+            'form' => new FormsResource($form)
         ]);
     }
 

@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/forms/create', [\App\Http\Controllers\Admin\FormController::class, 'create'])->name('forms.create');
     Route::get('/forms/{form}/edit', [\App\Http\Controllers\Admin\FormController::class, 'edit'])->name('forms.edit');
     Route::get('/forms/{form}', [\App\Http\Controllers\Admin\FormController::class, 'show'])->name('forms.show');
+
 });
 
 require __DIR__.'/auth.php';
