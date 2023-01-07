@@ -23,6 +23,7 @@
         "vite": "^4.0.0"
     },
     "dependencies": {
-        "jquery": "^3.6.3"
+        "jquery": "^3.6.3",
+        "react-beautiful-dnd": "^13.1.1"
     }
 }
