@@ -27,10 +27,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-
-
-    // I'll later wrap this routes into a single route resource
-
     Route::resource('forms', App\Http\Controllers\Admin\FormController::class);
 
 });
