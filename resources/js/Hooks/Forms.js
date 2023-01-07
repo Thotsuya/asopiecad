@@ -285,5 +285,6 @@ export default function useUserForms() {
         toggleOptionEditMode,
         handleTabEdit,
         handleOptionEdit,
+        addTabToForm,
     };
 }
