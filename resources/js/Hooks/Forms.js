@@ -8,7 +8,8 @@ export default function useUserForms() {
 
     const { success, error } = useToasts();
 
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, put, processing, errors, reset } = useForm({
+        id: null,
         form_name: "",
         tabs: [],
         fields: [],
@@ -254,6 +255,17 @@ export default function useUserForms() {
         });
     };
 
+    const handleFormEditSubmit = (e) => {
+        put(route("forms.update", { form: data.id }), {
+            onSuccess: (data) => {
+                success("Form updated successfully");
+            },
+            onError: (err) => {
+                error("Error updating form");
+            },
+        });
+    };
+
     return {
         option,
         setOption,
@@ -286,5 +298,6 @@ export default function useUserForms() {
         handleTabEdit,
         handleOptionEdit,
         addTabToForm,
+        handleFormEditSubmit,
     };
 }

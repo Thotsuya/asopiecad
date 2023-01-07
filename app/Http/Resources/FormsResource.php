@@ -19,9 +19,9 @@ class FormsResource extends JsonResource
             'form_name' => $this->form_name,
             'tabs' => collect($this->form_fields)->map(function ($tab) {
                 return [
-                    'tab_id' => $tab['tab_id'],
-                    'tab_name' => $tab['tab_name'],
-                    'tab_slug' => $tab['tab_slug'],
+                    'id' => $tab['tab_id'],
+                    'name' => $tab['tab_name'],
+                    'slug' => $tab['tab_slug'],
                     'editMode' => false,
                     'order' => $tab['order'],
                 ];
@@ -29,6 +29,7 @@ class FormsResource extends JsonResource
             'fields' => collect($this->form_fields)->map(function ($tab) {
                 return collect($tab['fields'])->map(function ($field) {
                     return [
+                        'id' => $field['id'],
                         'name' => $field['name'],
                         'type' => $field['type'],
                         'required' => $field['required'],
