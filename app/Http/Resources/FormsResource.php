@@ -15,11 +15,15 @@ class FormsResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id' => $this->id,
             'form_name' => $this->form_name,
             'tabs' => collect($this->form_fields)->map(function ($tab) {
                 return [
                     'tab_id' => $tab['tab_id'],
-                    'tab_name' => $tab['tab_name']
+                    'tab_name' => $tab['tab_name'],
+                    'tab_slug' => $tab['tab_slug'],
+                    'editMode' => false,
+                    'order' => $tab['order'],
                 ];
             })->toArray(),
             'fields' => collect($this->form_fields)->map(function ($tab) {
