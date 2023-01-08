@@ -54,8 +54,37 @@ export default function Sidebar({ auth }) {
                                 href={route("projects.index")}
                                 className="waves-effect"
                             >
-                                <i className="menu-icon ti-agenda"></i>
+                                <i className="menu-icon ti-clipboard"></i>
                                 <span>Proyectos</span>
+                            </Link>
+                        </li>
+                        <h5 className="title">
+                            Administración <strong>General</strong>
+                        </h5>
+                        <li
+                            className={
+                                route().current("users.*") ? "current" : ""
+                            }
+                        >
+                            <Link
+                                href={route("users.index")}
+                                className="waves-effect"
+                            >
+                                <i className="menu-icon ti-user"></i>
+                                <span>Usuarios</span>
+                            </Link>
+                        </li>
+                        <li
+                            className={
+                                route().current("roles.*") ? "current" : ""
+                            }
+                        >
+                            <Link
+                                href={route("roles.index")}
+                                className="waves-effect"
+                            >
+                                <i className="menu-icon ti-lock"></i>
+                                <span>Roles</span>
                             </Link>
                         </li>
                     </ul>
