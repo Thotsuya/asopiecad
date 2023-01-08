@@ -103,7 +103,7 @@ export default function Dashboard(props) {
                         >
                             <Link
                                 className="prj-item"
-                                href={route("projects.show", project.uuid)}
+                                href={route("projects.edit", project.uuid)}
                             >
                                 <div className="top-project-section">
                                     <div className="project-icon">

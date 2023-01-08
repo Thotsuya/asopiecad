@@ -53,22 +53,22 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        return inertia('Projects/Show', [
-            'project' => $project->load('form', 'users', 'beneficiaries', 'programs'),
-            'forms' => Form::select('id', 'form_name')->get(),
-            'users' => User::all(),
-        ]);
+        return $project->load('programs', 'beneficiaries', 'users', 'form');
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Inertia\Response|\Inertia\ResponseFactory
      */
-    public function edit($id)
+    public function edit(Project $project)
     {
-        //
+        return inertia('Projects/Edit', [
+            'project' => $project->load('form', 'users', 'beneficiaries', 'programs'),
+            'forms' => Form::select('id', 'form_name')->get(),
+            'users' => User::all(),
+        ]);
     }
 
     /**
