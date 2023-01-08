@@ -13,9 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('programs', function (Blueprint $table) {
-            $table->unsignedBigInteger('form_id')->nullable();
-            $table->foreign('form_id')->references('id')->on('forms');
+        Schema::table('projects', function (Blueprint $table) {
+            $table->foreignId('form_id')->after('project_description')->nullable()->constrained();
         });
     }
 
@@ -26,7 +25,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('programs', function (Blueprint $table) {
+        Schema::table('projects', function (Blueprint $table) {
             $table->dropForeign(['form_id']);
             $table->dropColumn('form_id');
         });

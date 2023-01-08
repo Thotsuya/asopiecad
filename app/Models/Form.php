@@ -30,5 +30,9 @@ class Form extends Model
         })->sum();
     }
 
+    public function projects(){
+        return $this->hasMany(Project::class);
+    }
+
 
 }

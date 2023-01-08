@@ -5,12 +5,13 @@ export default function Sidebar({ auth }) {
         <div className="main-menu">
             <header className="header">
                 <a href="index.html" className="logo">
-                    <i className="ico ti-desktop"></i>Asopiecad
+                    <i className="ico ti-desktop" />
+                    Asopiecad
                 </a>
                 <button
                     type="button"
                     className="button-close fa fa-times js__menu_close"
-                ></button>
+                />
             </header>
             <div className="content">
                 <div className="navigation">
@@ -42,6 +43,19 @@ export default function Sidebar({ auth }) {
                             >
                                 <i className="menu-icon ti-agenda"></i>
                                 <span>Formularios</span>
+                            </Link>
+                        </li>
+                        <li
+                            className={
+                                route().current("projects.*") ? "current" : ""
+                            }
+                        >
+                            <Link
+                                href={route("projects.index")}
+                                className="waves-effect"
+                            >
+                                <i className="menu-icon ti-agenda"></i>
+                                <span>Proyectos</span>
                             </Link>
                         </li>
                     </ul>

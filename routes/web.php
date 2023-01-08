@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('forms', App\Http\Controllers\Admin\FormController::class);
+    Route::resource('projects', App\Http\Controllers\Admin\ProjectController::class);
 
 });
 

@@ -44,7 +44,7 @@ export default function Navbar() {
                     onClick={handleSidebar}
                     type="button"
                     className="menu-mobile-button glyphicon glyphicon-menu-hamburger js__menu_mobile"
-                ></button>
+                />
                 <h1 className="page-title">Home</h1>
             </div>
             <div className="pull-right">
@@ -52,9 +52,9 @@ export default function Navbar() {
                     href="#"
                     className="ico-item ti-bell notice-alarm js__toggle_open"
                     data-target="#notification-popup"
-                ></a>
+                />
                 <div className="ico-item">
-                    <i className="ti-user"></i>
+                    <i className="ti-user" />
                     <ul className="sub-ico-item">
                         <li>
                             <a href="#">Settings</a>
