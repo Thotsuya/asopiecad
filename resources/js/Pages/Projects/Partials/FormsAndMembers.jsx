@@ -38,7 +38,7 @@ export default function FormsAndMembers({
 
     return (
         <div className="row">
-            <div className="col-lg-4 col-xs-12">
+            <div className="col-xs-12">
                 <div className="box-content">
                     <h4>Formularios</h4>
                     <p>
@@ -122,12 +122,6 @@ export default function FormsAndMembers({
                             ))}
                         </ul>
                     </div>
-                </div>
-            </div>
-
-            <div className="col-lg-8 col-xs-12">
-                <div className="box-content">
-                    <h4 className="box-title">Programas</h4>
                 </div>
             </div>
         </div>

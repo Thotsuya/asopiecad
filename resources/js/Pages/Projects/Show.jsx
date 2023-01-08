@@ -52,20 +52,30 @@ export default function Show({ auth, project, forms, users }) {
                 }
             />
 
-            <FormsAndMembers
-                users={
-                    users.filter((user) => {
-                        return !data.users
-                            .map((user) => user.id)
-                            .includes(user.id);
-                    }) ?? []
-                }
-                forms={forms}
-                project={data}
-                onMemberSelect={onMemberSelect}
-                onFormSelect={onFormSelect}
-                onMemberRemove={onMemberRemove}
-            />
+            <div className="row">
+                <div className="col-xs-12 col-lg-4">
+                    <FormsAndMembers
+                        users={
+                            users.filter((user) => {
+                                return !data.users
+                                    .map((user) => user.id)
+                                    .includes(user.id);
+                            }) ?? []
+                        }
+                        forms={forms}
+                        project={data}
+                        onMemberSelect={onMemberSelect}
+                        onFormSelect={onFormSelect}
+                        onMemberRemove={onMemberRemove}
+                    />
+                </div>
+
+                <div className="col-lg-8 col-xs-12">
+                    <div className="box-content">
+                        <h4 className="box-title">Programas</h4>
+                    </div>
+                </div>
+            </div>
         </AuthenticatedLayout>
     );
 }
