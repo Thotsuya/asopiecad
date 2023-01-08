@@ -15,9 +15,11 @@ return new class extends Migration
     {
         Schema::create('programs', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->uuid('uuid')->unique();
+            $table->string('program_name');
             $table->text('description')->nullable();
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
+            $table->integer('order')->default(1);
             $table->timestamps();
         });
     }

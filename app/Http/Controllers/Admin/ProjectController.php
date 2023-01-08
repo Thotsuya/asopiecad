@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectRequest;
+use App\Http\Requests\ProjectUpdateRequest;
 use App\Models\Form;
 use App\Models\Project;
 use App\Models\User;
@@ -42,7 +43,7 @@ class ProjectController extends Controller
     public function store(ProjectRequest $request)
     {
         $project = Project::create($request->validated());
-        return redirect()->route('projects.show', $project);
+        return redirect()->route('projects.edit', $project);
     }
 
     /**
@@ -76,11 +77,42 @@ class ProjectController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(ProjectUpdateRequest $request, Project $project)
     {
-        //
+        $project->update([
+            'project_name' => $request->project_name,
+            'project_description' => $request->project_description,
+            'form_id' => $request->form_id,
+        ]);
+
+        if($request->validated()['users']){
+            $project->users()->sync($request->validated()['users']);
+        }
+
+        if($request->validated()['programs']){
+            // If the program was deleted, delete the program based on the uuid, check if the uuid is in the request
+            $programsWithUuid = $project->programs->pluck('uuid')->toArray();
+            $programsWithUuidInRequest = collect($request->validated()['programs'])->pluck('uuid')->toArray();
+
+
+            $programsToDelete = array_diff($programsWithUuid, $programsWithUuidInRequest);
+
+            foreach($programsToDelete as $programToDelete){
+                $project->programs()->where('uuid', $programToDelete)->delete();
+            }
+
+            // If the program was edited, update the program based on the uuid, if not create a new program
+            foreach($request->validated()['programs'] as $program){
+                $project->programs()->updateOrCreate(['uuid' => $program['uuid']], [
+                    'program_name' => $program['program_name'],
+                    'order' => $program['order'],
+                ]);
+            }
+        }
+
+        return redirect()->route('projects.index');
     }
 
     /**

@@ -7,18 +7,20 @@ import FormsAndMembers from "@/Pages/Projects/Partials/FormsAndMembers";
 import Programs from "@/Pages/Projects/Partials/Programs";
 
 export default function Edit({ auth, project, forms, users }) {
-    const { data, setData, post, processing, errors, reset } = useForm({
-        id: project.id,
-        form_id: project.form_id
-            ? project.form_id
-            : forms[0]
-            ? forms[0].id
-            : null,
-        project_name: project.project_name,
-        project_description: project.project_description,
-        users: project.users,
-        programs: project.programs,
-    });
+    const { data, setData, put, processing, errors, reset, transform } =
+        useForm({
+            id: project.id,
+            uuid: project.uuid,
+            form_id: project.form_id
+                ? project.form_id
+                : forms[0]
+                ? forms[0].id
+                : null,
+            project_name: project.project_name,
+            project_description: project.project_description ?? "",
+            users: project.users,
+            programs: project.programs,
+        });
 
     const { success, error } = useToasts();
 
@@ -94,6 +96,18 @@ export default function Edit({ auth, project, forms, users }) {
         );
     };
 
+    const handleFormSubmit = (e) => {
+        put(route("projects.update", project.uuid), {
+            preserveScroll: true,
+            onSuccess: () => {
+                success("Project updated successfully");
+            },
+            onError: () => {
+                error("Project could not be updated");
+            },
+        });
+    };
+
     useEffect(() => {
         console.log(data);
     }, [data]);
@@ -139,6 +153,17 @@ export default function Edit({ auth, project, forms, users }) {
                         onProgramDelete={onProgramDelete}
                         handleDrop={handleDrop}
                     />
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-xs-12">
+                    <button
+                        className="btn btn-primary btn-block"
+                        onClick={handleFormSubmit}
+                        disabled={processing}
+                    >
+                        Guardar
+                    </button>
                 </div>
             </div>
         </AuthenticatedLayout>

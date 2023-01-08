@@ -12,7 +12,7 @@ class Project extends Model
 
     protected $fillable = [
         'project_name',
-        'description'
+        'project_description'
     ];
 
     public function getRouteKeyName()
