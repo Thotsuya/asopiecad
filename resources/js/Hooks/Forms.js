@@ -37,7 +37,26 @@ export default function useUserForms() {
         });
     };
 
+    const normalizeText = (text) => {
+        // Remove special characters and symbols
+        return text
+            .toLowerCase()
+            .replace(/\s/g, "-")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/ñ/g, "n")
+            .replace(/[^a-zA-Z0-9-]/g, "");
+    };
+
     const addTabToForm = () => {
+        if (tab === "") return;
+
+        // remove spaces
+        // replace accents with their non-accented equivalent
+        // replace non-alphanumeric characters with a space
+        // replace ñ with n
+        let tabSlug = normalizeText(tab);
+
         setData({
             ...data,
             tabs: [
@@ -48,7 +67,7 @@ export default function useUserForms() {
                             ? parseInt(data.tabs[data.tabs.length - 1].id) + 1
                             : 1,
                     name: tab,
-                    slug: tab.toLowerCase().replace(/ /g, "-"),
+                    slug: tabSlug,
                     editMode: false,
                     order:
                         data.tabs.length > 0
@@ -136,6 +155,8 @@ export default function useUserForms() {
     };
 
     const handleFieldOptionsChange = (e) => {
+        let OptionValue = normalizeText(option);
+
         setField({
             ...field,
             // Keep the old options and add the new one
@@ -148,7 +169,7 @@ export default function useUserForms() {
                             ? field.options[field.options.length - 1].id + 1
                             : field.options.length + 1,
                     name: option,
-                    value: option.toString().toLowerCase().replace(/ /g, "_"),
+                    value: `${OptionValue}-${field.options.length + 1}`,
                     order: field.options.length + 1,
                     editMode: false,
                 },
@@ -156,12 +177,14 @@ export default function useUserForms() {
         });
         // Clear the option input
         setOption("");
-        // Focus the option input
         optionInputRef.current.focus();
     };
 
     const addFieldToForm = (e) => {
-        let fieldSlug = field.name.toLowerCase().replace(/ /g, "_");
+        let fieldSlug = normalizeText(field.name);
+        fieldSlug = fieldSlug.replace(/[\u0300-\u036f]/g, "");
+        fieldSlug = fieldSlug.replace(/ñ/g, "n");
+
         setData({
             ...data,
             fields: [

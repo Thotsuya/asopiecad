@@ -9,7 +9,7 @@ export default function SmallInput({ field, onClick }) {
             <input
                 type={field.type}
                 className="form-control"
-                id={field.slug}
+                id={`${field.slug}-${field.id}`}
                 name={field.slug}
             />
         </div>

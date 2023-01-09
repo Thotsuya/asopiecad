@@ -454,8 +454,8 @@ export default function Create(props) {
                                         className={index === 0 ? "active" : ""}
                                     >
                                         <a
-                                            href={`#tab-${tab.slug}`}
-                                            id={`tab-${tab.slug}-tab`}
+                                            href={`#tab-${tab.slug}-${tab.id}`}
+                                            id={`tab-${tab.slug}-tab-${tab.id}`}
                                             role="tab"
                                             data-toggle="tab"
                                             aria-controls={`tab-${tab.slug}`}
@@ -478,7 +478,7 @@ export default function Create(props) {
                                                 index === 0 ? "active in" : ""
                                             }
                                             `}
-                                            id={`tab-${tab.slug}`}
+                                            id={`tab-${tab.slug}-${tab.id}`}
                                             aria-labelledby={`tab-${tab.slug}-tab`}
                                         >
                                             <div className="row">

@@ -8,7 +8,7 @@ export default function LargeInput({ field, onClick }) {
             </label>
             <textarea
                 className="form-control"
-                id={field.slug}
+                id={`${field.slug}-${field.id}`}
                 name={field.slug}
                 rows="3"
                 style={{ resize: "none" }}

@@ -8,7 +8,7 @@ export default function SelectInput({ field, onClick }) {
             </label>
             <select
                 className="form-control"
-                id={field.slug}
+                id={`${field.slug}-${field.id}`}
                 name={field.slug}
                 multiple={field.type === "select multiple"}
             >

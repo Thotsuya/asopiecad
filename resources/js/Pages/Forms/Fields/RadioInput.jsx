@@ -4,7 +4,7 @@ export default function RadioInput({ field, onClick }) {
             <div className="radio primary">
                 <input
                     type="radio"
-                    id={field.slug}
+                    id={`${field.slug}-${field.id}`}
                     name={field.slug}
                     value={field.slug}
                 />
