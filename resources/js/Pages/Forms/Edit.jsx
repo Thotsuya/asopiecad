@@ -35,6 +35,8 @@ export default function Edit({ form, auth }) {
         removeTabFromForm,
         addTabToForm,
         handleFormEditSubmit,
+        tabInputRef,
+        optionInputRef,
     } = useUserForms();
 
     useEffect(() => {
@@ -141,7 +143,18 @@ export default function Edit({ form, auth }) {
                                         <input
                                             type="text"
                                             className="form-control"
-                                            placeholder="Escribe una opción y presiona el botón de +"
+                                            placeholder="Escribe una opción y presiona enter o el botón de +"
+                                            value={option}
+                                            ref={optionInputRef}
+                                            onKeyDown={(e) => {
+                                                if (
+                                                    e.key === "Enter" &&
+                                                    option !== ""
+                                                ) {
+                                                    e.preventDefault();
+                                                    handleFieldOptionsChange();
+                                                }
+                                            }}
                                             id="options"
                                             name="options"
                                             onChange={handleOptionChange}
@@ -319,6 +332,12 @@ export default function Edit({ form, auth }) {
                                     id="tab"
                                     name="tab"
                                     onChange={handleTabChange}
+                                    ref={tabInputRef}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            addTabToForm();
+                                        }
+                                    }}
                                     value={tab}
                                 />
                             </div>

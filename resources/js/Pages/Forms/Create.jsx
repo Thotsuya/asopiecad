@@ -135,7 +135,7 @@ export default function Create(props) {
                                         <input
                                             type="text"
                                             className="form-control"
-                                            placeholder="Escribe una opción y presiona el botón de +"
+                                            placeholder="Escribe una opción y presiona Enter o el botón de +"
                                             id="options"
                                             name="options"
                                             ref={optionInputRef}
