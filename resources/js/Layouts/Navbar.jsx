@@ -1,3 +1,5 @@
+import { Inertia } from "@inertiajs/inertia";
+
 export default function Navbar() {
     const handleSidebar = () => {
         document.querySelector("html").classList.toggle("menu-active");
@@ -37,6 +39,10 @@ export default function Navbar() {
             });
     };
 
+    const handleLogout = () => {
+        Inertia.post(route("logout"));
+    };
+
     return (
         <div className="fixed-navbar">
             <div className="pull-left">
@@ -57,11 +63,15 @@ export default function Navbar() {
                     <i className="ti-user" />
                     <ul className="sub-ico-item">
                         <li>
-                            <a href="#">Settings</a>
+                            <a href="#">Mi Perfil</a>
                         </li>
                         <li>
-                            <a className="js__logout" href="#">
-                                Log Out
+                            <a
+                                className="js__logout"
+                                href="#"
+                                onClick={handleLogout}
+                            >
+                                Cerrar Sesión
                             </a>
                         </li>
                     </ul>
