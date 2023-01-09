@@ -1,6 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link } from "@inertiajs/inertia-react";
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "@inertiajs/inertia-react";
 import useToasts from "@/Hooks/Toasts";
 
@@ -10,6 +10,7 @@ export default function Dashboard(props) {
     });
 
     const [newProject, setNewProject] = useState(false);
+    const projectInputRef = useRef(null);
     const { success, error } = useToasts();
 
     const handleFormSubmit = (e) => {
@@ -67,6 +68,12 @@ export default function Dashboard(props) {
                                                 "project_name",
                                                 e.target.value
                                             );
+                                        }}
+                                        ref={projectInputRef}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                handleFormSubmit(e);
+                                            }
                                         }}
                                     />
                                 </div>

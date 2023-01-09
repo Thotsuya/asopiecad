@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import useToasts from "@/Hooks/Toasts";
 import { useForm } from "@inertiajs/inertia-react";
 
 export default function useUserForms() {
     const [option, setOption] = useState("");
     const [tab, setTab] = useState("");
+    const optionInputRef = useRef();
+    const tabInputRef = useRef();
 
     const { success, error } = useToasts();
 
@@ -56,6 +58,7 @@ export default function useUserForms() {
             ],
         });
         setTab("");
+        tabInputRef.current.focus();
     };
 
     const toggleTabEditMode = (tabId) => {
@@ -151,6 +154,10 @@ export default function useUserForms() {
                 },
             ],
         });
+        // Clear the option input
+        setOption("");
+        // Focus the option input
+        optionInputRef.current.focus();
     };
 
     const addFieldToForm = (e) => {
@@ -277,6 +284,7 @@ export default function useUserForms() {
         processing,
         errors,
         reset,
+        optionInputRef,
         success,
         error,
         field,
@@ -299,5 +307,6 @@ export default function useUserForms() {
         handleOptionEdit,
         addTabToForm,
         handleFormEditSubmit,
+        tabInputRef,
     };
 }

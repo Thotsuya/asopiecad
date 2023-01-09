@@ -37,6 +37,8 @@ export default function Create(props) {
         removeTabFromForm,
         addTabToForm,
         handleFormSubmit,
+        optionInputRef,
+        tabInputRef,
     } = useUserForms();
 
     return (
@@ -136,7 +138,14 @@ export default function Create(props) {
                                             placeholder="Escribe una opción y presiona el botón de +"
                                             id="options"
                                             name="options"
+                                            ref={optionInputRef}
                                             onChange={handleOptionChange}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") {
+                                                    handleFieldOptionsChange();
+                                                }
+                                            }}
+                                            value={option}
                                         />
                                     </div>
                                     <div className="col-lg-12 margin-bottom-10">
@@ -281,6 +290,7 @@ export default function Create(props) {
                                         id="checkbox-2"
                                         name="required"
                                         onChange={handleFieldChange}
+                                        checked={field.required}
                                     />
                                     <label htmlFor="checkbox-2">
                                         ¿Es requerido?
@@ -311,6 +321,12 @@ export default function Create(props) {
                                     id="tab"
                                     name="tab"
                                     onChange={handleTabChange}
+                                    ref={tabInputRef}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            addTabToForm();
+                                        }
+                                    }}
                                     value={tab}
                                 />
                             </div>
@@ -588,8 +604,9 @@ export default function Create(props) {
                                     className="btn btn-primary btn-block"
                                     type="button"
                                     disabled={
-                                        data.fields.length === 0 &&
-                                        data.form_name === ""
+                                        (data.fields.length === 0 &&
+                                            data.form_name === "") ||
+                                        processing
                                     }
                                     onClick={handleFormSubmit}
                                 >
