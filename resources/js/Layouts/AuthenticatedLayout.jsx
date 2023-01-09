@@ -5,7 +5,7 @@ export default function Authenticated({ auth, children }) {
     return (
         <>
             <Sidebar auth={auth} />
-            <Navbar />
+            <Navbar auth={auth} />
 
             <div id="wrapper">
                 <div className="main-content">

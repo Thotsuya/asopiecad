@@ -1,6 +1,18 @@
 import { Inertia } from "@inertiajs/inertia";
 
-export default function Navbar() {
+export default function Navbar({ auth }) {
+    const timeAwareGreeting = () => {
+        const hour = new Date().getHours();
+
+        if (hour >= 6 && hour < 12) {
+            return "Buenos días";
+        } else if (hour >= 12 && hour < 18) {
+            return "Buenas tardes";
+        } else {
+            return "Buenas noches";
+        }
+    };
+
     const handleSidebar = () => {
         document.querySelector("html").classList.toggle("menu-active");
         window.dispatchEvent(new Event("resize"));
@@ -51,7 +63,9 @@ export default function Navbar() {
                     type="button"
                     className="menu-mobile-button glyphicon glyphicon-menu-hamburger js__menu_mobile"
                 />
-                <h1 className="page-title">Home</h1>
+                <h1 className="page-title">
+                    {timeAwareGreeting()} <strong>{auth.user.name}</strong>!
+                </h1>
             </div>
             <div className="pull-right">
                 <a
@@ -66,11 +80,7 @@ export default function Navbar() {
                             <a href="#">Mi Perfil</a>
                         </li>
                         <li>
-                            <a
-                                className="js__logout"
-                                href="#"
-                                onClick={handleLogout}
-                            >
+                            <a href="#" onClick={handleLogout}>
                                 Cerrar Sesión
                             </a>
                         </li>
