@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('benefitiary_id')->constrained();
             $table->foreignId('project_id')->constrained();
+            $table->integer('internal_status')->default(0);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
