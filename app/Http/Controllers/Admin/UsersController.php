@@ -8,14 +8,24 @@ use Illuminate\Http\Request;
 
 class UsersController extends Controller
 {
+
+    public function __construct()
+    {
+        // TODO: Add permissions middleware
+    }
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Inertia\Response|\Inertia\ResponseFactory
      */
     public function index()
     {
-        //
+        return inertia('Users/Index', [
+            'users' => User::query()
+                ->paginate(6)
+                ->withQueryString()
+        ]);
     }
 
     /**
