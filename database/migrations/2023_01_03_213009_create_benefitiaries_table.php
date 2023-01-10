@@ -16,6 +16,10 @@ return new class extends Migration
         Schema::create('benefitiaries', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->integer('internal_status')->default(0);
+            $table->date('approved_at')->nullable();
+            $table->string('deletion_reason')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

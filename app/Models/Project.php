@@ -41,7 +41,7 @@ class Project extends Model
         return $this->belongsToMany(User::class);
     }
 
-    public function form(){
-        return $this->belongsTo(Form::class);
+    public function forms(){
+        return $this->belongsToMany(Form::class);
     }
 }

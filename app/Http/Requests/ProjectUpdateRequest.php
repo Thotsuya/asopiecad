@@ -24,7 +24,6 @@ class ProjectUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'form_id' => ['required', 'exists:forms,id'],
             'project_name' => ['required', 'string', 'max:255'],
             'project_description' => ['sometimes', 'string', 'max:255'],
             'users' => ['sometimes', 'array'],
@@ -33,6 +32,8 @@ class ProjectUpdateRequest extends FormRequest
             'programs.*.uuid' => ['sometimes'],
             'programs.*.program_name' => ['required', 'string', 'max:255'],
             'programs.*.order' => ['required', 'integer'],
+            'forms' => ['sometimes', 'array'],
+            'forms.*' => ['exists:forms,id'],
         ];
     }
 
@@ -44,8 +45,6 @@ class ProjectUpdateRequest extends FormRequest
 
     public function messages(){
         return [
-            'form_id.required' => 'El formulario es requerido',
-            'form_id.exists' => 'El formulario no existe',
             'project_name.required' => 'El nombre del proyecto es requerido',
             'project_name.string' => 'El nombre del proyecto debe ser una cadena de texto',
             'project_name.max' => 'El nombre del proyecto no debe exceder los 255 caracteres',
@@ -57,6 +56,10 @@ class ProjectUpdateRequest extends FormRequest
             'programs.*.program_name.required' => 'El nombre del programa es requerido',
             'programs.*.program_name.string' => 'El nombre del programa debe ser una cadena de texto',
             'programs.*.program_name.max' => 'El nombre del programa no debe exceder los 255 caracteres',
+            'programs.*.order.required' => 'El orden del programa es requerido',
+            'programs.*.order.integer' => 'El orden del programa debe ser un número entero',
+            'forms.array' => 'Los formularios deben ser un arreglo',
+            'forms.*.exists' => 'El formulario no existe',
         ];
     }
 

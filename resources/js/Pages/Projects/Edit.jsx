@@ -11,11 +11,7 @@ export default function Edit({ auth, project, forms, users }) {
         useForm({
             id: project.id,
             uuid: project.uuid,
-            form_id: project.form_id
-                ? project.form_id
-                : forms[0]
-                ? forms[0].id
-                : null,
+            forms: project.forms ? project.forms.map((form) => form.id) : [],
             project_name: project.project_name,
             project_description: project.project_description ?? "",
             users: project.users,
@@ -29,7 +25,14 @@ export default function Edit({ auth, project, forms, users }) {
     };
 
     const onFormSelect = (form) => {
-        setData("form_id", form);
+        setData("forms", [...data.forms, parseInt(form)]);
+    };
+
+    const onFormRemove = (form) => {
+        setData(
+            "forms",
+            data.forms.filter((f) => f !== parseInt(form))
+        );
     };
 
     const onMemberRemove = (member) => {
@@ -141,6 +144,7 @@ export default function Edit({ auth, project, forms, users }) {
                         onMemberSelect={onMemberSelect}
                         onFormSelect={onFormSelect}
                         onMemberRemove={onMemberRemove}
+                        onFormRemove={onFormRemove}
                     />
                 </div>
 

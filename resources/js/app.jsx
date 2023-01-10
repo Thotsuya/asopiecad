@@ -4,11 +4,13 @@ import "./bootstrap";
 import "../css/style.min.css";
 import "../fonts/themify-icons/themify-icons.css";
 import "../plugins/mCustomScrollbar/jquery.mCustomScrollbar.min.css";
+import "../plugins/select2/css/select2.min.css";
 
 // Importing scripts
 import "./Scripts/jquery.min";
 import "../plugins/bootstrap/js/bootstrap.min";
 import "../plugins/mCustomScrollbar/jquery.mCustomScrollbar.concat.min";
+import "../plugins/select2/js/select2.min";
 
 import { createRoot } from "react-dom/client";
 import { createInertiaApp } from "@inertiajs/inertia-react";

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import useSelect from "@/Hooks/Select";
 
 export default function FormsAndMembers({
     forms,
@@ -7,6 +8,7 @@ export default function FormsAndMembers({
     onMemberSelect,
     onFormSelect,
     onMemberRemove,
+    onFormRemove,
 }) {
     const [member, setMember] = useState({
         id: users[0].id,
@@ -36,6 +38,13 @@ export default function FormsAndMembers({
         });
     };
 
+    useSelect({
+        el: ".select2",
+        onChange: onFormSelect,
+        onRemove: onFormRemove,
+        selected: project.forms ?? [],
+    });
+
     return (
         <div className="row">
             <div className="col-xs-12">
@@ -45,14 +54,7 @@ export default function FormsAndMembers({
                         Selecciona el formulario que será utilizado para
                         registrar a los beneficiarios del proyecto.
                     </p>
-                    <select
-                        className="form-control"
-                        onChange={(e) => onFormSelect(parseInt(e.target.value))}
-                        defaultValue={project.form_id}
-                    >
-                        <option value="" disabled>
-                            Selecciona un formulario
-                        </option>
+                    <select className="form-control select2">
                         {forms.map((form) => (
                             <option key={form.id} value={form.id}>
                                 {form.form_name}

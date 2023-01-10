@@ -13,8 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('projects', function (Blueprint $table) {
-            $table->foreignId('form_id')->after('project_description')->nullable()->constrained();
+        Schema::create('form_project', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('form_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('project_id')->constrained()->cascadeOnDelete();
+            $table->timestamps();
         });
     }
 
@@ -25,9 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('projects', function (Blueprint $table) {
-            $table->dropForeign(['form_id']);
-            $table->dropColumn('form_id');
-        });
+        Schema::dropIfExists('form_project');
     }
 };

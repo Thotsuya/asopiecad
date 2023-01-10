@@ -66,7 +66,7 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         return inertia('Projects/Edit', [
-            'project' => $project->load('form', 'users', 'beneficiaries', 'programs'),
+            'project' => $project->load('forms', 'users', 'beneficiaries', 'programs'),
             'forms' => Form::select('id', 'form_name')->get(),
             'users' => User::all(),
         ]);
@@ -110,6 +110,10 @@ class ProjectController extends Controller
                     'order' => $program['order'],
                 ]);
             }
+        }
+
+        if($request->validated()['forms']){
+            $project->forms()->sync($request->validated()['forms']);
         }
 
         return redirect()->route('projects.index');

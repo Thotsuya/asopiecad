@@ -3,8 +3,8 @@ import { Head, useForm } from "@inertiajs/inertia-react";
 
 export default function Login({ status, canResetPassword }) {
     const { data, setData, post, processing, errors, reset } = useForm({
-        email: "",
-        password: "",
+        email: "admin@admin.com",
+        password: "secret",
         remember: "",
     });
 
@@ -46,6 +46,7 @@ export default function Login({ status, canResetPassword }) {
                                 name="email"
                                 className="frm-inp"
                                 onChange={onHandleChange}
+                                value={data.email}
                             />
                             <i className="fa fa-user frm-ico" />
                             {errors.email && (
@@ -61,6 +62,7 @@ export default function Login({ status, canResetPassword }) {
                                 placeholder="contraseña"
                                 className="frm-inp"
                                 name="password"
+                                value={data.password}
                                 onChange={onHandleChange}
                             />
                             <i className="fa fa-lock frm-ico" />
