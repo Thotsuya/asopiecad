@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
+use App\Http\Requests\UsersUpdateRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -24,6 +25,7 @@ class UsersController extends Controller
     {
         return inertia('Users/Index', [
             'users' => User::query()
+                ->where('id', '!=', auth()->id())
                 ->latest('id')
                 ->paginate(6)
                 ->withQueryString()
@@ -85,9 +87,15 @@ class UsersController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(UsersUpdateRequest $request, User $user)
     {
-        //
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
+
+        return redirect()->route('users.index');
     }
 
     /**
@@ -98,6 +106,7 @@ class UsersController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        $user->delete();
+        return redirect()->route('users.index');
     }
 }

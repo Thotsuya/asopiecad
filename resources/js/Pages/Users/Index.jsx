@@ -1,9 +1,34 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link } from "@inertiajs/inertia-react";
+import { Head } from "@inertiajs/inertia-react";
 import Pagination from "@/Components/Pagination";
 import UsersCreateModal from "@/Components/Users/UsersCreateModal";
+import UsersEditModal from "@/Components/Users/UsersEditModal";
+import { useState, useEffect } from "react";
+import useToasts from "@/Hooks/Toasts";
+import { Inertia } from "@inertiajs/inertia";
 
 export default function Users({ auth, users }) {
+    const [user, setUser] = useState(() => {
+        return users.data ? users.data[0] : null;
+    });
+
+    const { prompt, info } = useToasts();
+
+    const onUserSelect = (user) => {
+        prompt(
+            "¿Desea dar de baja a este Usuario?",
+            "No podrá revertir esta acción"
+        ).then((result) => {
+            if (result.isConfirmed) {
+                Inertia.delete(route("users.destroy", user.id), {
+                    onSuccess: () => {
+                        info("Usuario dado de baja");
+                    },
+                });
+            }
+        });
+    };
+
     return (
         <>
             <AuthenticatedLayout auth={auth}>
@@ -40,18 +65,25 @@ export default function Users({ auth, users }) {
                                             <td>{user.name}</td>
                                             <td>{user.email}</td>
                                             <td>
-                                                <Link
-                                                    href={route(
-                                                        "users.edit",
-                                                        user.id
-                                                    )}
+                                                <button
+                                                    type="button"
                                                     className="btn btn-warning btn-xs"
+                                                    onClick={() => {
+                                                        setUser(user);
+                                                    }}
+                                                    data-toggle="modal"
+                                                    data-target="#users-edit-modal"
                                                 >
-                                                    <i className="fa fa-pencil"></i>
-                                                </Link>
+                                                    <i className="fa fa-pencil" />
+                                                </button>
 
-                                                <button className="btn btn-danger btn-xs">
-                                                    <i className="fa fa-trash"></i>
+                                                <button
+                                                    className="btn btn-danger btn-xs"
+                                                    onClick={() => {
+                                                        onUserSelect(user);
+                                                    }}
+                                                >
+                                                    <i className="fa fa-trash" />
                                                 </button>
                                             </td>
                                         </tr>
@@ -72,6 +104,7 @@ export default function Users({ auth, users }) {
                 </div>
             </AuthenticatedLayout>
             <UsersCreateModal />
+            <UsersEditModal user={user} />
         </>
     );
 }

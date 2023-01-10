@@ -37,9 +37,22 @@ export default function useToasts() {
         });
     };
 
+    const info = (message) => {
+        Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+        }).fire({
+            icon: "info",
+            title: message,
+        });
+    };
+
     return {
         success,
         error,
+        info,
         prompt,
     };
 }
