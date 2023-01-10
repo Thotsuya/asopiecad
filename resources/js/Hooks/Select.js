@@ -13,7 +13,6 @@ export default function useSelect({
             placeholder: "Selecciona los formularios que componen el proyecto",
             width: "100%",
             multiple: true,
-            // No selection on mount
         });
 
         // Set selected options

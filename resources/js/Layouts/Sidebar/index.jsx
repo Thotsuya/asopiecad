@@ -58,6 +58,21 @@ export default function Sidebar({ auth }) {
                                 <span>Proyectos</span>
                             </Link>
                         </li>
+                        <li
+                            className={
+                                route().current("beneficiaries.*")
+                                    ? "current"
+                                    : ""
+                            }
+                        >
+                            <Link
+                                href={route("beneficiaries.index")}
+                                className="waves-effect"
+                            >
+                                <i className="menu-icon fa fa-users"></i>
+                                <span>Beneficiarios</span>
+                            </Link>
+                        </li>
                         <h5 className="title">
                             Administración <strong>General</strong>
                         </h5>

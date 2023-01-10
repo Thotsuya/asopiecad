@@ -1,5 +1,5 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head } from "@inertiajs/inertia-react";
+import { Head, Link } from "@inertiajs/inertia-react";
 import Pagination from "@/Components/Pagination";
 import UsersCreateModal from "@/Components/Users/UsersCreateModal";
 
@@ -23,7 +23,7 @@ export default function Users({ auth, users }) {
                     </div>
 
                     <div className="col-xs-12">
-                        <div className="box-content">
+                        <div className="box-content table-responsive">
                             <table className="table table-striped table-hover">
                                 <thead>
                                     <tr>
@@ -39,7 +39,21 @@ export default function Users({ auth, users }) {
                                             <td>{user.id}</td>
                                             <td>{user.name}</td>
                                             <td>{user.email}</td>
-                                            <td></td>
+                                            <td>
+                                                <Link
+                                                    href={route(
+                                                        "users.edit",
+                                                        user.id
+                                                    )}
+                                                    className="btn btn-warning btn-xs"
+                                                >
+                                                    <i className="fa fa-pencil"></i>
+                                                </Link>
+
+                                                <button className="btn btn-danger btn-xs">
+                                                    <i className="fa fa-trash"></i>
+                                                </button>
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -50,6 +64,8 @@ export default function Users({ auth, users }) {
                                 next_page_url={users.next_page_url}
                                 current_page={users.current_page}
                                 last_page={users.last_page}
+                                total={users.total}
+                                per_page={users.per_page}
                             />
                         </div>
                     </div>

@@ -28,7 +28,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('forms', App\Http\Controllers\Admin\FormController::class);
-    Route::resource('projects', App\Http\Controllers\Admin\ProjectController::class);
+    Route::resource('projects', App\Http\Controllers\Admin\ProjectController::class)->except('create');
+    Route::resource('beneficiaries',\App\Http\Controllers\Admin\BenefitiaryController::class);
     Route::resource('users', App\Http\Controllers\Admin\UsersController::class);
     Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
 

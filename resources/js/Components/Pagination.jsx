@@ -5,6 +5,8 @@ export default function Pagination({
     next_page_url,
     current_page,
     last_page,
+    per_page,
+    total,
 }) {
     return (
         <nav aria-label="Page navigation">
@@ -35,6 +37,14 @@ export default function Pagination({
                     </Link>
                 </li>
             </ul>
+
+            <span className="pull-right">
+                Mostrando{" "}
+                {current_page * per_page > total
+                    ? total
+                    : current_page * per_page}{" "}
+                de {total} registros
+            </span>
         </nav>
     );
 }
