@@ -9,6 +9,8 @@ use App\Models\Form;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 
 class ProjectController extends Controller
 {
@@ -43,6 +45,7 @@ class ProjectController extends Controller
     public function store(ProjectRequest $request)
     {
         $project = Project::create($request->validated());
+        $project->users()->attach(auth()->id());
         return redirect()->route('projects.edit', $project);
     }
 
@@ -69,6 +72,7 @@ class ProjectController extends Controller
             'project' => $project->load('forms', 'users', 'beneficiaries', 'programs'),
             'forms' => Form::select('id', 'form_name')->get(),
             'users' => User::all(),
+            'roles' => Role::where('name', '!=', User::SUPER_ADMIN)->get(),
         ]);
     }
 
@@ -84,7 +88,6 @@ class ProjectController extends Controller
         $project->update([
             'project_name' => $request->project_name,
             'project_description' => $request->project_description,
-            'form_id' => $request->form_id,
         ]);
 
         if($request->validated()['users']){

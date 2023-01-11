@@ -6,7 +6,7 @@ import ProjectTitleHeaderAndForm from "@/Pages/Projects/Partials/ProjectTitleHea
 import FormsAndMembers from "@/Pages/Projects/Partials/FormsAndMembers";
 import Programs from "@/Pages/Projects/Partials/Programs";
 
-export default function Edit({ auth, project, forms, users }) {
+export default function Edit({ auth, project, forms, users, roles }) {
     const { data, setData, put, processing, errors, reset, transform } =
         useForm({
             id: project.id,
@@ -14,7 +14,19 @@ export default function Edit({ auth, project, forms, users }) {
             forms: project.forms ? project.forms.map((form) => form.id) : [],
             project_name: project.project_name,
             project_description: project.project_description ?? "",
-            users: project.users,
+            users: project.users
+                ? project.users.map((user) => {
+                      return {
+                          id: user.id,
+                          name: user.name,
+                          role_id: user.pivot.role_id
+                              ? user.pivot.role_id
+                              : roles[0]
+                              ? roles[0].id
+                              : null,
+                      };
+                  })
+                : [],
             programs: project.programs,
         });
 
@@ -103,12 +115,22 @@ export default function Edit({ auth, project, forms, users }) {
         put(route("projects.update", project.uuid), {
             preserveScroll: true,
             onSuccess: () => {
-                success("Project updated successfully");
+                success("Proyecto actualizado correctamente");
             },
             onError: () => {
-                error("Project could not be updated");
+                error("Ha ocurrido un error al actualizar el proyecto");
             },
         });
+    };
+
+    const onRoleChange = (user_id, role_id) => {
+        const newUsers = data.users.map((user) => {
+            if (user.id === user_id) {
+                user.role_id = parseInt(role_id);
+            }
+            return user;
+        });
+        setData("users", newUsers);
     };
 
     useEffect(() => {
@@ -141,10 +163,12 @@ export default function Edit({ auth, project, forms, users }) {
                         }
                         forms={forms}
                         project={data}
+                        roles={roles}
                         onMemberSelect={onMemberSelect}
                         onFormSelect={onFormSelect}
                         onMemberRemove={onMemberRemove}
                         onFormRemove={onFormRemove}
+                        onRoleChange={onRoleChange}
                     />
                 </div>
 

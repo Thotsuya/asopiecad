@@ -9,6 +9,8 @@ export default function FormsAndMembers({
     onFormSelect,
     onMemberRemove,
     onFormRemove,
+    onRoleChange,
+    roles,
 }) {
     const [member, setMember] = useState({
         id: users[0].id,
@@ -22,6 +24,7 @@ export default function FormsAndMembers({
         setMember({
             id: selectedMember.id,
             name: selectedMember.name,
+            role_id: roles[0] ? roles[0].id : null,
         });
     };
 
@@ -35,6 +38,7 @@ export default function FormsAndMembers({
         setMember({
             id: newUsers[0].id,
             name: newUsers[0].name,
+            role_id: roles[0] ? roles[0].id : null,
         });
     };
 
@@ -106,8 +110,33 @@ export default function FormsAndMembers({
                             {project.users.map((user) => (
                                 <li key={user.id} className="list-group-item">
                                     <div className="row">
-                                        <div className="col-lg-10 col-xs-12">
+                                        <div className="col-lg-4 col-xs-12">
                                             {user.name}
+                                        </div>
+                                        <div className="col-lg-6 col-xs-12">
+                                            <select
+                                                className="form-control"
+                                                onChange={(e) => {
+                                                    onRoleChange(
+                                                        user.id,
+                                                        e.target.value
+                                                    );
+                                                }}
+                                                defaultValue={
+                                                    user.role_id
+                                                        ? user.role_id
+                                                        : roles[0].id
+                                                }
+                                            >
+                                                {roles.map((role) => (
+                                                    <option
+                                                        key={role.id}
+                                                        value={role.id}
+                                                    >
+                                                        {role.name}
+                                                    </option>
+                                                ))}
+                                            </select>
                                         </div>
                                         <div className="col-lg-2 col-xs-12">
                                             <button

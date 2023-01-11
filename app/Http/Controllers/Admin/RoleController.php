@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
@@ -14,7 +15,14 @@ class RoleController extends Controller
      */
     public function index()
     {
-        //
+        return inertia('Roles/Index', [
+            'roles' => Role::query()
+                ->with('permissions')
+                ->where('name', '!=', 'Super Admin')
+                ->latest('id')
+                ->paginate(6)
+                ->withQueryString()
+        ]);
     }
 
     /**
@@ -55,9 +63,12 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Role $role)
     {
-        //
+        return inertia('Roles/Edit', [
+            'role' => $role->load('permissions'),
+            'permissions' => \Spatie\Permission\Models\Permission::all(),
+        ]);
     }
 
     /**
@@ -67,9 +78,10 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Role $role)
     {
-        //
+        $role->syncPermissions($request->permissions);
+        return redirect()->route('roles.index');
     }
 
     /**

@@ -14,6 +14,8 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
 
+    const SUPER_ADMIN = 'Super Admin';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -45,6 +47,6 @@ class User extends Authenticatable
     ];
 
     public function projects(){
-        return $this->belongsToMany(Project::class);
+        return $this->belongsToMany(Project::class)->withPivot(['role_id']);
     }
 }

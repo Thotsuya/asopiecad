@@ -6,11 +6,12 @@ export default function useSelect({
     onRemove,
     options,
     selected,
+    placeholder = "Selecciona los formularios que componen el proyecto",
 }) {
     useEffect(() => {
         // Initialize Select 2
         $(el).select2({
-            placeholder: "Selecciona los formularios que componen el proyecto",
+            placeholder: placeholder,
             width: "100%",
             multiple: true,
         });

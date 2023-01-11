@@ -43,7 +43,8 @@ class ProjectUpdateRequest extends FormRequest
      * @return array<string, string>
      */
 
-    public function messages(){
+    public function messages()
+    {
         return [
             'project_name.required' => 'El nombre del proyecto es requerido',
             'project_name.string' => 'El nombre del proyecto debe ser una cadena de texto',
@@ -66,7 +67,9 @@ class ProjectUpdateRequest extends FormRequest
     public function validated($key = null, $default = null)
     {
         return array_merge(parent::validated($key, $default), [
-            'users' => collect($this->users)->pluck('id')->toArray(),
+            'users' => collect($this->input('users', []))->mapWithKeys(function ($user) {
+                return [$user['id'] => ['role_id' => $user['role_id']]];
+            })->toArray(),
             'programs' => collect($this->programs)->map(function ($program) {
                 return [
                     'uuid' => array_key_exists('uuid', $program) ? $program['uuid'] : null,

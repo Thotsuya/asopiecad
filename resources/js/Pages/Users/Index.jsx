@@ -52,16 +52,22 @@ export default function Users({ auth, users }) {
                             <table className="table table-striped table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Id</th>
+                                        <th>#</th>
                                         <th>Nombre</th>
                                         <th>Email</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {users.data.map((user) => (
+                                    {users.data.map((user, index) => (
                                         <tr key={user.id}>
-                                            <td>{user.id}</td>
+                                            <td>
+                                                {index +
+                                                    users.per_page *
+                                                        (users.current_page -
+                                                            1) +
+                                                    1}
+                                            </td>
                                             <td>{user.name}</td>
                                             <td>{user.email}</td>
                                             <td>

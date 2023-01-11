@@ -6,14 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UsersUpdateRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 
 class UsersController extends Controller
 {
 
     public function __construct()
     {
-        // TODO: Add permissions middleware
+        $this->middleware('can:Ver Usuarios')->only('index');
+        $this->middleware('can:Crear Usuarios')->only('create', 'store');
+        $this->middleware('can:Editar Usuarios')->only('edit', 'update');
+        $this->middleware('can:Eliminar Usuarios')->only('destroy');
+
     }
 
     /**
@@ -45,7 +48,7 @@ class UsersController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(UserRequest $request)
@@ -61,7 +64,7 @@ class UsersController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\User  $user
+     * @param \App\Models\User $user
      * @return \Illuminate\Http\Response
      */
     public function show(User $user)
@@ -72,7 +75,7 @@ class UsersController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\User  $user
+     * @param \App\Models\User $user
      * @return \Illuminate\Http\Response
      */
     public function edit(User $user)
@@ -83,8 +86,8 @@ class UsersController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\User $user
      * @return \Illuminate\Http\Response
      */
     public function update(UsersUpdateRequest $request, User $user)
@@ -101,7 +104,7 @@ class UsersController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\User  $user
+     * @param \App\Models\User $user
      * @return \Illuminate\Http\Response
      */
     public function destroy(User $user)
