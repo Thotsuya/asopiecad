@@ -1,33 +1,33 @@
-import { useEffect } from "react";
-import { Head, useForm } from "@inertiajs/inertia-react";
+import { useEffect } from 'react'
+import { Head, useForm } from '@inertiajs/inertia-react'
 
 export default function Login({ status, canResetPassword }) {
     const { data, setData, post, processing, errors, reset } = useForm({
-        email: "admin@admin.com",
-        password: "secret",
-        remember: "",
-    });
+        email: 'admin@admin.com',
+        password: 'secret',
+        remember: true,
+    })
 
     useEffect(() => {
         return () => {
-            reset("password");
-        };
-    }, []);
+            reset('password')
+        }
+    }, [])
 
     const onHandleChange = (event) => {
         setData(
             event.target.name,
-            event.target.type === "checkbox"
+            event.target.type === 'checkbox'
                 ? event.target.checked
                 : event.target.value
-        );
-    };
+        )
+    }
 
     const submit = (e) => {
-        e.preventDefault();
+        e.preventDefault()
 
-        post(route("login"));
-    };
+        post(route('login'))
+    }
 
     return (
         <>
@@ -80,6 +80,7 @@ export default function Login({ status, canResetPassword }) {
                                         id="remember"
                                         name="remember"
                                         onClick={onHandleChange}
+                                        defaultChecked={data.remember}
                                     />
                                     <label htmlFor="remember">
                                         Remember me
@@ -100,5 +101,5 @@ export default function Login({ status, canResetPassword }) {
                 </form>
             </div>
         </>
-    );
+    )
 }
