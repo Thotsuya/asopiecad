@@ -23,6 +23,9 @@ class Form extends Model
         'fields_count'
     ];
 
+
+    protected $touches = ['projects'];
+
     public function getFieldsCountAttribute(): int
     {
         return collect($this->form_fields)->map(function ($tab) {

@@ -136,10 +136,6 @@ export default function Edit({ auth, project, forms, users, roles }) {
         setData('users', newUsers)
     }
 
-    useEffect(() => {
-        console.log(data)
-    }, [data])
-
     return (
         <AuthenticatedLayout auth={auth}>
             <Head title={`Proyecto: ${project.project_name}`} />

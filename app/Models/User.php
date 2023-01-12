@@ -46,7 +46,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    protected $touches = ['projects'];
+
     public function projects(){
         return $this->belongsToMany(Project::class)->withPivot(['role_id']);
     }
+
 }

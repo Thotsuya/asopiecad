@@ -1,41 +1,46 @@
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link } from "@inertiajs/inertia-react";
-import { useState, useRef } from "react";
-import { useForm } from "@inertiajs/inertia-react";
-import useToasts from "@/Hooks/Toasts";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
+import { Head, Link } from '@inertiajs/inertia-react'
+import { useState, useRef } from 'react'
+import { useForm } from '@inertiajs/inertia-react'
+import useToasts from '@/Hooks/Toasts'
+import Pagination from '@/Components/Pagination'
+import useUsers from '@/Hooks/Users'
+import ProjectCard from '@/Pages/Projects/Partials/ProjectCard'
 
-export default function Dashboard(props) {
+export default function Dashboard({ auth, projects, roles }) {
     const { data, setData, post, processing, errors, reset } = useForm({
-        project_name: "",
-    });
+        project_name: '',
+    })
 
-    const [newProject, setNewProject] = useState(false);
-    const projectInputRef = useRef(null);
-    const { success, error } = useToasts();
+    const [newProject, setNewProject] = useState(false)
+    const projectInputRef = useRef(null)
+    const { success, error } = useToasts()
 
     const handleFormSubmit = (e) => {
-        e.preventDefault();
-        post(route("projects.store"), {
+        e.preventDefault()
+        post(route('projects.store'), {
             preserveScroll: true,
             preserveState: true,
             onSuccess: () => {
-                success("Proyecto creado con éxito");
-                setNewProject(false);
+                success('Proyecto creado con éxito')
+                setNewProject(false)
             },
             onError: () => {
-                error("Error al crear el proyecto");
+                error('Error al crear el proyecto')
             },
-        });
-    };
+        })
+    }
+
+    const { can } = useUsers()
 
     return (
-        <AuthenticatedLayout auth={props.auth}>
+        <AuthenticatedLayout auth={auth}>
             <Head title="Proyectos" />
 
             <div className="prj-header margin-bottom-10">
                 <button
                     className={`btn btn-submit-prj btn-sm waves-effect waves-light ${
-                        newProject ? "btn-danger" : "btn-info"
+                        newProject ? 'btn-danger' : 'btn-info'
                     }`}
                     onClick={() => setNewProject((newProject) => !newProject)}
                 >
@@ -49,7 +54,7 @@ export default function Dashboard(props) {
                         </>
                     )}
                 </button>
-                <div className="result-count">130 Projects</div>
+                <div className="result-count">{projects.total} Proyectos</div>
             </div>
 
             {newProject && (
@@ -65,14 +70,14 @@ export default function Dashboard(props) {
                                         value={data.project_name}
                                         onChange={(e) => {
                                             setData(
-                                                "project_name",
+                                                'project_name',
                                                 e.target.value
-                                            );
+                                            )
                                         }}
                                         ref={projectInputRef}
                                         onKeyDown={(e) => {
-                                            if (e.key === "Enter") {
-                                                handleFormSubmit(e);
+                                            if (e.key === 'Enter') {
+                                                handleFormSubmit(e)
                                             }
                                         }}
                                     />
@@ -87,7 +92,7 @@ export default function Dashboard(props) {
                                     >
                                         {processing ? (
                                             <>
-                                                <i className="fa fa-spinner fa-spin" />{" "}
+                                                <i className="fa fa-spinner fa-spin" />{' '}
                                                 Creando Proyecto...
                                             </>
                                         ) : (
@@ -102,49 +107,14 @@ export default function Dashboard(props) {
             )}
 
             <div className="prj-list row">
-                {props.projects && props.projects.length > 0 ? (
-                    props.projects.map((project) => (
-                        <div
+                {projects.data && projects.data.length > 0 ? (
+                    projects.data.map((project) => (
+                        <ProjectCard
                             key={project.id}
-                            className="col-lg-4 col-md-6 col-xs-12 margin-bottom-30"
-                        >
-                            <Link
-                                className="prj-item"
-                                href={route("projects.edit", project.uuid)}
-                            >
-                                <div className="top-project-section">
-                                    <div className="project-icon">
-                                        <img
-                                            src="http://placehold.it/184x170"
-                                            alt=""
-                                        />
-                                    </div>
-                                    <h3>{project.project_name}</h3>
-                                    <div className="meta">
-                                        <p className="author">
-                                            by <span>Bold Meida</span>
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="bottom-project-section">
-                                    <div className="meta">
-                                        <div className="points">
-                                            <i className="fa fa-bar-chart" />{" "}
-                                            407
-                                        </div>
-                                        <div className="views">
-                                            <i className="fa fa-eye" /> 40.6k
-                                        </div>
-                                        <div className="views">
-                                            <i className="fa fa-users" /> 40.6k
-                                        </div>
-                                        <span className="feedable-time timeago">
-                                            2 years ago
-                                        </span>
-                                    </div>
-                                </div>
-                            </Link>
-                        </div>
+                            project={project}
+                            roles={roles}
+                            auth={auth}
+                        />
                     ))
                 ) : (
                     <div className="row">
@@ -158,6 +128,19 @@ export default function Dashboard(props) {
                     </div>
                 )}
             </div>
+
+            <div className="row">
+                <div className="col-lg-12">
+                    <Pagination
+                        current_page={projects.current_page}
+                        last_page={projects.last_page}
+                        total={projects.total}
+                        per_page={projects.per_page}
+                        next_page_url={projects.next_page_url}
+                        prev_page_url={projects.prev_page_url}
+                    />
+                </div>
+            </div>
         </AuthenticatedLayout>
-    );
+    )
 }

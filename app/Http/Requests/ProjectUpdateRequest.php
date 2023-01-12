@@ -68,7 +68,9 @@ class ProjectUpdateRequest extends FormRequest
     {
         return array_merge(parent::validated($key, $default), [
             'users' => collect($this->input('users', []))->mapWithKeys(function ($user) {
-                return [$user['id'] => ['role_id' => $user['role_id']]];
+                return [$user['id'] => [
+                    'role_id' => $user['role_id'],
+                ]];
             })->toArray(),
             'programs' => collect($this->programs)->map(function ($program) {
                 return [

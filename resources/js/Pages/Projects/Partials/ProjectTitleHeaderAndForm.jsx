@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState } from 'react'
 
 export default function ProjectTitleHeaderAndForm({
     project,
-    onProjectNameChange,
-    onProjectDescriptionChange,
+    onProjectNameChange = () => {},
+    onProjectDescriptionChange = () => {},
+    editable = true,
+    children,
 }) {
-    const [editProjectName, setEditProjectName] = useState(false);
-    const [editProjectDescription, setEditProjectDescription] = useState(false);
+    const [editProjectName, setEditProjectName] = useState(false)
+    const [editProjectDescription, setEditProjectDescription] = useState(false)
 
     return (
         <div className="row">
@@ -18,31 +20,34 @@ export default function ProjectTitleHeaderAndForm({
                             className="form-control form-control-alt"
                             value={project.project_name}
                             onChange={onProjectNameChange}
-                        />{" "}
+                        />{' '}
                     </>
                 ) : (
                     <>
                         <h1 className="page-title">
                             Proyecto: <strong>{project.project_name}</strong>
-                        </h1>{" "}
+                        </h1>{' '}
                     </>
                 )}
-                <button
-                    className={`btn btn-xs btn-${
-                        editProjectName ? "danger" : "primary"
-                    } waves-effect waves-ligt`}
-                    onClick={() =>
-                        setEditProjectName(
-                            (editProjectName) => !editProjectName
-                        )
-                    }
-                >
-                    {editProjectName ? (
-                        <i className="fa fa-times" />
-                    ) : (
-                        <i className="fa fa-pencil" />
-                    )}
-                </button>
+                {editable && (
+                    <button
+                        className={`btn btn-xs btn-${
+                            editProjectName ? 'danger' : 'primary'
+                        } waves-effect waves-ligt`}
+                        onClick={() =>
+                            setEditProjectName(
+                                (editProjectName) => !editProjectName
+                            )
+                        }
+                    >
+                        {editProjectName ? (
+                            <i className="fa fa-times" />
+                        ) : (
+                            <i className="fa fa-pencil" />
+                        )}
+                    </button>
+                )}
+                {children}
             </div>
             <div className="col-lg-12 col-xs-12">
                 <p className="font-13">
@@ -53,31 +58,33 @@ export default function ProjectTitleHeaderAndForm({
                                 className="form-control form-control-alt"
                                 value={project.project_description}
                                 onChange={onProjectDescriptionChange}
-                            />{" "}
+                            />{' '}
                         </>
                     ) : (
-                        <>{project.project_description ?? "Sin descripción"} </>
+                        <>{project.project_description ?? 'Sin descripción'} </>
                     )}
 
-                    <button
-                        className={`btn btn-xs btn-${
-                            editProjectDescription ? "danger" : "primary"
-                        } waves-effect waves-ligt`}
-                        onClick={() =>
-                            setEditProjectDescription(
-                                (editProjectDescription) =>
-                                    !editProjectDescription
-                            )
-                        }
-                    >
-                        {editProjectDescription ? (
-                            <i className="fa fa-times" />
-                        ) : (
-                            <i className="fa fa-pencil" />
-                        )}
-                    </button>
+                    {editable && (
+                        <button
+                            className={`btn btn-xs btn-${
+                                editProjectDescription ? 'danger' : 'primary'
+                            } waves-effect waves-ligt`}
+                            onClick={() =>
+                                setEditProjectDescription(
+                                    (editProjectDescription) =>
+                                        !editProjectDescription
+                                )
+                            }
+                        >
+                            {editProjectDescription ? (
+                                <i className="fa fa-times" />
+                            ) : (
+                                <i className="fa fa-pencil" />
+                            )}
+                        </button>
+                    )}
                 </p>
             </div>
         </div>
-    );
+    )
 }

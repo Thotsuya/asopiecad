@@ -13,14 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('benefitiaries', function (Blueprint $table) {
+        Schema::create('goals', function (Blueprint $table) {
             $table->id();
-            $table->string('internal_id')->nullable();
-            $table->string('name');
-            $table->integer('internal_status')->default(0);
-            $table->timestamp('approved_at')->nullable();
-            $table->string('deletion_reason')->nullable();
-            $table->softDeletes();
+            $table->string('goal_name');
+            $table->string('goal_description');
+            $table->foreignId('project_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->integer('goal_progress')->default(0);
+            $table->integer('goal_status')->default(0);
             $table->timestamps();
         });
     }
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('benefitiaries');
+        Schema::dropIfExists('goals');
     }
 };

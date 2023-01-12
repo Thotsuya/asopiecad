@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectRequest;
 use App\Http\Requests\ProjectUpdateRequest;
+use App\Http\Resources\ProjectResource;
+use App\Http\Resources\RolePermissionResource;
 use App\Models\Form;
 use App\Models\Project;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 
 class ProjectController extends Controller
@@ -17,12 +17,32 @@ class ProjectController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Inertia\Response|\Inertia\ResponseFactory
      */
     public function index()
     {
+
+        $projects = auth()->user()->hasRole(User::SUPER_ADMIN)
+            ? Project::query()
+            : Project::query()
+                ->whereHas('users', function ($query) {
+                    $query->where('user_id', auth()->id());
+                });
+
         return inertia('Projects/Index', [
-            'projects' => Project::all()
+            'projects' => $projects
+                ->withCount('beneficiaries', 'users', 'programs')
+                ->latest('id')
+                ->paginate(6)
+                ->through(function (Project $project) {
+                    return ProjectResource::make($project);
+                }),
+            'roles' => RolePermissionResource::collection(
+                Role::query()
+                    ->where('name', '!=', 'Super Admin')
+                    ->with('permissions')
+                    ->get()
+            ),
         ]);
     }
 
@@ -39,31 +59,37 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(ProjectRequest $request)
     {
         $project = Project::create($request->validated());
-        $project->users()->attach(auth()->id());
+        $role = Role::where('name', '!=', 'Super Admin')->first();
+
+        $project->users()->attach(auth()->id(), [
+            'role_id' => $role->id,
+        ]);
         return redirect()->route('projects.edit', $project);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Inertia\Response|\Inertia\ResponseFactory
      */
     public function show(Project $project)
     {
-        return $project->load('programs', 'beneficiaries', 'users', 'form');
+        return inertia('Projects/Show', [
+            'project' => new ProjectResource($project->load('programs', 'beneficiaries', 'users', 'forms'))
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Inertia\Response|\Inertia\ResponseFactory
      */
     public function edit(Project $project)
@@ -79,8 +105,8 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update(ProjectUpdateRequest $request, Project $project)
@@ -90,11 +116,11 @@ class ProjectController extends Controller
             'project_description' => $request->project_description,
         ]);
 
-        if($request->validated()['users']){
+        if ($request->validated()['users']) {
             $project->users()->sync($request->validated()['users']);
         }
 
-        if($request->validated()['programs']){
+        if ($request->validated()['programs']) {
             // If the program was deleted, delete the program based on the uuid, check if the uuid is in the request
             $programsWithUuid = $project->programs->pluck('uuid')->toArray();
             $programsWithUuidInRequest = collect($request->validated()['programs'])->pluck('uuid')->toArray();
@@ -102,12 +128,12 @@ class ProjectController extends Controller
 
             $programsToDelete = array_diff($programsWithUuid, $programsWithUuidInRequest);
 
-            foreach($programsToDelete as $programToDelete){
+            foreach ($programsToDelete as $programToDelete) {
                 $project->programs()->where('uuid', $programToDelete)->delete();
             }
 
             // If the program was edited, update the program based on the uuid, if not create a new program
-            foreach($request->validated()['programs'] as $program){
+            foreach ($request->validated()['programs'] as $program) {
                 $project->programs()->updateOrCreate(['uuid' => $program['uuid']], [
                     'program_name' => $program['program_name'],
                     'order' => $program['order'],
@@ -115,7 +141,7 @@ class ProjectController extends Controller
             }
         }
 
-        if($request->validated()['forms']){
+        if ($request->validated()['forms']) {
             $project->forms()->sync($request->validated()['forms']);
         }
 
@@ -125,7 +151,7 @@ class ProjectController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

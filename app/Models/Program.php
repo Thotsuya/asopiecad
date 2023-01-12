@@ -16,6 +16,8 @@ class Program extends Model
         'order'
     ];
 
+    protected $touches = ['project'];
+
     protected static function booted()
     {
         parent::boot();
