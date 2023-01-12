@@ -1,10 +1,10 @@
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, useForm } from "@inertiajs/inertia-react";
-import useToasts from "@/Hooks/Toasts";
-import { useState, useEffect } from "react";
-import ProjectTitleHeaderAndForm from "@/Pages/Projects/Partials/ProjectTitleHeaderAndForm";
-import FormsAndMembers from "@/Pages/Projects/Partials/FormsAndMembers";
-import Programs from "@/Pages/Projects/Partials/Programs";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
+import { Head, useForm } from '@inertiajs/inertia-react'
+import useToasts from '@/Hooks/Toasts'
+import { useState, useEffect } from 'react'
+import ProjectTitleHeaderAndForm from '@/Pages/Projects/Partials/ProjectTitleHeaderAndForm'
+import FormsAndMembers from '@/Pages/Projects/Partials/FormsAndMembers'
+import Programs from '@/Pages/Projects/Partials/Programs'
 
 export default function Edit({ auth, project, forms, users, roles }) {
     const { data, setData, put, processing, errors, reset, transform } =
@@ -13,7 +13,10 @@ export default function Edit({ auth, project, forms, users, roles }) {
             uuid: project.uuid,
             forms: project.forms ? project.forms.map((form) => form.id) : [],
             project_name: project.project_name,
-            project_description: project.project_description ?? "",
+            project_description:
+                project.project_description.length > 0
+                    ? project.project_description
+                    : 'Descripción del proyecto',
             users: project.users
                 ? project.users.map((user) => {
                       return {
@@ -24,36 +27,36 @@ export default function Edit({ auth, project, forms, users, roles }) {
                               : roles[0]
                               ? roles[0].id
                               : null,
-                      };
+                      }
                   })
                 : [],
             programs: project.programs,
-        });
+        })
 
-    const { success, error } = useToasts();
+    const { success, error } = useToasts()
 
     const onMemberSelect = (member) => {
-        setData("users", [...data.users, member]);
-    };
+        setData('users', [...data.users, member])
+    }
 
     const onFormSelect = (form) => {
-        setData("forms", [...data.forms, parseInt(form)]);
-    };
+        setData('forms', [...data.forms, parseInt(form)])
+    }
 
     const onFormRemove = (form) => {
         setData(
-            "forms",
+            'forms',
             data.forms.filter((f) => f !== parseInt(form))
-        );
-    };
+        )
+    }
 
     const onMemberRemove = (member) => {
-        const newUsers = data.users.filter((user) => user.id !== member.id);
-        setData("users", newUsers);
-    };
+        const newUsers = data.users.filter((user) => user.id !== member.id)
+        setData('users', newUsers)
+    }
 
     const onProgramAdd = (program) => {
-        setData("programs", [
+        setData('programs', [
             ...data.programs,
             {
                 id: data.programs.length > 0 ? data.programs.length + 1 : 1,
@@ -64,78 +67,78 @@ export default function Edit({ auth, project, forms, users, roles }) {
                         : 1,
                 editing: false,
             },
-        ]);
-    };
+        ])
+    }
 
     const toggleProgramEdit = (program_id) => {
         const newPrograms = data.programs.map((program) => {
             if (program.id === program_id) {
-                program.editing = !program.editing;
+                program.editing = !program.editing
             }
-            return program;
-        });
-        setData("programs", newPrograms);
-    };
+            return program
+        })
+        setData('programs', newPrograms)
+    }
 
     const onProgramEdit = (program_id, program_name) => {
         const newPrograms = data.programs.map((program) => {
             if (program.id === program_id) {
-                program.program_name = program_name;
+                program.program_name = program_name
             }
-            return program;
-        });
-        setData("programs", newPrograms);
-    };
+            return program
+        })
+        setData('programs', newPrograms)
+    }
 
     const onProgramDelete = (program_id) => {
         const newPrograms = data.programs.filter(
             (program) => program.id !== program_id
-        );
-        setData("programs", newPrograms);
-    };
+        )
+        setData('programs', newPrograms)
+    }
 
     const handleDrop = (droppedItem) => {
-        if (!droppedItem.destination) return;
+        if (!droppedItem.destination) return
 
-        let updatedPrograms = [...data.programs];
-        const [removed] = updatedPrograms.splice(droppedItem.source.index, 1);
+        let updatedPrograms = [...data.programs]
+        const [removed] = updatedPrograms.splice(droppedItem.source.index, 1)
 
-        updatedPrograms.splice(droppedItem.destination.index, 0, removed);
+        updatedPrograms.splice(droppedItem.destination.index, 0, removed)
 
         setData(
-            "programs",
+            'programs',
             updatedPrograms.map((program, index) => {
-                program.order = index + 1;
-                return program;
+                program.order = index + 1
+                return program
             })
-        );
-    };
+        )
+    }
 
     const handleFormSubmit = (e) => {
-        put(route("projects.update", project.uuid), {
+        put(route('projects.update', project.uuid), {
             preserveScroll: true,
             onSuccess: () => {
-                success("Proyecto actualizado correctamente");
+                success('Proyecto actualizado correctamente')
             },
             onError: () => {
-                error("Ha ocurrido un error al actualizar el proyecto");
+                error('Ha ocurrido un error al actualizar el proyecto')
             },
-        });
-    };
+        })
+    }
 
     const onRoleChange = (user_id, role_id) => {
         const newUsers = data.users.map((user) => {
             if (user.id === user_id) {
-                user.role_id = parseInt(role_id);
+                user.role_id = parseInt(role_id)
             }
-            return user;
-        });
-        setData("users", newUsers);
-    };
+            return user
+        })
+        setData('users', newUsers)
+    }
 
     useEffect(() => {
-        console.log(data);
-    }, [data]);
+        console.log(data)
+    }, [data])
 
     return (
         <AuthenticatedLayout auth={auth}>
@@ -144,10 +147,10 @@ export default function Edit({ auth, project, forms, users, roles }) {
             <ProjectTitleHeaderAndForm
                 project={data}
                 onProjectNameChange={(e) =>
-                    setData("project_name", e.target.value)
+                    setData('project_name', e.target.value)
                 }
                 onProjectDescriptionChange={(e) =>
-                    setData("project_description", e.target.value)
+                    setData('project_description', e.target.value)
                 }
             />
 
@@ -158,7 +161,7 @@ export default function Edit({ auth, project, forms, users, roles }) {
                             users.filter((user) => {
                                 return !data.users
                                     .map((user) => user.id)
-                                    .includes(user.id);
+                                    .includes(user.id)
                             }) ?? []
                         }
                         forms={forms}
@@ -195,5 +198,5 @@ export default function Edit({ auth, project, forms, users, roles }) {
                 </div>
             </div>
         </AuthenticatedLayout>
-    );
+    )
 }

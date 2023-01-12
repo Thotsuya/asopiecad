@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid')->unique();
             $table->string('project_name');
-            $table->text('project_description')->nullable();
+            $table->string('project_description')->default('Descripción del proyecto');
             $table->softDeletes();
             $table->timestamps();
         });

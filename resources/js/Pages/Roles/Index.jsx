@@ -1,6 +1,6 @@
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import Pagination from "@/Components/Pagination";
-import { Head, Link } from "@inertiajs/inertia-react";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
+import Pagination from '@/Components/Pagination'
+import { Head, Link } from '@inertiajs/inertia-react'
 
 export default function Dashboard({ auth, roles }) {
     return (
@@ -10,12 +10,12 @@ export default function Dashboard({ auth, roles }) {
             <div className="row">
                 <div className="col-xs-12">
                     <h1>Roles</h1>
-                    <button
-                        type="button"
+                    <Link
+                        href={route('roles.create')}
                         className="btn btn-primary margin-bottom-10 waves-effect waves-light"
                     >
                         Crear Rol
-                    </button>
+                    </Link>
                 </div>
 
                 <div className="col-xs-12">
@@ -54,7 +54,7 @@ export default function Dashboard({ auth, roles }) {
                                                 ))}
                                             {role.permissions.length > 5 && (
                                                 <span className="badge bg-success">
-                                                    +{" "}
+                                                    +{' '}
                                                     {role.permissions.length -
                                                         5}
                                                 </span>
@@ -63,7 +63,7 @@ export default function Dashboard({ auth, roles }) {
                                         <td className="text-center">
                                             <Link
                                                 href={route(
-                                                    "roles.edit",
+                                                    'roles.edit',
                                                     role.id
                                                 )}
                                                 className="btn btn-primary btn-xs waves-effect waves-light"
@@ -87,5 +87,5 @@ export default function Dashboard({ auth, roles }) {
                 </div>
             </div>
         </AuthenticatedLayout>
-    );
+    )
 }
