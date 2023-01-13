@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class FormsResource extends JsonResource
+class BeneficiaryFormsResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -25,22 +25,21 @@ class FormsResource extends JsonResource
                     'slug' => $tab['tab_slug'],
                     'editMode' => false,
                     'order' => $tab['order'],
+                    'fields' => collect($tab['fields'])->map(function ($field) {
+                        return [
+                            'id' => $field['id'],
+                            'name' => $field['name'],
+                            'type' => $field['type'],
+                            'required' => $field['required'],
+                            'size' => $field['size'],
+                            'tab_id' => $field['tab_id'],
+                            'options' => $field['options'],
+                            'slug' => $field['slug']
+                        ];
+                    })->toArray()
                 ];
             })->toArray(),
-            'fields' => collect($this->form_fields)->map(function ($tab) {
-                return collect($tab['fields'])->map(function ($field) {
-                    return [
-                        'id' => $field['id'],
-                        'name' => $field['name'],
-                        'type' => $field['type'],
-                        'required' => $field['required'],
-                        'size' => $field['size'],
-                        'tab_id' => $field['tab_id'],
-                        'options' => $field['options'],
-                        'slug' => $field['slug']
-                    ];
-                })->toArray();
-            })->flatten(1)->toArray()
         ];
+
     }
 }

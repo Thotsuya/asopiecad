@@ -1,19 +1,34 @@
-export default function RadioInput({ field, onClick }) {
+export default function RadioInput({
+    field,
+    onClick = () => {},
+    editable = true,
+    onChange = () => {},
+    checked = false,
+    error = '',
+}) {
     return (
-        <div className={`${field.size} margin-bottom-10`}>
+        <div
+            className={`${field.size} margin-bottom-10 form-group ${
+                error ? 'has-error' : ''
+            }`}
+        >
             <div className="radio primary">
                 <input
                     type="radio"
                     id={`${field.slug}-${field.id}`}
                     name={field.slug}
-                    value={field.slug}
+                    checked={checked}
+                    onChange={onChange}
                 />
-                <label htmlFor={field.slug}>
+                <label htmlFor={`${field.slug}-${field.id}`}>
                     {field.name}
                     {field.required && <span className="text-danger">*</span>}
-                    <i className="fa fa-times" onClick={onClick} />
+                    {editable && (
+                        <i className="fa fa-times" onClick={onClick} />
+                    )}
                 </label>
             </div>
+            {error && <span className="help-block">{error}</span>}
         </div>
-    );
+    )
 }

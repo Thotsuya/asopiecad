@@ -1,16 +1,29 @@
-export default function SelectInput({ field, onClick }) {
+export default function SelectInput({
+    field,
+    onClick = () => {},
+    editable = true,
+    onChange = () => {},
+    value,
+    error = '',
+}) {
     return (
-        <div className={`${field.size} margin-bottom-10`}>
+        <div
+            className={`${field.size} margin-bottom-10 form-group ${
+                error ? 'has-error' : ''
+            }`}
+        >
             <label htmlFor={field.slug}>
                 {field.name}
                 {field.required && <span className="text-danger">*</span>}
-                <i className="fa fa-times" onClick={onClick} />
+                {editable && <i className="fa fa-times" onClick={onClick} />}
             </label>
             <select
                 className="form-control"
                 id={`${field.slug}-${field.id}`}
                 name={field.slug}
-                multiple={field.type === "select multiple"}
+                multiple={field.type === 'select multiple'}
+                value={value}
+                onChange={onChange}
             >
                 {field.options.map((option) => (
                     <option key={option.id} value={option.value}>
@@ -18,6 +31,7 @@ export default function SelectInput({ field, onClick }) {
                     </option>
                 ))}
             </select>
+            {error && <span className="help-block">{error}</span>}
         </div>
-    );
+    )
 }

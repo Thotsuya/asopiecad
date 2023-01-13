@@ -30,10 +30,10 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Editar Proyectos']);
         Permission::create(['name' => 'Eliminar Proyectos']);
 
-        Permission::create(['name' => 'Ver Formullarios']);
-        Permission::create(['name' => 'Crear Formullarios']);
-        Permission::create(['name' => 'Editar Formullarios']);
-        Permission::create(['name' => 'Eliminar Formullarios']);
+        Permission::create(['name' => 'Ver Formularios']);
+        Permission::create(['name' => 'Crear Formularios']);
+        Permission::create(['name' => 'Editar Formularios']);
+        Permission::create(['name' => 'Eliminar Formularios']);
 
         Permission::create(['name' => 'Ver Beneficiarios']);
         Permission::create(['name' => 'Crear Beneficiarios']);
@@ -45,7 +45,7 @@ class RolePermissionSeeder extends Seeder
         Role::create(['name' => 'Admin'])->syncPermissions(Permission::all()->modelKeys());
         Role::create(['name' => 'Gerente'])->givePermissionTo([
             'Ver Proyectos',
-            'Ver Formullarios',
+            'Ver Formularios',
             'Ver Beneficiarios',
             'Crear Beneficiarios',
             'Editar Beneficiarios',
