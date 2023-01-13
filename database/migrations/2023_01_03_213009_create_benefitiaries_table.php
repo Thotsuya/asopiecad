@@ -15,9 +15,10 @@ return new class extends Migration
     {
         Schema::create('benefitiaries', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->string('internal_id')->nullable();
             $table->string('name');
-            $table->integer('internal_status')->default(0);
+            $table->string('internal_status')->default(\App\Models\Benefitiary::INTERNAL_STATUSES['pending']);
             $table->timestamp('approved_at')->nullable();
             $table->string('deletion_reason')->nullable();
             $table->softDeletes();

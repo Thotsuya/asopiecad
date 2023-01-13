@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Benefitiary extends Model
 {
@@ -17,6 +18,13 @@ class Benefitiary extends Model
         'internal_status',
         'approved_at',
         'deletion_reason'
+    ];
+
+    public const INTERNAL_STATUSES = [
+        'pending' => 'Pending',
+        'approved' => 'Approved',
+        'rejected' => 'Rejected',
+        'deleted' => 'Deleted',
     ];
 
     // Relationships
@@ -43,6 +51,7 @@ class Benefitiary extends Model
             $code = str_shuffle($code);
 
             $model->internal_id = $code;
+            $model->uuid = (string) Str::uuid();
         });
 
     }

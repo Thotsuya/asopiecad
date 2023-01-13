@@ -51,7 +51,8 @@ export default function BeneficiaryCreateModal({ project }) {
                             <div className="col-xs-12">
                                 <div className="form-group">
                                     <label htmlFor="name">
-                                        Beneficiarios Existentes
+                                        Beneficiarios Existentes que no
+                                        pertenecen a este proyecto
                                     </label>
                                     <select
                                         className="form-control"
