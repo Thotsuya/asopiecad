@@ -29,20 +29,19 @@ class ProjectController extends Controller
                     $query->where('user_id', auth()->id());
                 });
 
+        $roles =  Role::query()
+            ->where('name', '!=', 'Super Admin')
+            ->with('permissions')
+            ->get();
+
         return inertia('Projects/Index', [
             'projects' => $projects
                 ->withCount('beneficiaries', 'users', 'programs')
                 ->latest('id')
                 ->paginate(6)
-                ->through(function (Project $project) {
-                    return ProjectResource::make($project);
+                ->through(function (Project $project) use($roles){
+                    return ProjectResource::make($project,$roles);
                 }),
-            'roles' => RolePermissionResource::collection(
-                Role::query()
-                    ->where('name', '!=', 'Super Admin')
-                    ->with('permissions')
-                    ->get()
-            ),
         ]);
     }
 

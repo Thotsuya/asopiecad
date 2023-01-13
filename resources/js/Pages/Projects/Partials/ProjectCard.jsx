@@ -1,17 +1,6 @@
 import { Link } from '@inertiajs/inertia-react'
-import useUsers from '@/Hooks/Users'
 
 export default function ProjectCard({ project, roles, auth }) {
-    const userProjectRole = project.users.find(
-        (user) => user.id === auth.user.id
-    ).pivot.role_id
-
-    const userPermissions = roles.find(
-        (role) => role.id === userProjectRole
-    ).permissions
-
-    const { can } = useUsers()
-
     return (
         <div
             key={project.id}
@@ -49,7 +38,7 @@ export default function ProjectCard({ project, roles, auth }) {
                         <div className="views">
                             <i
                                 className="fa fa-cogs"
-                                title="Miemros del equipo de proyecto"
+                                title="Miembros del equipo de proyecto"
                             />{' '}
                             {project.users_count}
                         </div>
@@ -60,7 +49,7 @@ export default function ProjectCard({ project, roles, auth }) {
                     <div className="row">
                         <div className="col-xs-12 margin-top-10">
                             <div className="btn-group pull-right">
-                                {can('Editar Proyectos', userPermissions) && (
+                                {project.can.edit && (
                                     <Link
                                         href={route(
                                             'projects.edit',
@@ -74,7 +63,8 @@ export default function ProjectCard({ project, roles, auth }) {
                                         />
                                     </Link>
                                 )}
-                                {can('Ver Proyectos', userPermissions) && (
+
+                                {project.can.view && (
                                     <Link
                                         href={route(
                                             'projects.show',

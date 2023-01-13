@@ -12,6 +12,13 @@ class ProjectResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
+
+    public function __construct($resource,$roles = [])
+    {
+        parent::__construct($resource);
+        $this->roles = $roles;
+    }
+
     public function toArray($request)
     {
         return [
@@ -24,7 +31,21 @@ class ProjectResource extends JsonResource
             'beneficiaries_count' => $this->beneficiaries_count,
             'users_count' => $this->users_count,
             'programs_count' => $this->programs_count,
-            'users' => $this->whenLoaded('users',$this->users),
+            'users' => $this->whenLoaded('users',function ()  {
+               return $this->users->map(function ($user) {
+                   return [
+                       'id' => $user->id,
+                       'name' => $user->name,
+                       'email' => $user->email,
+                       'role' => $this->roles->where('id',$user->pivot->role_id)->first()->name,
+                       'abilities' => $this->roles->where('id',$user->pivot->role_id)->first()->permissions->pluck('name')->toArray(),
+                   ];
+               });
+            }),
+            'can' => [
+                'edit' => auth()->user()->can('edit-project', [$this->resource,$this->roles]),
+                'view' => auth()->user()->can('view-project', [$this->resource,$this->roles]),
+            ],
             'forms' => $this->whenLoaded('forms',$this->forms),
             'programs' => $this->whenLoaded('programs',$this->programs),
             'beneficiaries' => $this->whenLoaded('beneficiaries',$this->beneficiaries),
