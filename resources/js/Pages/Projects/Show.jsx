@@ -9,8 +9,14 @@ import ProjectTabs from '@/Pages/Projects/Partials/ProjectTabs'
 
 // Modals
 import BeneficiaryCreateModal from '@/Components/Projects/BeneficiaryCreateModal'
+import AppointmentCreateModal from '@/Components/Appointments/AppointmentCreateModal'
+
+// Hooks
+import { useState } from 'react'
 
 export default function Dashboard({ auth, project, beneficiaries, programs }) {
+    const [selectedBeneficiary, setSelectedBeneficiary] = useState(null)
+
     return (
         <>
             <AuthenticatedLayout auth={auth}>
@@ -56,6 +62,9 @@ export default function Dashboard({ auth, project, beneficiaries, programs }) {
                                 <ProjectBeneficiaries
                                     beneficiaries={beneficiaries}
                                     project={project}
+                                    onBeneficiarySelected={
+                                        setSelectedBeneficiary
+                                    }
                                 />
                                 <Goals goals={project.goals} />
                             </div>
@@ -97,6 +106,11 @@ export default function Dashboard({ auth, project, beneficiaries, programs }) {
             </AuthenticatedLayout>
 
             <BeneficiaryCreateModal project={project} />
+            <AppointmentCreateModal
+                project={project}
+                beneficiary={selectedBeneficiary}
+                auth={auth}
+            />
         </>
     )
 }

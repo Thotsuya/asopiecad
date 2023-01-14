@@ -3,10 +3,12 @@ import { Link } from '@inertiajs/inertia-react'
 import useToasts from '@/Hooks/Toasts'
 import { Inertia } from '@inertiajs/inertia'
 
-export default function ProjectBeneficiaries({ beneficiaries = [], project }) {
+export default function ProjectBeneficiaries({
+    beneficiaries = [],
+    project,
+    onBeneficiarySelected,
+}) {
     const { promptWithInput, info } = useToasts()
-
-    console.log(project)
 
     const handleDelete = (beneficiary) => {
         promptWithInput(
@@ -103,7 +105,16 @@ export default function ProjectBeneficiaries({ beneficiaries = [], project }) {
                                                     </button>
                                                     <ul className="dropdown-menu">
                                                         <li>
-                                                            <a href="#">
+                                                            <a
+                                                                href="#"
+                                                                onClick={() => {
+                                                                    onBeneficiarySelected(
+                                                                        beneficiary
+                                                                    )
+                                                                }}
+                                                                data-toggle="modal"
+                                                                data-target="#modal-register-appointment"
+                                                            >
                                                                 Registrar visita
                                                             </a>
                                                         </li>

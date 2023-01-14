@@ -45,5 +45,9 @@ class Project extends Model
         return $this->belongsToMany(Form::class);
     }
 
+    public function appointments(){
+        return $this->hasMany(Appointment::class);
+    }
+
 
 }

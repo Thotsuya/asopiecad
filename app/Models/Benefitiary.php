@@ -80,11 +80,9 @@ class Benefitiary extends Model
         return $this->belongsToMany(Program::class);
     }
 
-    public static function canApproveBenefitiary(Project $project,Collection $roles){
-        return $project->users->contains(auth()->user()->id) &&
-            $roles
-                ->where('id', $project->users->where('id', auth()->user()->id)->first()->pivot->role_id)
-                ->first()
-                ->hasPermissionTo('Aprobar Beneficiarios');
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
     }
+
 }

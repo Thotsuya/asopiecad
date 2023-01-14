@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('beneficiaries',\App\Http\Controllers\Admin\BenefitiaryController::class);
     Route::resource('users', App\Http\Controllers\Admin\UsersController::class);
     Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
+    Route::resource('appointments', App\Http\Controllers\Admin\AppointmentController::class);
 
     Route::get('projects/{project}/forms', [App\Http\Controllers\Admin\ProjectFormController::class, 'create'])->name('projects.forms.create');
     Route::post('projects/{project}/forms', [App\Http\Controllers\Admin\ProjectFormController::class, 'store'])->name('projects.forms.store');
