@@ -90,4 +90,28 @@ trait HasValidationRulesAndMessages {
 
         return $messages;
     }
+
+    public function hasFileFields()
+    {
+        return collect($this->form_fields)->map(function ($tab) {
+            return collect($tab['fields'])->map(function ($field) {
+                return $field['type'] == 'file' || $field['type'] == 'image';
+            })->contains(true);
+        })->contains(true);
+    }
+
+    public function getFileFields()
+    {
+        $fields = [];
+
+        collect($this->form_fields)->each(function ($tab) use (&$fields) {
+            collect($tab['fields'])->each(function ($field) use (&$fields) {
+                if ($field['type'] == 'file' || $field['type'] == 'image') {
+                    $fields[] = $field['slug'] . '-' . $this->form_slug . '-' . $this->id;
+                }
+            });
+        });
+
+        return $fields;
+    }
 }

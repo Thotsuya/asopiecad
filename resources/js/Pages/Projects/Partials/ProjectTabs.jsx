@@ -10,7 +10,7 @@ export default function ProjectTabs({ project }) {
                     aria-controls="home"
                     aria-expanded="true"
                 >
-                    Programas
+                    Programas <i className="fa fa-book" aria-hidden="true" />
                 </a>
             </li>
             <li role="presentation">
@@ -21,7 +21,8 @@ export default function ProjectTabs({ project }) {
                     data-toggle="tab"
                     aria-controls="profile"
                 >
-                    Beneficiarios
+                    Beneficiarios{' '}
+                    <i className="fa fa-users" aria-hidden="true" />
                 </a>
             </li>
             <li role="presentation">
@@ -32,7 +33,8 @@ export default function ProjectTabs({ project }) {
                     data-toggle="tab"
                     aria-controls="profile"
                 >
-                    Metas
+                    Metas{' '}
+                    <i className="fa fa-flag-checkered" aria-hidden="true" />
                 </a>
             </li>
         </ul>

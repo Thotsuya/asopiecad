@@ -35,6 +35,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('projects/{project}/forms', [App\Http\Controllers\Admin\ProjectFormController::class, 'create'])->name('projects.forms.create');
     Route::post('projects/{project}/forms', [App\Http\Controllers\Admin\ProjectFormController::class, 'store'])->name('projects.forms.store');
+    Route::get('projects/{project}/beneficiaries/{beneficiary}/edit', [App\Http\Controllers\Admin\ProjectFormController::class, 'edit'])->name('projects.forms.edit');
+    Route::put('projects/{project}/beneficiaries/{beneficiary}', [App\Http\Controllers\Admin\ProjectFormController::class, 'update'])->name('projects.forms.update');
+    Route::delete('projects/{project}/beneficiaries/{beneficiary}', [App\Http\Controllers\Admin\ProjectFormController::class, 'destroy'])->name('projects.forms.destroy');
 
 });
 

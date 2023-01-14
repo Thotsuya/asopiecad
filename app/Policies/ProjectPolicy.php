@@ -51,5 +51,41 @@ class ProjectPolicy
 
     }
 
+    public function approveBeneficiaries(User $user, Project $project, Collection $roles)
+    {
+        // Check if the project has forms to register beneficiaries and that the user has the permission to register beneficiaries
+        return $user->projects->contains($project->id) &&
+            $project->forms->count() > 0 &&
+            $roles
+                ->where('id', $project->users->where('id', $user->id)->first()->pivot->role_id)
+                ->first()
+                ->hasPermissionTo('Aprobar Beneficiarios');
+
+    }
+
+    public function editBeneficiaries(User $user, Project $project, Collection $roles)
+    {
+        // Check if the project has forms to register beneficiaries and that the user has the permission to register beneficiaries
+        return $user->projects->contains($project->id) &&
+            $project->forms->count() > 0 &&
+            $roles
+                ->where('id', $project->users->where('id', $user->id)->first()->pivot->role_id)
+                ->first()
+                ->hasPermissionTo('Editar Beneficiarios');
+
+    }
+
+    public function deleteBeneficiaries(User $user, Project $project, Collection $roles)
+    {
+        // Check if the project has forms to register beneficiaries and that the user has the permission to register beneficiaries
+        return $user->projects->contains($project->id) &&
+            $project->forms->count() > 0 &&
+            $roles
+                ->where('id', $project->users->where('id', $user->id)->first()->pivot->role_id)
+                ->first()
+                ->hasPermissionTo('Eliminar Beneficiarios');
+
+    }
+
 
 }

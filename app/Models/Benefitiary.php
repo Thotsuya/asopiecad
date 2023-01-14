@@ -4,28 +4,41 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class Benefitiary extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $touches = ['projects'];
 
     protected $fillable = [
         'internal_id',
         'name',
+        'beneficiary_data',
         'internal_status',
         'approved_at',
         'deletion_reason'
     ];
 
     public const INTERNAL_STATUSES = [
-        'pending' => 'Pending',
-        'approved' => 'Approved',
-        'rejected' => 'Rejected',
-        'deleted' => 'Deleted',
+        'pending' => 'Pendiente de aprobación',
+        'approved' => 'Aprobado',
+        'rejected' => 'Rechazado',
+        'deleted' => 'Eliminado',
     ];
+
+    protected $casts = [
+        'beneficiary_data' => 'json',
+    ];
+
+
+    public function getRouteKeyName()
+    {
+       return 'uuid';
+    }
 
     // Relationships
 
@@ -65,5 +78,13 @@ class Benefitiary extends Model
     public function programs()
     {
         return $this->belongsToMany(Program::class);
+    }
+
+    public static function canApproveBenefitiary(Project $project,Collection $roles){
+        return $project->users->contains(auth()->user()->id) &&
+            $roles
+                ->where('id', $project->users->where('id', auth()->user()->id)->first()->pivot->role_id)
+                ->first()
+                ->hasPermissionTo('Aprobar Beneficiarios');
     }
 }

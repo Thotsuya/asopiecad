@@ -18,6 +18,7 @@ return new class extends Migration
             $table->uuid('uuid')->unique();
             $table->string('internal_id')->nullable();
             $table->string('name');
+            $table->text('beneficiary_data');
             $table->string('internal_status')->default(\App\Models\Benefitiary::INTERNAL_STATUSES['pending']);
             $table->timestamp('approved_at')->nullable();
             $table->string('deletion_reason')->nullable();

@@ -1,6 +1,7 @@
+import useBenefitiaries from '@/Hooks/Benefitiaries'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head } from '@inertiajs/inertia-react'
-import useBenefitiaries from '@/Hooks/Benefitiaries'
+import { useEffect } from 'react'
 import FormTabs from '@/Pages/Beneficiares/Partials/FormTabs'
 import FormTabContent from '@/Pages/Beneficiares/Partials/FormTabContent'
 import LargeInput from '@/Pages/Forms/Fields/LargeInput'
@@ -8,49 +9,65 @@ import CheckboxInput from '@/Pages/Forms/Fields/CheckboxInput'
 import SelectInput from '@/Pages/Forms/Fields/SelectInput'
 import RadioInput from '@/Pages/Forms/Fields/RadioInput'
 import SmallInput from '@/Pages/Forms/Fields/SmallInput'
-import { useEffect } from 'react'
 
-export default function Create({
-    auth,
-    forms,
-    project,
-    is_new = false,
-    beneficiary = null,
-}) {
-    const { data, setData, errors, handleSubmit, processing } =
-        useBenefitiaries(forms, is_new, project, beneficiary)
+export default function Edit({ auth, forms, project, beneficiary = null }) {
+    const { data, setData, errors, handleSubmitUpdate, isDirty, processing } =
+        useBenefitiaries(forms, false, project, beneficiary)
+
+    useEffect(() => {
+        Object.keys(beneficiary.beneficiary_data).forEach((key) => {
+            setData((data) => ({
+                ...data,
+                [key]: beneficiary.beneficiary_data[key],
+            }))
+        })
+        // Set isDirty to false to avoid showing the alert when the page loads
+    }, [])
 
     return (
         <AuthenticatedLayout auth={auth}>
-            <Head title="Registrar Beneficiario" />
+            <Head title="Editar Beneficiario" />
 
             <h1 className="page-title">
-                {is_new ? 'Registrar Beneficiario' : 'Editar Beneficiario'} en
-                Proyecto: <b>{project.project_name}</b>
+                Editar Beneficiario Proyecto: <b>{project.project_name}</b>
             </h1>
 
             <div className="row">
-                <div className="col-xs-12">
-                    <h3 className="page-title">
-                        {is_new ? 'Nuevo Beneficiario' : 'Beneficiario'}:{' '}
-                        <b>{data.name}</b>
-                    </h3>
+                <div
+                    className={`col-xs-12 form-group ${
+                        errors.name ? 'has-error' : ''
+                    }`}
+                >
+                    <h3 className="page-title">Beneficiario:</h3>
+                    <input
+                        type="text"
+                        className="form-control"
+                        name="name"
+                        value={data.name}
+                        onChange={(e) =>
+                            setData((data) => ({
+                                ...data,
+                                name: e.target.value,
+                            }))
+                        }
+                    />
+                    {errors.name && (
+                        <span className="help-block">{errors.name}</span>
+                    )}
                 </div>
             </div>
 
             <div className="row">
-                <div className="col-xs-12">
-                    <div className="alert alert-info">
-                        <p>
-                            Se registrarán los datos del beneficiario{' '}
-                            <b>{data.name}</b> en el proyecto{' '}
-                            <b>{project.project_name}</b>. Verifique que los
-                            datos sean correctos antes de guardar. <br /> Los
-                            campos marcados con{' '}
-                            <span className="text-danger">*</span> son
-                            obligatorios.
-                        </p>
-                    </div>
+                <div className="col-xs-12 margin-top-10">
+                    {isDirty && (
+                        <div className="alert alert-warning">
+                            <p>
+                                <i className="fa fa-exclamation-triangle"></i>{' '}
+                                Hay cambios sin guardar, guardalos antes de
+                                salir de la página para evitar perderlos.
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -306,16 +323,16 @@ export default function Create({
                 <div className="col-xs-12">
                     <button
                         className="btn btn-primary btn-block"
-                        onClick={handleSubmit}
+                        onClick={handleSubmitUpdate}
                         disabled={processing}
                     >
                         {processing ? (
                             <span>
-                                <i className="fa fa-spinner fa-spin" />{' '}
-                                Guardando Beneficiario
+                                <i className="fa fa-spinner fa-spin"></i>{' '}
+                                Guardando cambios
                             </span>
                         ) : (
-                            <span>Guardar Beneficiario</span>
+                            'Guardar cambios en el formulario'
                         )}
                     </button>
                 </div>

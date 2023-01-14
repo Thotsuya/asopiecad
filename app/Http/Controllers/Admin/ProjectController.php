@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectRequest;
 use App\Http\Requests\ProjectUpdateRequest;
+use App\Http\Resources\BeneficiaryResource;
 use App\Http\Resources\ProjectResource;
 use App\Http\Resources\RolePermissionResource;
 use App\Models\Form;
@@ -84,9 +85,17 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-
         return inertia('Projects/Show', [
-            'project' => new ProjectResource($project->load('programs', 'beneficiaries', 'users', 'forms'),$this->roles),
+            // Paginate the beneficiaries
+            'beneficiaries' => $project->beneficiaries()
+                ->latest('id')
+                ->with('programs')
+                ->paginate(6)
+                ->through(function ($beneficiary) {
+                    return BeneficiaryResource::make($beneficiary);
+                }),
+            'programs' => $project->programs,
+            'project' => new ProjectResource($project->load('beneficiaries', 'users', 'forms'),$this->roles),
         ]);
     }
 

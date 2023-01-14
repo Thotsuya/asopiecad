@@ -1,18 +1,25 @@
 import { useForm } from '@inertiajs/inertia-react'
+import useToasts from '@/Hooks/Toasts'
 
-export default function useBenefitiaries(forms, isNew = false, project) {
-    const { data, setData, post, put, processing, errors, reset } = useForm(
-        () => {
+export default function useBenefitiaries(
+    forms,
+    isNew = false,
+    project,
+    beneficiary = null
+) {
+    const { success, error } = useToasts()
+    const { data, setData, post, put, processing, errors, reset, isDirty } =
+        useForm(() => {
             // Loop through the form fields, create an object with the field slug as the key and the value as the value
             const formData = {}
+            formData['name'] = isNew ? beneficiary : beneficiary.name
             forms.forEach((form) => {
                 form.tabs.forEach((tab) => {
                     tab.fields.forEach((field) => {
-                        if (field.type === 'checkbox') {
-                            formData[
-                                `${field.slug}-${form.form_slug}-${form.id}`
-                            ] = false
-                        } else if (field.type === 'radio') {
+                        if (
+                            field.type === 'checkbox' ||
+                            field.type === 'radio'
+                        ) {
                             formData[
                                 `${field.slug}-${form.form_slug}-${form.id}`
                             ] = false
@@ -44,13 +51,33 @@ export default function useBenefitiaries(forms, isNew = false, project) {
                 })
             })
             return formData
-        }
-    )
+        })
 
     const handleSubmit = (e) => {
         if (isNew) {
-            post(route('projects.forms.store', { project: project.uuid }))
+            post(route('projects.forms.store', { project: project.uuid }), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    success('Beneficiario creado con éxito')
+                    reset()
+                },
+            })
         }
+    }
+
+    const handleSubmitUpdate = () => {
+        put(
+            route('projects.forms.update', {
+                project: project.uuid,
+                beneficiary: beneficiary.uuid,
+            }),
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    success('Beneficiario actualizado con éxito')
+                },
+            }
+        )
     }
 
     return {
@@ -61,5 +88,7 @@ export default function useBenefitiaries(forms, isNew = false, project) {
         errors,
         reset,
         handleSubmit,
+        isDirty,
+        handleSubmitUpdate,
     }
 }

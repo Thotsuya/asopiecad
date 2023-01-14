@@ -1,22 +1,31 @@
 import { useState, useEffect } from 'react'
 import { Inertia } from '@inertiajs/inertia'
+import { useForm } from '@inertiajs/inertia-react'
+import useToasts from '@/Hooks/Toasts'
 
 export default function BeneficiaryCreateModal({ project }) {
-    const [isNewBeneficiary, setIsNewBeneficiary] = useState(false)
+    const { success, error } = useToasts()
+
+    const { data, setData, get, processing, errors, reset, wasSuccessful } =
+        useForm({
+            beneficiary_id: null,
+            beneficiary_name: '',
+            is_new_beneficiary: false,
+        })
 
     const handleSubmit = () => {
-        Inertia.get(
-            route('projects.forms.create', project.uuid),
-            {},
-            {
-                onBefore: () => {
-                    document
-                        .getElementById('modal-register-beneficiary-close')
-                        .click()
-                },
-                onSuccess: () => {},
-            }
-        )
+        get(route('projects.forms.create', project.uuid), {
+            onSuccess: () => {
+                document
+                    .getElementById('modal-register-beneficiary-close')
+                    .click()
+            },
+            onError: (err) => {
+                let firstError = Object.values(err)[0]
+                error(firstError)
+            },
+            preserveState: true,
+        })
     }
 
     return (
@@ -49,7 +58,11 @@ export default function BeneficiaryCreateModal({ project }) {
                     <div className="modal-body">
                         <div className="row">
                             <div className="col-xs-12">
-                                <div className="form-group">
+                                <div
+                                    className={`form-group ${
+                                        errors.beneficiary_id ? 'has-error' : ''
+                                    }`}
+                                >
                                     <label htmlFor="name">
                                         Beneficiarios Existentes que no
                                         pertenecen a este proyecto
@@ -58,7 +71,7 @@ export default function BeneficiaryCreateModal({ project }) {
                                         className="form-control"
                                         id="beneficiary"
                                         name="beneficiary"
-                                        disabled={isNewBeneficiary}
+                                        disabled={data.is_new_beneficiary}
                                     >
                                         <option value="0">
                                             Seleccione un beneficiario
@@ -69,15 +82,21 @@ export default function BeneficiaryCreateModal({ project }) {
                                             Pedro Martinez
                                         </option>
                                     </select>
+                                    {errors.beneficiary_id && (
+                                        <span className="help-block">
+                                            {errors.beneficiary_id}
+                                        </span>
+                                    )}
                                     <div className="checkbox">
                                         <input
                                             type="checkbox"
                                             id="is_new_beneficiary"
                                             name="is_new_beneficiary"
-                                            checked={isNewBeneficiary}
+                                            checked={data.is_new_beneficiary}
                                             onChange={() => {
-                                                setIsNewBeneficiary(
-                                                    (prev) => !prev
+                                                setData(
+                                                    'is_new_beneficiary',
+                                                    !data.is_new_beneficiary
                                                 )
                                             }}
                                         />
@@ -86,6 +105,38 @@ export default function BeneficiaryCreateModal({ project }) {
                                         </label>
                                     </div>
                                 </div>
+                                {data.is_new_beneficiary && (
+                                    <div
+                                        className={`form-group ${
+                                            errors.beneficiary_name
+                                                ? 'has-error'
+                                                : ''
+                                        }`}
+                                    >
+                                        <label htmlFor="name">
+                                            Nombre del Beneficiario
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="beneficiary_name"
+                                            name="beneficiary_name"
+                                            value={data.beneficiary_name}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'beneficiary_name',
+                                                    e.target.value
+                                                )
+                                            }
+                                            disabled={!data.is_new_beneficiary}
+                                        />
+                                        {errors.beneficiary_name && (
+                                            <span className="help-block">
+                                                {errors.beneficiary_name}
+                                            </span>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

@@ -27,9 +27,13 @@ class BeneficiaryStoreRequest extends FormRequest
         $project = $this->route('project');
         $forms = $project->forms()->get();
 
-        $merged_rules = collect($forms)->map(function(Form $form){
-            return $form->getFormValidationRules();
-        })->collapse()->toArray();
+        $merged_rules = collect($forms)
+            ->map(function (Form $form) {
+                return $form->getFormValidationRules();
+            })->collapse()
+            ->merge([
+                'name' => ['required', 'string', 'max:255'],
+            ])->toArray();
 
 
         return $merged_rules;
@@ -40,9 +44,15 @@ class BeneficiaryStoreRequest extends FormRequest
         $project = $this->route('project');
         $forms = $project->forms()->get();
 
-        $merged_messages = collect($forms)->map(function(Form $form){
-            return $form->getFormValidationMessages();
-        })->collapse()->toArray();
+        $merged_messages = collect($forms)
+            ->map(function (Form $form) {
+                return $form->getFormValidationMessages();
+            })->collapse()
+            ->merge([
+                'name.required' => 'El nombre del beneficiario es requerido',
+                'name.string' => 'El nombre del beneficiario debe ser un texto',
+                'name.max' => 'El nombre del beneficiario debe tener como máximo 255 caracteres',
+            ])->toArray();
 
         return $merged_messages;
     }

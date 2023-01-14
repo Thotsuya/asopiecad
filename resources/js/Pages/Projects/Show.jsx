@@ -10,7 +10,7 @@ import ProjectTabs from '@/Pages/Projects/Partials/ProjectTabs'
 // Modals
 import BeneficiaryCreateModal from '@/Components/Projects/BeneficiaryCreateModal'
 
-export default function Dashboard({ auth, project }) {
+export default function Dashboard({ auth, project, beneficiaries, programs }) {
     return (
         <>
             <AuthenticatedLayout auth={auth}>
@@ -54,7 +54,8 @@ export default function Dashboard({ auth, project }) {
                             <div className="tab-content" id="myTabContent">
                                 <Programs programs={project.programs} />
                                 <ProjectBeneficiaries
-                                    beneficiaries={project.beneficiaries}
+                                    beneficiaries={beneficiaries}
+                                    project={project}
                                 />
                                 <Goals goals={project.goals} />
                             </div>
