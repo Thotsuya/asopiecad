@@ -13,8 +13,15 @@ import AppointmentCreateModal from '@/Components/Appointments/AppointmentCreateM
 
 // Hooks
 import { useState } from 'react'
+import Appointments from '@/Pages/Projects/Partials/Appointments'
 
-export default function Dashboard({ auth, project, beneficiaries, programs }) {
+export default function Dashboard({
+    auth,
+    project,
+    beneficiaries,
+    programs,
+    appointments,
+}) {
     const [selectedBeneficiary, setSelectedBeneficiary] = useState(null)
 
     return (
@@ -50,7 +57,7 @@ export default function Dashboard({ auth, project, beneficiaries, programs }) {
                 </ProjectTitleHeaderAndForm>
 
                 <div className="row">
-                    <div className="col-md-9 col-xs-12 margin-bottom-20">
+                    <div className="col-xs-12 margin-bottom-20">
                         <div className="box-content">
                             <h4 className="box-title">
                                 Información del Proyecto
@@ -70,38 +77,8 @@ export default function Dashboard({ auth, project, beneficiaries, programs }) {
                             </div>
                         </div>
                     </div>
-
-                    <div className="col-md-3 col-xs-12">
-                        <div className="box-content">
-                            <h4 className="box-title">
-                                Datos Generales del Proyecto
-                            </h4>
-
-                            <div className="row">
-                                <div className="col-xs-12">
-                                    <ul className="list-unstyled">
-                                        <li>
-                                            <strong>Fecha de Inicio:</strong>{' '}
-                                        </li>
-                                        <li>
-                                            <strong>
-                                                Duración del Proyecto:
-                                            </strong>{' '}
-                                        </li>
-                                        <li>
-                                            <strong>Estado:</strong>{' '}
-                                        </li>
-                                        <li>
-                                            <strong>Objetivo General:</strong>{' '}
-                                        </li>
-                                        <li>
-                                            <strong>Progreso</strong>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {console.log(appointments)}
+                    <Appointments appointments={appointments} />
                 </div>
             </AuthenticatedLayout>
 

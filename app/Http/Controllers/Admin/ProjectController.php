@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectRequest;
 use App\Http\Requests\ProjectUpdateRequest;
+use App\Http\Resources\AppointmentResource;
 use App\Http\Resources\BeneficiaryResource;
 use App\Http\Resources\ProjectResource;
 use App\Http\Resources\RolePermissionResource;
@@ -95,6 +96,7 @@ class ProjectController extends Controller
                     return BeneficiaryResource::make($beneficiary);
                 }),
             'programs' => $project->programs,
+            'appointments' => AppointmentResource::collection($project->appointments->load('user','benefitiary')),
             'project' => new ProjectResource($project->load('beneficiaries', 'users', 'forms'),$this->roles),
         ]);
     }

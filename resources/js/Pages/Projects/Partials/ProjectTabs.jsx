@@ -3,8 +3,8 @@ export default function ProjectTabs({ project }) {
         <ul className="nav nav-tabs" id="myTabs" role="tablist">
             <li role="presentation" className="active">
                 <a
-                    href="#home"
-                    id="home-tab"
+                    href="#programs"
+                    id="programs-tab"
                     role="tab"
                     data-toggle="tab"
                     aria-controls="home"
@@ -15,9 +15,9 @@ export default function ProjectTabs({ project }) {
             </li>
             <li role="presentation">
                 <a
-                    href="#profile"
+                    href="#beneficiaries"
                     role="tab"
-                    id="profile-tab"
+                    id="beneficiaries-tab"
                     data-toggle="tab"
                     aria-controls="profile"
                 >
@@ -29,7 +29,7 @@ export default function ProjectTabs({ project }) {
                 <a
                     href="#goals"
                     role="tab"
-                    id="profile-tab"
+                    id="goals-tab"
                     data-toggle="tab"
                     aria-controls="profile"
                 >

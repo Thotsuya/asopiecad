@@ -3,7 +3,7 @@ export default function Programs({ programs }) {
         <div
             className="tab-pane fade in active"
             role="tabpanel"
-            id="home"
+            id="programs"
             aria-labelledby="home-tab"
         >
             <p>

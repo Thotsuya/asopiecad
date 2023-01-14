@@ -46,7 +46,7 @@ export default function ProjectBeneficiaries({
         <div
             className="tab-pane fade"
             role="tabpanel"
-            id="profile"
+            id="beneficiaries"
             aria-labelledby="profile-tab"
         >
             <div className="row">
