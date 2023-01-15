@@ -71,6 +71,8 @@ export default function useBenefitiaries(
         if (field.type === 'select multiple') return []
         if (field.type === 'text' || field.type === 'textarea') return ''
         if (field.type === 'number') return 0
+        if (field.type === 'date') return new Date().toISOString().slice(0, 10)
+        if (field.type === 'file') return null
         return ''
     }
 
