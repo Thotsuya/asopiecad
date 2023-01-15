@@ -165,7 +165,7 @@ export default function AppointmentCreateModal({ project, beneficiary, auth }) {
                                     <div className="alert alert-info">
                                         No hay comentarios registrados. Puedes
                                         agregar uno haciendo click en el botón
-                                        de la derecha.
+                                        +.
                                     </div>
                                 )}
                                 {toggleComments && (

@@ -56,6 +56,11 @@ export default function AppointmentShowModal({ appointment }) {
                                     <h4>Comentarios</h4>
                                 </div>
                                 <div className="col-xs-12">
+                                    {appointment.comments.length === 0 && (
+                                        <div className="alert alert-info">
+                                            No hay comentarios registrados
+                                        </div>
+                                    )}
                                     {appointment.comments.map(
                                         (comment, index) => (
                                             <div
