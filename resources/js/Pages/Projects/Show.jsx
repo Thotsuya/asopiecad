@@ -44,6 +44,14 @@ export default function Dashboard({
                         >
                             <i className="fa fa-user" />
                         </button>
+                        <button
+                            title="Registrar Meta"
+                            className="btn btn-xs btn-warning waves-effect waves-light"
+                            data-toggle="modal"
+                            data-target="#modal-register-goal"
+                        >
+                            <i className="fa fa-flag" />
+                        </button>
                     </div>
                 </ProjectTitleHeaderAndForm>
 

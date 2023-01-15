@@ -12,41 +12,13 @@ export default function useBenefitiaries(
         useForm(() => {
             // Loop through the form fields, create an object with the field slug as the key and the value as the value
             const formData = {}
+
             formData['name'] = isNew ? beneficiary : beneficiary.name
             forms.forEach((form) => {
                 form.tabs.forEach((tab) => {
                     tab.fields.forEach((field) => {
-                        if (
-                            field.type === 'checkbox' ||
-                            field.type === 'radio'
-                        ) {
-                            formData[
-                                `${field.slug}-${form.form_slug}-${form.id}`
-                            ] = false
-                        } else if (field.type === 'select') {
-                            formData[
-                                `${field.slug}-${form.form_slug}-${form.id}`
-                            ] = field.options[0].value
-                        } else if (field.type === 'select multiple') {
-                            formData[
-                                `${field.slug}-${form.form_slug}-${form.id}`
-                            ] = []
-                        } else if (
-                            field.type === 'text' ||
-                            field.type === 'textarea'
-                        ) {
-                            formData[
-                                `${field.slug}-${form.form_slug}-${form.id}`
-                            ] = ''
-                        } else if (field.type === 'number') {
-                            formData[
-                                `${field.slug}-${form.form_slug}-${form.id}`
-                            ] = 0
-                        } else {
-                            formData[
-                                `${field.slug}-${form.form_slug}-${form.id}`
-                            ] = ''
-                        }
+                        formData[`${field.slug}-${form.form_slug}-${form.id}`] =
+                            fieldType(field)
                     })
                 })
             })
@@ -91,6 +63,15 @@ export default function useBenefitiaries(
                 },
             }
         )
+    }
+
+    function fieldType(field) {
+        if (field.type === 'checkbox' || field.type === 'radio') return false
+        if (field.type === 'select') return field.options[0].value
+        if (field.type === 'select multiple') return []
+        if (field.type === 'text' || field.type === 'textarea') return ''
+        if (field.type === 'number') return 0
+        return ''
     }
 
     return {

@@ -18,7 +18,7 @@ export default function Edit({ auth, forms, project, beneficiary = null }) {
         Object.keys(beneficiary.beneficiary_data).forEach((key) => {
             setData((data) => ({
                 ...data,
-                [key]: beneficiary.beneficiary_data[key],
+                [key]: beneficiary.beneficiary_data[key] ?? data[key],
             }))
         })
         // Set isDirty to false to avoid showing the alert when the page loads
