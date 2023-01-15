@@ -15,12 +15,12 @@ return new class extends Migration
     {
         Schema::create('goals', function (Blueprint $table) {
             $table->id();
-            $table->string('goal_name');
             $table->string('goal_description');
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->integer('goal_progress')->default(0);
-            $table->integer('goal_status')->default(0);
+            $table->float('goal_target')->default(0);
+            $table->float('goal_current')->default(0);
+            $table->string('goal_status')->default(\App\Models\Goal::GOAL_STATUS[1]);
             $table->timestamps();
         });
     }

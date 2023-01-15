@@ -56,4 +56,12 @@ class User extends Authenticatable
         return $this->hasMany(Appointment::class);
     }
 
+    public function goals(){
+        return $this->hasMany(Goal::class);
+    }
+
+    public function goalProgresses(){
+        return $this->hasMany(GoalProgress::class);
+    }
+
 }

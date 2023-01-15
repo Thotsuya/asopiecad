@@ -1,8 +1,3 @@
-import { useEffect, useRef, useState } from 'react'
-import { useForm } from '@inertiajs/inertia-react'
-import useToasts from '@/Hooks/Toasts'
-import useComments from '@/Hooks/Comments'
-
 export default function AppointmentShowModal({ appointment }) {
     return (
         <div

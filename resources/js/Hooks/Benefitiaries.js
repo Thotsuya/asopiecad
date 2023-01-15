@@ -72,7 +72,7 @@ export default function useBenefitiaries(
         if (field.type === 'text' || field.type === 'textarea') return ''
         if (field.type === 'number') return 0
         if (field.type === 'date') return new Date().toISOString().slice(0, 10)
-        if (field.type === 'file') return null
+        if (field.type === 'file') return null // TODO: Handle file uploads
         if (field.type === 'datetime local')
             return new Date().toISOString().slice(0, 16)
         if (field.type === 'time') return new Date().toISOString().slice(11, 16)

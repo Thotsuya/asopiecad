@@ -49,5 +49,8 @@ class Project extends Model
         return $this->hasMany(Appointment::class);
     }
 
+    public function goals(){
+        return $this->hasMany(Goal::class);
+    }
 
 }

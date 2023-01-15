@@ -7,6 +7,7 @@ use App\Http\Requests\ProjectRequest;
 use App\Http\Requests\ProjectUpdateRequest;
 use App\Http\Resources\AppointmentResource;
 use App\Http\Resources\BeneficiaryResource;
+use App\Http\Resources\GoalResource;
 use App\Http\Resources\ProjectResource;
 use App\Models\Benefitiary;
 use App\Models\Form;
@@ -105,10 +106,17 @@ class ProjectController extends Controller
                     return AppointmentResource::make($appointment);
                 }),
             'beneficiaries_not_in_project' => Benefitiary::query()
-                ->whereDoesntHave('projects', fn ($query) => $query->where('project_id', $project->id))
+                ->whereDoesntHave('projects', fn($query) => $query->where('project_id', $project->id))
                 ->select('id', 'uuid', 'name')
                 ->get(),
             'project' => new ProjectResource($project->load('beneficiaries', 'users', 'forms'), $this->roles),
+            'goals' => $project->goals()
+                ->latest('id')
+                ->with(['goalProgress','user'])
+                ->paginate(6)
+                ->through(function ($goal) {
+                    return GoalResource::make($goal);
+                }),
         ]);
     }
 

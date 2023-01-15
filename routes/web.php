@@ -40,6 +40,8 @@ Route::middleware('auth')->group(function () {
     Route::put('projects/{project}/beneficiaries/{beneficiary}', [App\Http\Controllers\Admin\ProjectFormController::class, 'update'])->name('projects.forms.update');
     Route::delete('projects/{project}/beneficiaries/{beneficiary}', [App\Http\Controllers\Admin\ProjectFormController::class, 'destroy'])->name('projects.forms.destroy');
 
+    Route::post('/projects/{project}/goals', [App\Http\Controllers\Admin\GoalController::class, 'store'])->name('projects.goals.store');
+
 });
 
 require __DIR__.'/auth.php';

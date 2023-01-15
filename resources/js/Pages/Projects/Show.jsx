@@ -16,6 +16,7 @@ import Appointments from '@/Pages/Projects/Partials/Appointments'
 import AppointmentsTab from '@/Pages/Projects/Partials/AppointmentsTab'
 import AppointmentEditModal from '@/Components/Appointments/AppointmentEditModal'
 import AppointmentShowModal from '@/Components/Appointments/AppointmentShowModal'
+import GoalsCreateModal from '@/Components/Goals/GoalsCreateModal'
 
 export default function Dashboard({
     auth,
@@ -23,6 +24,7 @@ export default function Dashboard({
     beneficiaries,
     programs,
     appointments,
+    goals,
     paginated_appointments,
     beneficiaries_not_in_project,
 }) {
@@ -33,6 +35,7 @@ export default function Dashboard({
         <>
             <AuthenticatedLayout auth={auth}>
                 <Head title={`Proyecto: ${project.project_name}`} />
+                {console.log(goals)}
 
                 <ProjectTitleHeaderAndForm project={project} editable={false}>
                     <div className="btn-group">
@@ -72,7 +75,7 @@ export default function Dashboard({
                                         setSelectedBeneficiary
                                     }
                                 />
-                                <Goals goals={project.goals} />
+                                <Goals goals={goals} auth={auth} />
                                 <AppointmentsTab
                                     appointments={paginated_appointments}
                                     onAppointmentSelected={
@@ -103,6 +106,8 @@ export default function Dashboard({
                 auth={auth}
             />
             <AppointmentShowModal appointment={selectedAppointment} />
+
+            <GoalsCreateModal project={project} />
         </>
     )
 }
