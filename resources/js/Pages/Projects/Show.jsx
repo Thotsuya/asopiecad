@@ -11,7 +11,7 @@ import BeneficiaryCreateModal from '@/Components/Projects/BeneficiaryCreateModal
 import AppointmentCreateModal from '@/Components/Appointments/AppointmentCreateModal'
 
 // Hooks
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Appointments from '@/Pages/Projects/Partials/Appointments'
 import AppointmentsTab from '@/Pages/Projects/Partials/AppointmentsTab'
 import AppointmentEditModal from '@/Components/Appointments/AppointmentEditModal'
@@ -24,6 +24,7 @@ export default function Dashboard({
     programs,
     appointments,
     paginated_appointments,
+    beneficiaries_not_in_project,
 }) {
     const [selectedBeneficiary, setSelectedBeneficiary] = useState(null)
     const [selectedAppointment, setSelectedAppointment] = useState(null)
@@ -80,7 +81,10 @@ export default function Dashboard({
                 </div>
             </AuthenticatedLayout>
 
-            <BeneficiaryCreateModal project={project} />
+            <BeneficiaryCreateModal
+                project={project}
+                beneficiaries={beneficiaries_not_in_project}
+            />
             <AppointmentCreateModal
                 project={project}
                 beneficiary={selectedBeneficiary}

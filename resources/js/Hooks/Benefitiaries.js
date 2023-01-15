@@ -62,6 +62,19 @@ export default function useBenefitiaries(
                     reset()
                 },
             })
+        } else {
+            put(
+                route('projects.forms.update', {
+                    project: project.uuid,
+                    beneficiary: beneficiary.uuid,
+                }),
+                {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        success('Beneficiario actualizado con éxito')
+                    },
+                }
+            )
         }
     }
 

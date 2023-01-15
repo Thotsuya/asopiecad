@@ -8,7 +8,7 @@ use App\Http\Requests\ProjectUpdateRequest;
 use App\Http\Resources\AppointmentResource;
 use App\Http\Resources\BeneficiaryResource;
 use App\Http\Resources\ProjectResource;
-use App\Http\Resources\RolePermissionResource;
+use App\Models\Benefitiary;
 use App\Models\Form;
 use App\Models\Project;
 use App\Models\User;
@@ -19,7 +19,7 @@ class ProjectController extends Controller
 
     public function __construct()
     {
-        $this->roles =  Role::query()
+        $this->roles = Role::query()
             ->where('name', '!=', 'Super Admin')
             ->with('permissions')
             ->get();
@@ -45,8 +45,8 @@ class ProjectController extends Controller
                 ->withCount('beneficiaries', 'users', 'programs')
                 ->latest('id')
                 ->paginate(6)
-                ->through(function (Project $project){
-                    return ProjectResource::make($project,$this->roles);
+                ->through(function (Project $project) {
+                    return ProjectResource::make($project, $this->roles);
                 }),
         ]);
     }
@@ -90,21 +90,25 @@ class ProjectController extends Controller
             // Paginate the beneficiaries
             'beneficiaries' => $project->beneficiaries()
                 ->latest('id')
-                ->with('programs','appointments')
+                ->with('programs', 'appointments')
                 ->paginate(6)
                 ->through(function ($beneficiary) {
                     return BeneficiaryResource::make($beneficiary);
                 }),
             'programs' => $project->programs,
-            'appointments' => AppointmentResource::collection($project->appointments->load('user','benefitiary')),
+            'appointments' => AppointmentResource::collection($project->appointments->load('user', 'benefitiary')),
             'paginated_appointments' => $project->appointments()
-                ->with(['benefitiary','user'])
+                ->with(['benefitiary', 'user'])
                 ->latest('id')
                 ->paginate(6)
                 ->through(function ($appointment) {
                     return AppointmentResource::make($appointment);
                 }),
-            'project' => new ProjectResource($project->load('beneficiaries', 'users', 'forms'),$this->roles),
+            'beneficiaries_not_in_project' => Benefitiary::query()
+                ->whereDoesntHave('projects', fn ($query) => $query->where('project_id', $project->id))
+                ->select('id', 'uuid', 'name')
+                ->get(),
+            'project' => new ProjectResource($project->load('beneficiaries', 'users', 'forms'), $this->roles),
         ]);
     }
 

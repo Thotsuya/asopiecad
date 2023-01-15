@@ -3,12 +3,12 @@ import { Inertia } from '@inertiajs/inertia'
 import { useForm } from '@inertiajs/inertia-react'
 import useToasts from '@/Hooks/Toasts'
 
-export default function BeneficiaryCreateModal({ project }) {
+export default function BeneficiaryCreateModal({ project, beneficiaries }) {
     const { success, error } = useToasts()
 
     const { data, setData, get, processing, errors, reset, wasSuccessful } =
         useForm({
-            beneficiary_id: null,
+            beneficiary_id: beneficiaries[0] ? beneficiaries[0].id : '',
             beneficiary_name: '',
             is_new_beneficiary: false,
         })
@@ -64,23 +64,32 @@ export default function BeneficiaryCreateModal({ project }) {
                                     }`}
                                 >
                                     <label htmlFor="name">
-                                        Beneficiarios Existentes que no
-                                        pertenecen a este proyecto
+                                        Beneficiarios Existentes no registrados
+                                        en el proyecto
                                     </label>
                                     <select
                                         className="form-control"
                                         id="beneficiary"
                                         name="beneficiary"
-                                        disabled={data.is_new_beneficiary}
+                                        disabled={
+                                            data.is_new_beneficiary ||
+                                            beneficiaries.length === 0
+                                        }
+                                        onChange={(e) => {
+                                            setData({
+                                                ...data,
+                                                beneficiary_id: e.target.value,
+                                            })
+                                        }}
                                     >
-                                        <option value="0">
-                                            Seleccione un beneficiario
-                                        </option>
-                                        <option value="1">Juan Perez</option>
-                                        <option value="2">Maria Lopez</option>
-                                        <option value="3">
-                                            Pedro Martinez
-                                        </option>
+                                        {beneficiaries.map((beneficiary) => (
+                                            <option
+                                                key={beneficiary.id}
+                                                value={beneficiary.id}
+                                            >
+                                                {beneficiary.name}
+                                            </option>
+                                        ))}
                                     </select>
                                     {errors.beneficiary_id && (
                                         <span className="help-block">
@@ -94,10 +103,18 @@ export default function BeneficiaryCreateModal({ project }) {
                                             name="is_new_beneficiary"
                                             checked={data.is_new_beneficiary}
                                             onChange={() => {
-                                                setData(
-                                                    'is_new_beneficiary',
-                                                    !data.is_new_beneficiary
-                                                )
+                                                setData((data) => ({
+                                                    ...data,
+                                                    is_new_beneficiary:
+                                                        !data.is_new_beneficiary,
+                                                    beneficiary_id:
+                                                        data.is_new_beneficiary
+                                                            ? beneficiaries[0]
+                                                                ? beneficiaries[0]
+                                                                      .id
+                                                                : ''
+                                                            : '',
+                                                }))
                                             }}
                                         />
                                         <label htmlFor="is_new_beneficiary">

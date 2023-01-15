@@ -20,6 +20,17 @@ export default function Create({
     const { data, setData, errors, handleSubmit, processing } =
         useBenefitiaries(forms, is_new, project, beneficiary)
 
+    useEffect(() => {
+        if (!is_new) {
+            Object.keys(beneficiary.beneficiary_data).forEach((key) => {
+                setData((data) => ({
+                    ...data,
+                    [key]: beneficiary.beneficiary_data[key],
+                }))
+            })
+        }
+    }, [])
+
     return (
         <AuthenticatedLayout auth={auth}>
             <Head title="Registrar Beneficiario" />
@@ -40,9 +51,18 @@ export default function Create({
 
             <div className="row">
                 <div className="col-xs-12">
-                    <div className="alert alert-info">
+                    <div
+                        className={`alert alert-${is_new ? 'info' : 'warning'}`}
+                    >
                         <p>
                             Se registrarán los datos del beneficiario{' '}
+                            {!is_new ? (
+                                <strong className="text-primary">
+                                    Ya existente
+                                </strong>
+                            ) : (
+                                ''
+                            )}{' '}
                             <b>{data.name}</b> en el proyecto{' '}
                             <b>{project.project_name}</b>. Verifique que los
                             datos sean correctos antes de guardar. <br /> Los

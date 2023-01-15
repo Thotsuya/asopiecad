@@ -24,14 +24,15 @@ class ProjectFormController extends Controller
 
     public function create(Request $request,Project $project){
 
+
         $this->authorize('register-beneficiaries',[$project,$this->roles]);
         $this->validate($request,[
             'is_new_beneficiary' => ['required', Rule::in(['true', 'false'])],
             'beneficiary_name' => Rule::requiredIf(fn() => $request->input('is_new_beneficiary') === 'true'),
-            'beneficiary_id' => Rule::requiredIf(fn() => $request->input('is_new_beneficiary') === 'false'),
+            'beneficiary_id' => [Rule::requiredIf(fn() => $request->input('is_new_beneficiary') === 'false')],
         ],[
             'beneficiary_name.required' => 'El nombre del nuevo beneficiario es requerido',
-            'beneficiary_id.required' => 'Debe seleccionar un beneficiario existente',
+            'beneficiary_id.required' => 'Debe seleccionar un beneficiario existente o crear uno nuevo',
         ]);
 
         $forms = $project->forms()->get();
@@ -39,8 +40,8 @@ class ProjectFormController extends Controller
         return inertia('Beneficiares/Create',[
             'project' => $project,
             'forms' => BeneficiaryFormsResource::collection($forms),
-            'is_new' => $request->is_new_beneficiary,
-            'beneficiary' => $request->is_new_beneficiary ? $request->beneficiary_name : null, // TODO: If is not new, get the beneficiary from the database
+            'is_new' => $request->is_new_beneficiary === 'true',
+            'beneficiary' => $request->is_new_beneficiary === 'true' ? $request->beneficiary_name : Benefitiary::findOrFail($request->beneficiary_id),
         ]);
     }
 
@@ -78,6 +79,8 @@ class ProjectFormController extends Controller
             'name' => $request->validated()['name'],
             'beneficiary_data' => $request->validated(),
         ]);
+
+        $project->beneficiaries()->syncWithoutDetaching($beneficiary->id);
 
         return redirect()->route('projects.show',$project);
     }
