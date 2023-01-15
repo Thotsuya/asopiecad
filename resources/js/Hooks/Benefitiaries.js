@@ -73,6 +73,11 @@ export default function useBenefitiaries(
         if (field.type === 'number') return 0
         if (field.type === 'date') return new Date().toISOString().slice(0, 10)
         if (field.type === 'file') return null
+        if (field.type === 'datetime local')
+            return new Date().toISOString().slice(0, 16)
+        if (field.type === 'time') return new Date().toISOString().slice(11, 16)
+        if (field.type === 'color') return '#000000'
+        if (field.type === 'range') return 0
         return ''
     }
 
