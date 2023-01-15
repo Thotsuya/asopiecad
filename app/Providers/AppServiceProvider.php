@@ -42,6 +42,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('edit-beneficiaries',[ProjectPolicy::class,'editBeneficiaries']);
         Gate::define('delete-beneficiaries',[ProjectPolicy::class,'deleteBeneficiaries']);
 
+        Gate::define('register-appointments',[ProjectPolicy::class,'registerAppointments']);
+        Gate::define('edit-appointments',[ProjectPolicy::class,'editAppointments']);
+
+
         Inertia::share('permissions', function(){
             return auth()->check() ? auth()->user()->getAllPermissions()->pluck('name') : [];
         });

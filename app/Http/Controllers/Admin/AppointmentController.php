@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AppointmentRequest;
+use App\Models\Appointment;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
@@ -43,7 +44,7 @@ class AppointmentController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(AppointmentRequest $request)
     {
@@ -81,11 +82,14 @@ class AppointmentController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(AppointmentRequest $request, Appointment $appointment)
     {
-        //
+        $appointment->update($request->validated());
+        $project = Project::where('id',$request->project_id)->first();
+
+        return redirect()->route('projects.show', $project->uuid);
     }
 
     /**

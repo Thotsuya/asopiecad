@@ -59,6 +59,7 @@ export default function ProjectBeneficiaries({
                                     <th>Nombre</th>
                                     <th>Código Interno</th>
                                     <th>Programas</th>
+                                    <th>Última visita</th>
                                     <th>Estado</th>
                                     <th></th>
                                 </tr>
@@ -80,6 +81,16 @@ export default function ProjectBeneficiaries({
                                                     <></>
                                                 ) : (
                                                     'No hay programas registrados'
+                                                )}
+                                            </td>
+                                            <td>
+                                                {!beneficiary.last_visited_at ? (
+                                                    <span className="label label-danger">
+                                                        No hay visitas
+                                                        registradas
+                                                    </span>
+                                                ) : (
+                                                    beneficiary.last_visited_at
                                                 )}
                                             </td>
                                             <td>

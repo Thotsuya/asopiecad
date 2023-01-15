@@ -47,6 +47,8 @@ class ProjectResource extends JsonResource
                 'view' => auth()->user()->can('view-project', [$this->resource,$this->roles]),
                 'register-beneficiary' => auth()->user()->can('register-beneficiary', [$this->resource,$this->roles]),
                 'delete-beneficiary' => auth()->user()->can('delete-beneficiary', [$this->resource,$this->roles]),
+                'register-appointments' => auth()->user()->can('register-appointments', [$this->resource,$this->roles]),
+                'edit-appointments' => auth()->user()->can('edit-appointments', [$this->resource,$this->roles]),
             ],
             'forms' => $this->whenLoaded('forms',$this->forms),
             'programs' => $this->whenLoaded('programs',$this->programs),

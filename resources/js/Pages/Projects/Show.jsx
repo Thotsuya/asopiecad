@@ -4,7 +4,6 @@ import ProjectTitleHeaderAndForm from '@/Pages/Projects/Partials/ProjectTitleHea
 import Programs from '@/Pages/Projects/Partials/ProgramsContent'
 import Goals from '@/Pages/Projects/Partials/Goals'
 import ProjectBeneficiaries from '@/Pages/Projects/Partials/ProjectBeneficiaries'
-import ProjectStatistics from '@/Pages/Projects/Partials/ProjectStatistics'
 import ProjectTabs from '@/Pages/Projects/Partials/ProjectTabs'
 
 // Modals
@@ -12,8 +11,11 @@ import BeneficiaryCreateModal from '@/Components/Projects/BeneficiaryCreateModal
 import AppointmentCreateModal from '@/Components/Appointments/AppointmentCreateModal'
 
 // Hooks
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Appointments from '@/Pages/Projects/Partials/Appointments'
+import AppointmentsTab from '@/Pages/Projects/Partials/AppointmentsTab'
+import AppointmentEditModal from '@/Components/Appointments/AppointmentEditModal'
+import AppointmentShowModal from '@/Components/Appointments/AppointmentShowModal'
 
 export default function Dashboard({
     auth,
@@ -21,8 +23,10 @@ export default function Dashboard({
     beneficiaries,
     programs,
     appointments,
+    paginated_appointments,
 }) {
     const [selectedBeneficiary, setSelectedBeneficiary] = useState(null)
+    const [selectedAppointment, setSelectedAppointment] = useState(null)
 
     return (
         <>
@@ -38,20 +42,6 @@ export default function Dashboard({
                             data-target="#modal-register-beneficiary"
                         >
                             <i className="fa fa-user" />
-                        </button>
-                        <button
-                            title="Registrar nueva meta"
-                            className="btn btn-xs btn-info waves-effect waves-light"
-                        >
-                            <i className="fa fa-flag" />
-                        </button>
-                        <button
-                            title="Registrar nueva visita"
-                            className="btn btn-xs btn-success waves-effect waves-light"
-                            data-toggle="modal"
-                            data-target="#modal-new-visit"
-                        >
-                            <i className="fa fa-calendar-check-o" />
                         </button>
                     </div>
                 </ProjectTitleHeaderAndForm>
@@ -74,11 +64,19 @@ export default function Dashboard({
                                     }
                                 />
                                 <Goals goals={project.goals} />
+                                <AppointmentsTab
+                                    appointments={paginated_appointments}
+                                    onAppointmentSelected={
+                                        setSelectedAppointment
+                                    }
+                                />
                             </div>
                         </div>
                     </div>
-                    {console.log(appointments)}
-                    <Appointments appointments={appointments} />
+                    <Appointments
+                        appointments={appointments}
+                        setSelectedAppointment={setSelectedAppointment}
+                    />
                 </div>
             </AuthenticatedLayout>
 
@@ -88,6 +86,11 @@ export default function Dashboard({
                 beneficiary={selectedBeneficiary}
                 auth={auth}
             />
+            <AppointmentEditModal
+                appointment={selectedAppointment}
+                auth={auth}
+            />
+            <AppointmentShowModal appointment={selectedAppointment} />
         </>
     )
 }

@@ -21,18 +21,21 @@ class AppointmentResource extends JsonResource
             'date' => Carbon::parse($this->start_date)->format('Y-m-d H:i:s'),
             'textColor' => '#ffffff',
             'backgroundColor' => '#ffffff',
+            'formatted_date' => $this->start_date->translatedFormat('l, d F Y h:i A'),
+            'comments' => $this->comments,
             'user' => $this->whenLoaded('user', function () {
                 return [
                     'id' => $this->user->id,
                     'name' => $this->user->name,
                 ];
             }),
-            'beneficiary' => $this->whenLoaded('beneficiary', function () {
+            'beneficiary' => $this->whenLoaded('benefitiary', function () {
                 return [
-                    'id' => $this->beneficiary->id,
-                    'name' => $this->beneficiary->name,
+                    'id' => $this->benefitiary->id,
+                    'name' => $this->benefitiary->name,
                 ];
             }),
+            'project_id' => $this->project_id,
         ];
     }
 }

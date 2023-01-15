@@ -3,46 +3,48 @@ import { useForm } from '@inertiajs/inertia-react'
 import useToasts from '@/Hooks/Toasts'
 import useComments from '@/Hooks/Comments'
 
-export default function AppointmentCreateModal({ project, beneficiary, auth }) {
+export default function AppointmentEditModal({ appointment, auth }) {
     const {
         data,
         setData,
-        post,
         processing,
         errors,
-        reset,
-        handleSubmit,
         commentsRef,
         toggleComments,
         setToggleComments,
         handleCommentAdd,
         handleCommentDelete,
-        submitDisabled,
-        wasSuccessful,
+        handleUpdate,
     } = useComments(auth)
 
     useEffect(() => {
-        setData({
-            ...data,
-            project_id: project.id,
-            benefitiary_id: beneficiary ? beneficiary.id : '',
-            beneficiary_name: beneficiary ? beneficiary.name : '',
-        })
-    }, [beneficiary])
+        if (appointment) {
+            setData({
+                ...data,
+                id: appointment.id,
+                start_date: appointment.date,
+                benefitiary_id: appointment.beneficiary.id,
+                beneficiary_name: appointment.beneficiary.name,
+                title: appointment.title,
+                project_id: appointment.project_id,
+                comments: appointment.comments,
+            })
+        }
+    }, [appointment])
 
     return (
         <div
             className="modal fade"
-            id="modal-register-appointment"
+            id="modal-edit-visit"
             tabIndex="-1"
             role="dialog"
-            aria-labelledby="modal-register-appointment-label"
+            aria-labelledby="modal-edit-visit-label"
         >
             <div className="modal-dialog" role="document">
                 <div className="modal-content">
                     <div className="modal-header">
                         <button
-                            id="modal-register-appointment-close"
+                            id="modal-edit-visit-close"
                             type="button"
                             className="close"
                             data-dismiss="modal"
@@ -50,11 +52,8 @@ export default function AppointmentCreateModal({ project, beneficiary, auth }) {
                         >
                             <span aria-hidden="true">&times;</span>
                         </button>
-                        <h4
-                            className="modal-title"
-                            id="modal-register-appointment-label"
-                        >
-                            Registrar visita{' '}
+                        <h4 className="modal-title" id="modal-edit-visit-label">
+                            Editar visita{' '}
                             <i className="fa fa-calendar-check-o" />
                         </h4>
                     </div>
@@ -216,17 +215,20 @@ export default function AppointmentCreateModal({ project, beneficiary, auth }) {
                                                                 {comment.user}
                                                             </b>
                                                         </small>
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-danger btn-xs pull-right"
-                                                            onClick={() =>
-                                                                handleCommentDelete(
-                                                                    index
-                                                                )
-                                                            }
-                                                        >
-                                                            <i className="fa fa-times"></i>
-                                                        </button>
+                                                        {comment.user_id ===
+                                                            auth.user.id && (
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-danger btn-xs pull-right"
+                                                                onClick={() =>
+                                                                    handleCommentDelete(
+                                                                        index
+                                                                    )
+                                                                }
+                                                            >
+                                                                <i className="fa fa-times" />
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -248,7 +250,7 @@ export default function AppointmentCreateModal({ project, beneficiary, auth }) {
                             type="button"
                             className="btn btn-primary btn-sm waves-effect waves-light"
                             disabled={processing}
-                            onClick={handleSubmit}
+                            onClick={handleUpdate}
                         >
                             {processing ? (
                                 <>
@@ -256,7 +258,7 @@ export default function AppointmentCreateModal({ project, beneficiary, auth }) {
                                     Guardando...
                                 </>
                             ) : (
-                                'Registrar visita'
+                                'Editar visita'
                             )}
                         </button>
                     </div>

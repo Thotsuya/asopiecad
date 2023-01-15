@@ -29,6 +29,11 @@ class BeneficiaryResource extends JsonResource
                 'Rechazado', 'Eliminado' => 'danger',
                 default => 'secondary',
             },
+            'last_visited_at' => $this->whenLoaded('appointments', function () {
+                return $this->appointments->sortByDesc('start_date')->first()
+                    ? $this->appointments->sortByDesc('start_date')->first()->start_date->translatedFormat('d/m/Y H:i A')
+                    : null;
+            }),
             'programs' => $this->programs,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

@@ -3,7 +3,10 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { useEffect, useState } from 'react'
 
-export default function Appointments({ appointments = [] }) {
+export default function Appointments({
+    appointments = [],
+    setSelectedAppointment,
+}) {
     const [loaded, setLoaded] = useState(false)
 
     useEffect(() => {
@@ -28,12 +31,36 @@ export default function Appointments({ appointments = [] }) {
                                 locale={'es'}
                                 events={appointments}
                                 eventClick={(info) => {
-                                    console.log(info)
+                                    setSelectedAppointment({
+                                        id: parseInt(info.event.id),
+                                        title: info.event.title,
+                                        date: new Date(
+                                            info.event.start
+                                        ).toLocaleString(),
+                                        beneficiary:
+                                            info.event.extendedProps
+                                                .beneficiary,
+                                        project_id: parseInt(
+                                            info.event.extendedProps.project_id
+                                        ),
+                                        comments:
+                                            info.event.extendedProps.comments,
+                                        user: info.event.extendedProps.user,
+                                    })
+
+                                    $('#modal-show-visit').modal('show')
+                                }}
+                                eventTimeFormat={{
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: true,
                                 }}
                             />
                         ) : (
                             <div className="text-center">
-                                <i className="fa fa-spinner fa-spin fa-3x fa-fw" />
+                                <i className="fa fa-spinner fa-spin fa-4x fa-fw" />{' '}
+                                <br />
+                                Cargando...
                             </div>
                         )}
                     </div>

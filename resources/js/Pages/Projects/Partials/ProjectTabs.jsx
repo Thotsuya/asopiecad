@@ -1,4 +1,26 @@
+import { useEffect } from 'react'
+import { Inertia } from '@inertiajs/inertia'
+
 export default function ProjectTabs({ project }) {
+    useEffect(() => {
+        // To avoid the glitch where the selected tab is on n page and the
+        // content is on n+1 page
+
+        // Register the tab click event
+        $('#myTabs a').on('click', function (e) {
+            e.preventDefault()
+            // Remove the query string from the url
+            const url = window.location.href.split('?')[0]
+
+            // Manual visit to the url with the tab query string
+            Inertia.visit(url, {
+                method: 'get',
+                preserveState: true,
+                preserveScroll: true,
+            })
+        })
+    }, [])
+
     return (
         <ul className="nav nav-tabs" id="myTabs" role="tablist">
             <li role="presentation" className="active">
@@ -23,6 +45,17 @@ export default function ProjectTabs({ project }) {
                 >
                     Beneficiarios{' '}
                     <i className="fa fa-users" aria-hidden="true" />
+                </a>
+            </li>
+            <li role="presentation">
+                <a
+                    href="#appointments"
+                    role="tab"
+                    id="appointments-tab"
+                    data-toggle="tab"
+                    aria-controls="profile"
+                >
+                    Visitas <i className="fa fa-calendar" aria-hidden="true" />
                 </a>
             </li>
             <li role="presentation">

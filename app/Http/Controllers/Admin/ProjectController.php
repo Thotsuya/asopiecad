@@ -90,13 +90,20 @@ class ProjectController extends Controller
             // Paginate the beneficiaries
             'beneficiaries' => $project->beneficiaries()
                 ->latest('id')
-                ->with('programs')
+                ->with('programs','appointments')
                 ->paginate(6)
                 ->through(function ($beneficiary) {
                     return BeneficiaryResource::make($beneficiary);
                 }),
             'programs' => $project->programs,
             'appointments' => AppointmentResource::collection($project->appointments->load('user','benefitiary')),
+            'paginated_appointments' => $project->appointments()
+                ->with(['benefitiary','user'])
+                ->latest('id')
+                ->paginate(6)
+                ->through(function ($appointment) {
+                    return AppointmentResource::make($appointment);
+                }),
             'project' => new ProjectResource($project->load('beneficiaries', 'users', 'forms'),$this->roles),
         ]);
     }
