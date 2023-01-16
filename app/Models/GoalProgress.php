@@ -13,12 +13,21 @@ class GoalProgress extends Model
     protected $fillable = [
         'goal_id',
         'user_id',
-        'progress',
+        'goal_progress',
+        'goal_description',
     ];
 
     protected $with = ['user'];
 
     protected $touches = ['goal'];
+
+    // Always fetch by descending order
+    protected static function booted()
+    {
+        static::addGlobalScope('order', function ($builder) {
+            $builder->orderBy('created_at', 'desc');
+        });
+    }
 
     public function goal()
     {

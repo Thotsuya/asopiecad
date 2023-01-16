@@ -42,6 +42,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/projects/{project}/goals', [App\Http\Controllers\Admin\GoalController::class, 'store'])->name('projects.goals.store');
 
+    Route::post('/projects/{goal}/progress', [App\Http\Controllers\Admin\GoalProgressController::class, 'store'])->name('projects.goals.progress.store');
+
 });
 
 require __DIR__.'/auth.php';

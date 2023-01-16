@@ -50,6 +50,7 @@ class ProjectResource extends JsonResource
                 'register-appointments' => auth()->user()->can('register-appointments', [$this->resource,$this->roles]),
                 'edit-appointments' => auth()->user()->can('edit-appointments', [$this->resource,$this->roles]),
                 'register-goals' => auth()->user()->can('register-goals', [$this->resource,$this->roles]),
+                'register-goal-progress' => auth()->user()->can('register-goal-progress', [$this->resource,$this->roles]),
             ],
             'forms' => $this->whenLoaded('forms',$this->forms),
             'programs' => $this->whenLoaded('programs',$this->programs),

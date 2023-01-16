@@ -17,7 +17,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('goal_id')->constrained();
             $table->foreignId('user_id')->constrained();
-            $table->integer('progress');
+            $table->integer('goal_progress');
+            $table->string('goal_description')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

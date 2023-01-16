@@ -5378,3 +5378,17 @@ a.fc-event:hover {
     transition: ease-in-out;
     transition-duration: 200ms
 }
+
+.list-group-item-action:hover {
+    background: #f5f5f5;
+    cursor: pointer !important;
+}
+
+.list-group-item-action.list-active {
+    background: #f5f5f5;
+    cursor: pointer !important;
+}
+
+.list-group-item.list-content{
+    background-color: #f5f5f5;
+}

@@ -122,5 +122,16 @@ class ProjectPolicy
 
     }
 
+    public function registerGoalProgress(User $user, Project $project, Collection $roles)
+    {
+        // Check if the project has forms to register beneficiaries and that the user has the permission to register beneficiaries
+        return $user->projects->contains($project->id) &&
+            $roles
+                ->where('id', $project->users->where('id', $user->id)->first()->pivot->role_id)
+                ->first()
+                ->hasPermissionTo('Registrar avance de Metas');
+
+    }
+
 
 }

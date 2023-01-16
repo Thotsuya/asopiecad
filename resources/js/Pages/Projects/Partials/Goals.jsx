@@ -1,6 +1,6 @@
 import Pagination from '@/Components/Pagination'
 
-export default function Goals({ goals = [], auth }) {
+export default function Goals({ goals = [], auth, onGoalSelected, can }) {
     return (
         <div
             className="tab-pane fade"
@@ -76,6 +76,20 @@ export default function Goals({ goals = [], auth }) {
                                                 </td>
                                                 <td className="text-center">
                                                     <div className="btn-group">
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-xs btn-info"
+                                                            data-toggle="modal"
+                                                            data-target="#modal-view-goal-progress"
+                                                            onClick={() =>
+                                                                onGoalSelected(
+                                                                    goal
+                                                                )
+                                                            }
+                                                        >
+                                                            <i className="fa fa-eye" />
+                                                        </button>
+
                                                         {goal.user.id ===
                                                             auth.user.id && (
                                                             <button
@@ -86,14 +100,23 @@ export default function Goals({ goals = [], auth }) {
                                                                 <i className="fa fa-edit" />
                                                             </button>
                                                         )}
-                                                        <button
-                                                            className="btn btn-success btn-xs"
-                                                            data-toggle="modal"
-                                                            data-target="#modal-edit-goal-progress"
-                                                            title="Actualizar progreso"
-                                                        >
-                                                            <i className="fa fa-check" />
-                                                        </button>
+                                                        {can[
+                                                            'register-goal-progress'
+                                                        ] && (
+                                                            <button
+                                                                className="btn btn-success btn-xs"
+                                                                data-toggle="modal"
+                                                                data-target="#modal-register-goal-progress"
+                                                                title="Actualizar progreso"
+                                                                onClick={() =>
+                                                                    onGoalSelected(
+                                                                        goal
+                                                                    )
+                                                                }
+                                                            >
+                                                                <i className="fa fa-check" />
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 </td>
                                             </tr>

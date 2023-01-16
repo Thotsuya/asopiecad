@@ -11,12 +11,14 @@ import BeneficiaryCreateModal from '@/Components/Projects/BeneficiaryCreateModal
 import AppointmentCreateModal from '@/Components/Appointments/AppointmentCreateModal'
 
 // Hooks
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Appointments from '@/Pages/Projects/Partials/Appointments'
 import AppointmentsTab from '@/Pages/Projects/Partials/AppointmentsTab'
 import AppointmentEditModal from '@/Components/Appointments/AppointmentEditModal'
 import AppointmentShowModal from '@/Components/Appointments/AppointmentShowModal'
 import GoalsCreateModal from '@/Components/Goals/GoalsCreateModal'
+import GoalsProgressModal from '@/Components/Goals/GoalsProgressModal'
+import GoalsViewProgressModal from '@/Components/Goals/GoalsViewProgressModal'
 
 export default function Dashboard({
     auth,
@@ -30,12 +32,12 @@ export default function Dashboard({
 }) {
     const [selectedBeneficiary, setSelectedBeneficiary] = useState(null)
     const [selectedAppointment, setSelectedAppointment] = useState(null)
+    const [selectedGoal, setSelectedGoal] = useState(null)
 
     return (
         <>
             <AuthenticatedLayout auth={auth}>
                 <Head title={`Proyecto: ${project.project_name}`} />
-                {console.log(goals)}
 
                 <ProjectTitleHeaderAndForm project={project} editable={false}>
                     <div className="btn-group">
@@ -75,7 +77,12 @@ export default function Dashboard({
                                         setSelectedBeneficiary
                                     }
                                 />
-                                <Goals goals={goals} auth={auth} />
+                                <Goals
+                                    goals={goals}
+                                    auth={auth}
+                                    onGoalSelected={setSelectedGoal}
+                                    can={project.can}
+                                />
                                 <AppointmentsTab
                                     appointments={paginated_appointments}
                                     onAppointmentSelected={
@@ -108,6 +115,8 @@ export default function Dashboard({
             <AppointmentShowModal appointment={selectedAppointment} />
 
             <GoalsCreateModal project={project} />
+            <GoalsProgressModal goal={selectedGoal} project={project} />
+            <GoalsViewProgressModal goal={selectedGoal} />
         </>
     )
 }
