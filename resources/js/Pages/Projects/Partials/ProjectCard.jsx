@@ -49,7 +49,7 @@ export default function ProjectCard({ project, roles, auth }) {
                     <div className="row">
                         <div className="col-xs-12 margin-top-10">
                             <div className="btn-group pull-right">
-                                {project.can.edit && (
+                                {project.can['edit-project'] && (
                                     <Link
                                         href={route(
                                             'projects.edit',
@@ -64,7 +64,7 @@ export default function ProjectCard({ project, roles, auth }) {
                                     </Link>
                                 )}
 
-                                {project.can.view && (
+                                {project.can['view-project'] && (
                                     <Link
                                         href={route(
                                             'projects.show',

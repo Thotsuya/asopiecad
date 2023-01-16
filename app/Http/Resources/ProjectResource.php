@@ -43,12 +43,17 @@ class ProjectResource extends JsonResource
                });
             }),
             'can' => [
-                'edit' => auth()->user()->can('edit-project', [$this->resource,$this->roles]),
-                'view' => auth()->user()->can('view-project', [$this->resource,$this->roles]),
-                'register-beneficiary' => auth()->user()->can('register-beneficiary', [$this->resource,$this->roles]),
-                'delete-beneficiary' => auth()->user()->can('delete-beneficiary', [$this->resource,$this->roles]),
+                'edit-project' => auth()->user()->can('edit-project', [$this->resource,$this->roles]),
+                'view-project' => auth()->user()->can('view-project', [$this->resource,$this->roles]),
+
+                'register-beneficiary' => auth()->user()->can('register-beneficiaries', [$this->resource,$this->roles]),
+                'approve-beneficiary' => auth()->user()->can('approve-beneficiaries', [$this->resource,$this->roles]),
+                'edit-beneficiary' => auth()->user()->can('edit-beneficiaries', [$this->resource,$this->roles]),
+                'delete-beneficiary' => auth()->user()->can('delete-beneficiaries', [$this->resource,$this->roles]),
+
                 'register-appointments' => auth()->user()->can('register-appointments', [$this->resource,$this->roles]),
                 'edit-appointments' => auth()->user()->can('edit-appointments', [$this->resource,$this->roles]),
+
                 'register-goals' => auth()->user()->can('register-goals', [$this->resource,$this->roles]),
                 'register-goal-progress' => auth()->user()->can('register-goal-progress', [$this->resource,$this->roles]),
             ],

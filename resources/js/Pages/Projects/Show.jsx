@@ -40,23 +40,28 @@ export default function Dashboard({
                 <Head title={`Proyecto: ${project.project_name}`} />
 
                 <ProjectTitleHeaderAndForm project={project} editable={false}>
+                    {console.log(project)}
                     <div className="btn-group">
-                        <button
-                            title="Registrar Beneficiario"
-                            className="btn btn-xs btn-primary waves-effect waves-light"
-                            data-toggle="modal"
-                            data-target="#modal-register-beneficiary"
-                        >
-                            <i className="fa fa-user" />
-                        </button>
-                        <button
-                            title="Registrar Meta"
-                            className="btn btn-xs btn-warning waves-effect waves-light"
-                            data-toggle="modal"
-                            data-target="#modal-register-goal"
-                        >
-                            <i className="fa fa-flag" />
-                        </button>
+                        {project.can['register-beneficiary'] && (
+                            <button
+                                title="Registrar Beneficiario"
+                                className="btn btn-xs btn-primary waves-effect waves-light"
+                                data-toggle="modal"
+                                data-target="#modal-register-beneficiary"
+                            >
+                                <i className="fa fa-user" />
+                            </button>
+                        )}
+                        {project.can['register-goals'] && (
+                            <button
+                                title="Registrar Meta"
+                                className="btn btn-xs btn-warning waves-effect waves-light"
+                                data-toggle="modal"
+                                data-target="#modal-register-goal"
+                            >
+                                <i className="fa fa-flag" />
+                            </button>
+                        )}
                     </div>
                 </ProjectTitleHeaderAndForm>
 
