@@ -10,6 +10,14 @@ use Inertia\Inertia;
 
 class FormController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:Ver Formularios')->only('index');
+        $this->middleware('can:Crear Formularios')->only('create','store');
+        $this->middleware('can:Editar Formularios')->only('edit','update');
+        $this->middleware('can:Eliminar Formularios')->only('destroy');
+    }
+
     public function index(){
         return Inertia::render('Forms/Index',[
             'forms' => Form::all()
