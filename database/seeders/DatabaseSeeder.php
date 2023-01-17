@@ -24,12 +24,14 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::create([
-            'name' => 'Admin',
+            'name' => 'Super Admin',
             'email' => 'admin@admin.com',
             'password' => bcrypt('secret'),
         ])->assignRole('Super Admin');
 
-        \App\Models\User::factory(10)->create();
+        \App\Models\User::factory(10)->create()->each(function ($user) {
+            $user->assignRole('Gerente');
+        });
 
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',

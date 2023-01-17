@@ -1,30 +1,31 @@
-import { useForm } from "@inertiajs/inertia-react";
-import useToasts from "@/Hooks/Toasts";
+import { useForm } from '@inertiajs/inertia-react'
+import useToasts from '@/Hooks/Toasts'
 
-export default function UsersCreateModal() {
+export default function UsersCreateModal({ roles }) {
     const { data, setData, post, processing, errors, reset, transform } =
         useForm({
-            name: "",
-            email: "",
-            password: "",
-            password_confirmation: "",
-        });
+            name: '',
+            email: '',
+            password: '',
+            role_id: roles[0] ? roles[0].id : null,
+            password_confirmation: '',
+        })
 
-    const { success, error } = useToasts();
+    const { success, error } = useToasts()
 
     const handleSubmit = (e) => {
-        e.preventDefault();
-        post(route("users.store"), {
+        e.preventDefault()
+        post(route('users.store'), {
             onSuccess: () => {
-                success("Usuario creado correctamente");
-                reset();
-                document.getElementById("users-create-modal-close").click();
+                success('Usuario creado correctamente')
+                reset()
+                document.getElementById('users-create-modal-close').click()
             },
             onError: () => {
-                error("Ha ocurrido un error");
+                error('Ha ocurrido un error')
             },
-        });
-    };
+        })
+    }
 
     return (
         <div
@@ -57,7 +58,7 @@ export default function UsersCreateModal() {
                         <div className="row">
                             <div
                                 className={`col-xs-12 ${
-                                    errors.name ? "has-error" : ""
+                                    errors.name ? 'has-error' : ''
                                 }`}
                             >
                                 <label htmlFor="name">Nombre</label>
@@ -69,7 +70,7 @@ export default function UsersCreateModal() {
                                     name="name"
                                     value={data.name}
                                     onChange={(e) => {
-                                        setData("name", e.target.value);
+                                        setData('name', e.target.value)
                                     }}
                                 />
                                 {errors.name && (
@@ -81,7 +82,7 @@ export default function UsersCreateModal() {
 
                             <div
                                 className={`col-xs-12 form-group margin-top-15 ${
-                                    errors.email ? "has-error" : ""
+                                    errors.email ? 'has-error' : ''
                                 } `}
                             >
                                 <label htmlFor="email">Email</label>
@@ -93,7 +94,7 @@ export default function UsersCreateModal() {
                                     name="email"
                                     value={data.email}
                                     onChange={(e) => {
-                                        setData("email", e.target.value);
+                                        setData('email', e.target.value)
                                     }}
                                 />
                                 {errors.email && (
@@ -105,7 +106,30 @@ export default function UsersCreateModal() {
 
                             <div
                                 className={`col-xs-12 form-group margin-top-15 ${
-                                    errors.password ? "has-error" : ""
+                                    errors.role_id ? 'has-error' : ''
+                                } `}
+                            >
+                                <label htmlFor="role_id">Rol de Sistema</label>
+                                <select
+                                    className="form-control"
+                                    id="role_id"
+                                    name="role_id"
+                                    value={data.role_id}
+                                    onChange={(e) => {
+                                        setData('role_id', e.target.value)
+                                    }}
+                                >
+                                    {roles.map((role) => (
+                                        <option key={role.id} value={role.id}>
+                                            {role.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div
+                                className={`col-xs-12 form-group margin-top-15 ${
+                                    errors.password ? 'has-error' : ''
                                 } `}
                             >
                                 <label htmlFor="password">Contraseña</label>
@@ -116,7 +140,7 @@ export default function UsersCreateModal() {
                                     id="password"
                                     name="password"
                                     onChange={(e) => {
-                                        setData("password", e.target.value);
+                                        setData('password', e.target.value)
                                     }}
                                 />
                                 {errors.password && (
@@ -128,7 +152,7 @@ export default function UsersCreateModal() {
 
                             <div
                                 className={`col-xs-12 form-group margin-top-15 ${
-                                    errors.password ? "has-error" : ""
+                                    errors.password ? 'has-error' : ''
                                 } `}
                             >
                                 <label htmlFor="password_confirmation">
@@ -142,9 +166,9 @@ export default function UsersCreateModal() {
                                     name="password_confirmation"
                                     onChange={(e) => {
                                         setData(
-                                            "password_confirmation",
+                                            'password_confirmation',
                                             e.target.value
-                                        );
+                                        )
                                     }}
                                 />
                             </div>
@@ -164,11 +188,11 @@ export default function UsersCreateModal() {
                             disabled={processing}
                             onClick={handleSubmit}
                         >
-                            {processing ? "Guardando..." : "Guardar"}
+                            {processing ? 'Guardando...' : 'Guardar'}
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-    );
+    )
 }

@@ -114,4 +114,16 @@ trait HasValidationRulesAndMessages {
 
         return $fields;
     }
+
+    public function getFormFields(){
+        $fields = [];
+
+        collect($this->form_fields)->each(function ($tab) use (&$fields) {
+            collect($tab['fields'])->each(function ($field) use (&$fields) {
+                $fields[] = $field['slug'] . '-' . $this->form_slug . '-' . $this->id;
+            });
+        });
+
+        return $fields;
+    }
 }

@@ -27,9 +27,16 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::get('/beneficiaries', [App\Http\Controllers\Admin\BeneficiariesController::class, 'index'])->name('beneficiaries.index');
+    Route::get('/beneficiaries/create', [App\Http\Controllers\Admin\BeneficiariesController::class, 'create'])->name('beneficiaries.create');
+    Route::post('/beneficiaries', [App\Http\Controllers\Admin\BeneficiariesController::class, 'store'])->name('beneficiaries.store');
+    Route::get('/beneficiaries/{beneficiary}', [App\Http\Controllers\Admin\BeneficiariesController::class, 'show'])->name('beneficiaries.show');
+    Route::put('/beneficiaries/{beneficiary}', [App\Http\Controllers\Admin\BeneficiariesController::class, 'update'])->name('beneficiaries.update');
+    Route::get('/beneficiaries/{beneficiary}/edit', [App\Http\Controllers\Admin\BeneficiariesController::class, 'edit'])->name('beneficiaries.edit');
+
+
     Route::resource('forms', App\Http\Controllers\Admin\FormController::class);
     Route::resource('projects', App\Http\Controllers\Admin\ProjectController::class)->except('create');
-    Route::resource('beneficiaries',\App\Http\Controllers\Admin\BenefitiaryController::class);
     Route::resource('users', App\Http\Controllers\Admin\UsersController::class);
     Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
     Route::resource('appointments', App\Http\Controllers\Admin\AppointmentController::class);
@@ -41,8 +48,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('projects/{project}/beneficiaries/{beneficiary}', [App\Http\Controllers\Admin\ProjectFormController::class, 'destroy'])->name('projects.forms.destroy');
 
     Route::post('/projects/{project}/goals', [App\Http\Controllers\Admin\GoalController::class, 'store'])->name('projects.goals.store');
-
     Route::post('/projects/{goal}/progress', [App\Http\Controllers\Admin\GoalProgressController::class, 'store'])->name('projects.goals.progress.store');
+
+
+
 
 });
 

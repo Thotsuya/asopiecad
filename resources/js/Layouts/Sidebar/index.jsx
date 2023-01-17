@@ -1,4 +1,4 @@
-import { Link } from "@inertiajs/inertia-react";
+import { Link } from '@inertiajs/inertia-react'
 
 export default function Sidebar({ auth }) {
     return (
@@ -21,11 +21,11 @@ export default function Sidebar({ auth }) {
                     <ul className="menu js__accordion">
                         <li
                             className={
-                                route().current("dashboard") ? "current" : ""
+                                route().current('dashboard') ? 'current' : ''
                             }
                         >
                             <Link
-                                href={route("dashboard")}
+                                href={route('dashboard')}
                                 className="waves-effect"
                             >
                                 <i className="menu-icon ti-dashboard" />
@@ -34,11 +34,11 @@ export default function Sidebar({ auth }) {
                         </li>
                         <li
                             className={
-                                route().current("forms.*") ? "current" : ""
+                                route().current('forms.*') ? 'current' : ''
                             }
                         >
                             <Link
-                                href={route("forms.index")}
+                                href={route('forms.index')}
                                 className="waves-effect"
                             >
                                 <i className="menu-icon ti-agenda"></i>
@@ -47,11 +47,11 @@ export default function Sidebar({ auth }) {
                         </li>
                         <li
                             className={
-                                route().current("projects.*") ? "current" : ""
+                                route().current('projects.*') ? 'current' : ''
                             }
                         >
                             <Link
-                                href={route("projects.index")}
+                                href={route('projects.index')}
                                 className="waves-effect"
                             >
                                 <i className="menu-icon ti-clipboard"></i>
@@ -60,13 +60,13 @@ export default function Sidebar({ auth }) {
                         </li>
                         <li
                             className={
-                                route().current("beneficiaries.*")
-                                    ? "current"
-                                    : ""
+                                route().current('beneficiaries.*')
+                                    ? 'current'
+                                    : ''
                             }
                         >
                             <Link
-                                href={route("beneficiaries.index")}
+                                href={route('beneficiaries.index')}
                                 className="waves-effect"
                             >
                                 <i className="menu-icon fa fa-users"></i>
@@ -78,11 +78,11 @@ export default function Sidebar({ auth }) {
                         </h5>
                         <li
                             className={
-                                route().current("users.*") ? "current" : ""
+                                route().current('users.*') ? 'current' : ''
                             }
                         >
                             <Link
-                                href={route("users.index")}
+                                href={route('users.index')}
                                 className="waves-effect"
                             >
                                 <i className="menu-icon ti-user"></i>
@@ -91,11 +91,11 @@ export default function Sidebar({ auth }) {
                         </li>
                         <li
                             className={
-                                route().current("roles.*") ? "current" : ""
+                                route().current('roles.*') ? 'current' : ''
                             }
                         >
                             <Link
-                                href={route("roles.index")}
+                                href={route('roles.index')}
                                 className="waves-effect"
                             >
                                 <i className="menu-icon ti-lock"></i>
@@ -106,5 +106,5 @@ export default function Sidebar({ auth }) {
                 </div>
             </div>
         </div>
-    );
+    )
 }

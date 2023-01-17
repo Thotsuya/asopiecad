@@ -49,4 +49,9 @@ class Form extends Model
     {
         return $this->belongsToMany(Project::class);
     }
+
+    public function benefitiaries()
+    {
+        return $this->belongsToMany(Benefitiary::class)->withPivot(['form_data']);
+    }
 }

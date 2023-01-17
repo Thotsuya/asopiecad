@@ -1,32 +1,33 @@
-import { useForm } from "@inertiajs/inertia-react";
-import useToasts from "@/Hooks/Toasts";
-import { useEffect } from "react";
+import { useForm } from '@inertiajs/inertia-react'
+import useToasts from '@/Hooks/Toasts'
+import { useEffect } from 'react'
 
-export default function UsersEditModal({ user }) {
+export default function UsersEditModal({ user, roles }) {
     const { data, setData, put, processing, errors, reset, transform } =
         useForm({
             id: user.id,
             name: user.name,
             email: user.email,
-            password: "",
-            password_confirmation: "",
-        });
+            role_id: user.roles[0] ? user.roles[0].id : null,
+            password: '',
+            password_confirmation: '',
+        })
 
-    const { success, error } = useToasts();
+    const { success, error } = useToasts()
 
     const handleSubmit = (e) => {
-        e.preventDefault();
+        e.preventDefault()
 
-        put(route("users.update", user.id), {
+        put(route('users.update', user.id), {
             onSuccess: () => {
-                success("Usuario actualizado correctamente");
-                document.getElementById("users-edit-modal-close").click();
+                success('Usuario actualizado correctamente')
+                document.getElementById('users-edit-modal-close').click()
             },
             onError: () => {
-                error("Error al actualizar usuario");
+                error('Error al actualizar usuario')
             },
-        });
-    };
+        })
+    }
 
     useEffect(() => {
         setData((data) => ({
@@ -34,8 +35,9 @@ export default function UsersEditModal({ user }) {
             id: user.id,
             name: user.name,
             email: user.email,
-        }));
-    }, [user]);
+            role_id: user.roles[0] ? user.roles[0].id : null,
+        }))
+    }, [user])
 
     return (
         <div
@@ -65,7 +67,7 @@ export default function UsersEditModal({ user }) {
                         <div className="row">
                             <div
                                 className={`col-xs-12 ${
-                                    errors.name ? "has-error" : ""
+                                    errors.name ? 'has-error' : ''
                                 }`}
                             >
                                 <label htmlFor="name">Nombre</label>
@@ -77,7 +79,7 @@ export default function UsersEditModal({ user }) {
                                     name="name"
                                     value={data.name}
                                     onChange={(e) => {
-                                        setData("name", e.target.value);
+                                        setData('name', e.target.value)
                                     }}
                                 />
                                 {errors.name && (
@@ -89,7 +91,7 @@ export default function UsersEditModal({ user }) {
 
                             <div
                                 className={`col-xs-12 form-group margin-top-15 ${
-                                    errors.email ? "has-error" : ""
+                                    errors.email ? 'has-error' : ''
                                 } `}
                             >
                                 <label htmlFor="email">Email</label>
@@ -101,7 +103,7 @@ export default function UsersEditModal({ user }) {
                                     name="email"
                                     value={data.email}
                                     onChange={(e) => {
-                                        setData("email", e.target.value);
+                                        setData('email', e.target.value)
                                     }}
                                 />
                                 {errors.email && (
@@ -113,7 +115,30 @@ export default function UsersEditModal({ user }) {
 
                             <div
                                 className={`col-xs-12 form-group margin-top-15 ${
-                                    errors.password ? "has-error" : ""
+                                    errors.role_id ? 'has-error' : ''
+                                } `}
+                            >
+                                <label htmlFor="role_id">Rol de sistema</label>
+                                <select
+                                    className="form-control"
+                                    id="role_id_edit"
+                                    name="role_id"
+                                    value={data.role_id}
+                                    onChange={(e) => {
+                                        setData('role_id', e.target.value)
+                                    }}
+                                >
+                                    {roles.map((role) => (
+                                        <option key={role.id} value={role.id}>
+                                            {role.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div
+                                className={`col-xs-12 form-group margin-top-15 ${
+                                    errors.password ? 'has-error' : ''
                                 } `}
                             >
                                 <label htmlFor="password">Contraseña</label>
@@ -124,7 +149,7 @@ export default function UsersEditModal({ user }) {
                                     id="password_edit"
                                     name="password"
                                     onChange={(e) => {
-                                        setData("password", e.target.value);
+                                        setData('password', e.target.value)
                                     }}
                                 />
                                 {errors.password && (
@@ -136,7 +161,7 @@ export default function UsersEditModal({ user }) {
 
                             <div
                                 className={`col-xs-12 form-group margin-top-15 ${
-                                    errors.password ? "has-error" : ""
+                                    errors.password ? 'has-error' : ''
                                 } `}
                             >
                                 <label htmlFor="password_confirmation">
@@ -150,9 +175,9 @@ export default function UsersEditModal({ user }) {
                                     name="password_confirmation"
                                     onChange={(e) => {
                                         setData(
-                                            "password_confirmation",
+                                            'password_confirmation',
                                             e.target.value
-                                        );
+                                        )
                                     }}
                                 />
                             </div>
@@ -172,11 +197,11 @@ export default function UsersEditModal({ user }) {
                             disabled={processing}
                             onClick={handleSubmit}
                         >
-                            {processing ? "Guardando..." : "Guardar"}
+                            {processing ? 'Guardando...' : 'Guardar'}
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-    );
+    )
 }

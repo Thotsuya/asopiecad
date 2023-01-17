@@ -17,7 +17,6 @@ class Benefitiary extends Model
     protected $fillable = [
         'internal_id',
         'name',
-        'beneficiary_data',
         'internal_status',
         'approved_at',
         'deletion_reason'
@@ -83,6 +82,11 @@ class Benefitiary extends Model
     public function appointments()
     {
         return $this->hasMany(Appointment::class);
+    }
+
+    public function forms()
+    {
+        return $this->belongsToMany(Form::class)->withPivot(['form_data']);
     }
 
 }

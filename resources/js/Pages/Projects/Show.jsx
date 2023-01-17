@@ -40,7 +40,6 @@ export default function Dashboard({
                 <Head title={`Proyecto: ${project.project_name}`} />
 
                 <ProjectTitleHeaderAndForm project={project} editable={false}>
-                    {console.log(project)}
                     <div className="btn-group">
                         {project.can['register-beneficiary'] && (
                             <button

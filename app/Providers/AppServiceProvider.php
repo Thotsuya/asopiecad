@@ -30,9 +30,9 @@ class AppServiceProvider extends ServiceProvider
         \Schema::defaultStringLength(191);
         JsonResource::withoutWrapping();
          //Super admin role
-//        Gate::before(function ($user, $ability) {
-//            return $user->hasRole('Super Admin') ? true : null;
-//        });
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('Super Admin') ? true : null;
+        });
 
         Gate::define('edit-project',[ProjectPolicy::class,'edit']);
         Gate::define('view-project',[ProjectPolicy::class,'view']);

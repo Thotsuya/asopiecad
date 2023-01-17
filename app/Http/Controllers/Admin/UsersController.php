@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UsersUpdateRequest;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 
 class UsersController extends Controller
 {
@@ -28,10 +29,12 @@ class UsersController extends Controller
     {
         return inertia('Users/Index', [
             'users' => User::query()
+                ->with('roles')
                 ->where('id', '!=', auth()->id())
                 ->latest('id')
                 ->paginate(6)
-                ->withQueryString()
+                ->withQueryString(),
+            'roles' => Role::where('name', '!=', User::SUPER_ADMIN)->get()
         ]);
     }
 
@@ -53,11 +56,13 @@ class UsersController extends Controller
      */
     public function store(UserRequest $request)
     {
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
         ]);
+
+        $user->assignRole($request->role_id);
         return redirect()->route('users.index');
     }
 
@@ -97,6 +102,8 @@ class UsersController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password),
         ]);
+
+        $user->syncRoles($request->role_id);
 
         return redirect()->route('users.index');
     }

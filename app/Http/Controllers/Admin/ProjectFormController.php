@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BeneficiaryStoreRequest;
 use App\Http\Resources\BeneficiaryFormsResource;
+use App\Http\Resources\BeneficiaryResource;
 use App\Models\Benefitiary;
+use App\Models\Form;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -41,7 +43,7 @@ class ProjectFormController extends Controller
             'project' => $project,
             'forms' => BeneficiaryFormsResource::collection($forms),
             'is_new' => $request->is_new_beneficiary === 'true',
-            'beneficiary' => $request->is_new_beneficiary === 'true' ? $request->beneficiary_name : Benefitiary::findOrFail($request->beneficiary_id),
+            'beneficiary' => $request->is_new_beneficiary === 'true' ? $request->beneficiary_name : BeneficiaryResource::make(Benefitiary::findOrFail($request->beneficiary_id)->load('forms')),
         ]);
     }
 
@@ -49,9 +51,9 @@ class ProjectFormController extends Controller
     {
         $this->authorize('register-beneficiaries', [$project, $this->roles]);
 
+
         $beneficiary = Benefitiary::create([
             'name' => $request->validated()['name'],
-            'beneficiary_data' => $request->validated(),
             'internal_status' => auth()->user()->can('approve-beneficiaries', [$project, $this->roles])
                 ? Benefitiary::INTERNAL_STATUSES['approved']
                 : Benefitiary::INTERNAL_STATUSES['pending'],
@@ -60,7 +62,17 @@ class ProjectFormController extends Controller
                 : null,
         ]);
 
+        $forms = $project->forms()->get()->mapWithKeys(function(Form $form) use($request) {
+            $fields = $form->getFormFields();
+
+            return [$form->id => [
+                'form_data' => json_encode(collect($request->validated())->only($fields)->toArray())
+            ]];
+
+        })->toArray();
+
         $project->beneficiaries()->attach($beneficiary->id);
+        $beneficiary->forms()->attach($forms);
 
         return redirect()->route('projects.show', $project);
     }
@@ -74,7 +86,7 @@ class ProjectFormController extends Controller
         return inertia('Beneficiares/Edit', [
             'project' => $project,
             'forms' => BeneficiaryFormsResource::collection($forms),
-            'beneficiary' => $beneficiary,
+            'beneficiary' => BeneficiaryResource::make($beneficiary->load('forms')),
         ]);
     }
 
@@ -84,10 +96,19 @@ class ProjectFormController extends Controller
 
         $beneficiary->update([
             'name' => $request->validated()['name'],
-            'beneficiary_data' => $request->validated(),
         ]);
 
+        $forms = $project->forms()->get()->mapWithKeys(function(Form $form) use($request) {
+            $fields = $form->getFormFields();
+
+            return [$form->id => [
+                'form_data' => json_encode(collect($request->validated())->only($fields)->toArray())
+            ]];
+
+        })->toArray();
+
         $project->beneficiaries()->syncWithoutDetaching($beneficiary->id);
+        $beneficiary->forms()->syncWithoutDetaching($forms);
 
         return redirect()->route('projects.show', $project);
     }

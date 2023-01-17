@@ -1,33 +1,33 @@
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head } from "@inertiajs/inertia-react";
-import Pagination from "@/Components/Pagination";
-import UsersCreateModal from "@/Components/Users/UsersCreateModal";
-import UsersEditModal from "@/Components/Users/UsersEditModal";
-import { useState, useEffect } from "react";
-import useToasts from "@/Hooks/Toasts";
-import { Inertia } from "@inertiajs/inertia";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
+import { Head } from '@inertiajs/inertia-react'
+import Pagination from '@/Components/Pagination'
+import UsersCreateModal from '@/Components/Users/UsersCreateModal'
+import UsersEditModal from '@/Components/Users/UsersEditModal'
+import { useState, useEffect } from 'react'
+import useToasts from '@/Hooks/Toasts'
+import { Inertia } from '@inertiajs/inertia'
 
-export default function Users({ auth, users }) {
+export default function Users({ auth, users, roles }) {
     const [user, setUser] = useState(() => {
-        return users.data ? users.data[0] : null;
-    });
+        return users.data ? users.data[0] : null
+    })
 
-    const { prompt, info } = useToasts();
+    const { prompt, info } = useToasts()
 
     const onUserSelect = (user) => {
         prompt(
-            "¿Desea dar de baja a este Usuario?",
-            "No podrá revertir esta acción"
+            '¿Desea dar de baja a este Usuario?',
+            'No podrá revertir esta acción'
         ).then((result) => {
             if (result.isConfirmed) {
-                Inertia.delete(route("users.destroy", user.id), {
+                Inertia.delete(route('users.destroy', user.id), {
                     onSuccess: () => {
-                        info("Usuario dado de baja");
+                        info('Usuario dado de baja')
                     },
-                });
+                })
             }
-        });
-    };
+        })
+    }
 
     return (
         <>
@@ -55,6 +55,7 @@ export default function Users({ auth, users }) {
                                         <th>#</th>
                                         <th>Nombre</th>
                                         <th>Email</th>
+                                        <th>Rol</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -71,11 +72,16 @@ export default function Users({ auth, users }) {
                                             <td>{user.name}</td>
                                             <td>{user.email}</td>
                                             <td>
+                                                <span className="label label-primary">
+                                                    {user.roles[0].name}
+                                                </span>
+                                            </td>
+                                            <td>
                                                 <button
                                                     type="button"
                                                     className="btn btn-warning btn-xs"
                                                     onClick={() => {
-                                                        setUser(user);
+                                                        setUser(user)
                                                     }}
                                                     data-toggle="modal"
                                                     data-target="#users-edit-modal"
@@ -86,7 +92,7 @@ export default function Users({ auth, users }) {
                                                 <button
                                                     className="btn btn-danger btn-xs"
                                                     onClick={() => {
-                                                        onUserSelect(user);
+                                                        onUserSelect(user)
                                                     }}
                                                 >
                                                     <i className="fa fa-trash" />
@@ -109,8 +115,8 @@ export default function Users({ auth, users }) {
                     </div>
                 </div>
             </AuthenticatedLayout>
-            <UsersCreateModal />
-            <UsersEditModal user={user} />
+            <UsersCreateModal roles={roles} />
+            <UsersEditModal user={user} roles={roles} />
         </>
-    );
+    )
 }

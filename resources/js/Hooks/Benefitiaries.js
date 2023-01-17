@@ -4,7 +4,7 @@ import useToasts from '@/Hooks/Toasts'
 export default function useBenefitiaries(
     forms,
     isNew = false,
-    project,
+    project = null,
     beneficiary = null
 ) {
     const { success, error } = useToasts()
@@ -14,6 +14,7 @@ export default function useBenefitiaries(
             const formData = {}
 
             formData['name'] = isNew ? beneficiary : beneficiary.name
+            formData['forms'] = forms
             forms.forEach((form) => {
                 form.tabs.forEach((tab) => {
                     tab.fields.forEach((field) => {
@@ -65,6 +66,25 @@ export default function useBenefitiaries(
         )
     }
 
+    const handleSubmitForDataOnly = () => {
+        if (isNew) {
+            post(route('beneficiaries.store'), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    success('Beneficiario creado con éxito')
+                    reset()
+                },
+            })
+        } else {
+            put(route('beneficiaries.update', beneficiary.uuid), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    success('Beneficiario actualizado con éxito')
+                },
+            })
+        }
+    }
+
     function fieldType(field) {
         if (field.type === 'checkbox' || field.type === 'radio') return false
         if (field.type === 'select') return field.options[0].value
@@ -91,5 +111,6 @@ export default function useBenefitiaries(
         handleSubmit,
         isDirty,
         handleSubmitUpdate,
+        handleSubmitForDataOnly,
     }
 }

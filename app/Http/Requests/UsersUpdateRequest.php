@@ -27,6 +27,7 @@ class UsersUpdateRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $this->user->id],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'role_id' => ['required', 'exists:roles,id']
         ];
     }
 
@@ -43,6 +44,8 @@ class UsersUpdateRequest extends FormRequest
             'email.unique' => 'El campo email debe ser único',
             'password.min' => 'El campo password debe ser mínimo de 8 caracteres',
             'password.confirmed' => 'El campo password debe ser igual al campo password confirmation',
+            'role_id.required' => 'El campo rol es obligatorio',
+            'role_id.exists' => 'El campo rol debe existir en la tabla roles'
         ];
     }
 

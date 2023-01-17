@@ -22,7 +22,13 @@ class BeneficiaryResource extends JsonResource
             'internal_status' => $this->internal_status,
             'approved_at' => $this->approved_at,
             'deletion_reason' => $this->deletion_reason,
-            'beneficiary_data' => $this->beneficiary_data,
+            'beneficiary_data' => $this->whenLoaded('forms',function(){
+                return collect($this->forms)->map(function($form){
+                    return json_decode($form->pivot->form_data);
+                })->reduce(function($carry, $item){
+                    return $carry->merge($item);
+                }, collect([]))->toArray();
+            }),
             'badge' => match ($this->internal_status) {
                 'Pendiente' => 'warning',
                 'Aprobado' => 'success',
@@ -34,9 +40,13 @@ class BeneficiaryResource extends JsonResource
                     ? $this->appointments->sortByDesc('start_date')->first()->start_date->translatedFormat('d/m/Y H:i A')
                     : null;
             }),
-            'programs' => $this->programs,
+            'programs' => $this->whenLoaded('programs'),
+            'projects' => $this->whenLoaded('projects'),
+            'projects_count' => $this->whenCounted('projects'),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
     }
+
+
 }
