@@ -45,24 +45,9 @@ class Benefitiary extends Model
     {
         parent::boot();
         static::creating(function ($model) {
-            // Generate a random 8 digit code, mixing numbers and letters
-            $letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            $numbers = '0123456789';
+            $lastInternalId = self::orderBy('internal_id', 'desc')->first()->internal_id ?? 0;
 
-            $code = '';
-
-            for ($i = 0; $i < 4; $i++) {
-                $code .= $letters[rand(0, strlen($letters) - 1)];
-            }
-
-            for ($i = 0; $i < 4; $i++) {
-                $code .= $numbers[rand(0, strlen($numbers) - 1)];
-            }
-
-            // Mix the code
-            $code = str_shuffle($code);
-
-            $model->internal_id = $code;
+            $model->internal_id = str_pad($lastInternalId + 1, 8, '0', STR_PAD_LEFT);
             $model->uuid = (string) Str::uuid();
         });
 
