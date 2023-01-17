@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/inertia-react'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import RegisterBeneficiaryModal from '@/Components/Beneficiaries/RegisterBeneficiaryModal'
+import Pagination from '@/Components/Pagination'
 
 export default function Index({
     beneficiaries_paginated,
@@ -132,6 +133,24 @@ export default function Index({
                                             )}
                                         </tbody>
                                     </table>
+                                    <Pagination
+                                        current_page={
+                                            beneficiaries_paginated.current_page
+                                        }
+                                        last_page={
+                                            beneficiaries_paginated.last_page
+                                        }
+                                        total={beneficiaries_paginated.total}
+                                        per_page={
+                                            beneficiaries_paginated.per_page
+                                        }
+                                        next_page_url={
+                                            beneficiaries_paginated.next_page_url
+                                        }
+                                        prev_page_url={
+                                            beneficiaries_paginated.prev_page_url
+                                        }
+                                    />
                                 </div>
                             )}
                         </div>
