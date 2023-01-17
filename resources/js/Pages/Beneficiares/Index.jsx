@@ -2,6 +2,8 @@ import { Head, Link } from '@inertiajs/inertia-react'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import RegisterBeneficiaryModal from '@/Components/Beneficiaries/RegisterBeneficiaryModal'
 import Pagination from '@/Components/Pagination'
+import { useState } from 'react'
+import BeneficiaryProjectModal from '@/Components/Beneficiaries/BeneficiaryProjectModal'
 
 export default function Index({
     beneficiaries_paginated,
@@ -10,6 +12,8 @@ export default function Index({
     forms,
     auth,
 }) {
+    const [beneficiary, setBeneficiary] = useState(null)
+
     return (
         <>
             <AuthenticatedLayout auth={auth}>
@@ -127,6 +131,21 @@ export default function Index({
                                                             >
                                                                 <i className="fa fa-edit"></i>
                                                             </Link>
+
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-info btn-sm"
+                                                                onClick={() =>
+                                                                    setBeneficiary(
+                                                                        beneficiary
+                                                                    )
+                                                                }
+                                                                title="Registrar en un proyecto"
+                                                                data-toggle="modal"
+                                                                data-target="#modal-beneficiary-project"
+                                                            >
+                                                                <i className="fa fa-book"></i>
+                                                            </button>
                                                         </td>
                                                     </tr>
                                                 )
@@ -162,6 +181,11 @@ export default function Index({
                 beneficiaries={beneficiaries}
                 forms={forms}
                 projects={projects}
+            />
+
+            <BeneficiaryProjectModal
+                projects={projects}
+                beneficiary={beneficiary}
             />
         </>
     )

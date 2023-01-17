@@ -78,6 +78,17 @@ export default function ProjectCard({ project, roles, auth }) {
                                         />
                                     </Link>
                                 )}
+
+                                <Link
+                                    className="btn btn-danger btn-sm"
+                                    title="Configurar Reportes"
+                                    href={route(
+                                        'projects.reports.index',
+                                        project.uuid
+                                    )}
+                                >
+                                    <i className="fa fa-bar-chart" />
+                                </Link>
                             </div>
                         </div>
                     </div>
