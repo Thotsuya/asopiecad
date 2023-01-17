@@ -6,18 +6,11 @@ import '../fonts/themify-icons/themify-icons.css'
 import '../plugins/mCustomScrollbar/jquery.mCustomScrollbar.min.css'
 import '../plugins/select2/css/select2.min.css'
 
-import '../plugins/jquery-ui/jquery-ui.min.css'
-import '../plugins/jquery-ui/jquery-ui.structure.min.css'
-import '../plugins/jquery-ui/jquery-ui.theme.min.css'
-
 // Importing scripts
 import './Scripts/jquery.min'
 import '../plugins/bootstrap/js/bootstrap.min'
 import '../plugins/mCustomScrollbar/jquery.mCustomScrollbar.concat.min'
 import '../plugins/select2/js/select2.min'
-
-import '../plugins/jquery-ui/jquery-ui.min'
-import '../plugins/jquery-ui/jquery.ui.touch-punch.min'
 
 import { createRoot } from 'react-dom/client'
 import { createInertiaApp } from '@inertiajs/inertia-react'
