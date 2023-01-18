@@ -7,7 +7,7 @@ import Pagination from '@/Components/Pagination'
 import useUsers from '@/Hooks/Users'
 import ProjectCard from '@/Pages/Projects/Partials/ProjectCard'
 
-export default function Dashboard({ auth, projects, roles }) {
+export default function Index({ auth, projects, roles }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         project_name: '',
     })
@@ -38,22 +38,26 @@ export default function Dashboard({ auth, projects, roles }) {
             <Head title="Proyectos" />
 
             <div className="prj-header margin-bottom-10">
-                <button
-                    className={`btn btn-submit-prj btn-sm waves-effect waves-light ${
-                        newProject ? 'btn-danger' : 'btn-info'
-                    }`}
-                    onClick={() => setNewProject((newProject) => !newProject)}
-                >
-                    {newProject ? (
-                        <>
-                            Cancelar <i className="fa fa-times" />
-                        </>
-                    ) : (
-                        <>
-                            Nuevo Proyecto <i className="fa fa-plus" />
-                        </>
-                    )}
-                </button>
+                {can('Crear Proyectos', auth.user.abilities) && (
+                    <button
+                        className={`btn btn-submit-prj btn-sm waves-effect waves-light ${
+                            newProject ? 'btn-danger' : 'btn-info'
+                        }`}
+                        onClick={() =>
+                            setNewProject((newProject) => !newProject)
+                        }
+                    >
+                        {newProject ? (
+                            <>
+                                Cancelar <i className="fa fa-times" />
+                            </>
+                        ) : (
+                            <>
+                                Nuevo Proyecto <i className="fa fa-plus" />
+                            </>
+                        )}
+                    </button>
+                )}
                 <div className="result-count">{projects.total} Proyectos</div>
             </div>
 

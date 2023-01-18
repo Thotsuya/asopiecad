@@ -1,19 +1,26 @@
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link } from "@inertiajs/inertia-react";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
+import { Head, Link } from '@inertiajs/inertia-react'
+import useUsers from '@/Hooks/Users'
 
 export default function Forms(props) {
+    const { can } = useUsers()
+
     return (
         <AuthenticatedLayout auth={props.auth}>
             <Head title="Formularios" />
 
             <div className="prj-header margin-bottom-30">
-                <Link
-                    href={route("forms.create")}
-                    className="btn btn-info btn-submit-prj btn-sm waves-effect waves-light"
-                >
-                    Nuevo Formulario
-                </Link>
-                <div className="result-count">130 Projects</div>
+                {can('Crear Formularios', props.auth.user.abilities) && (
+                    <Link
+                        href={route('forms.create')}
+                        className="btn btn-info btn-submit-prj btn-sm waves-effect waves-light"
+                    >
+                        Nuevo Formulario
+                    </Link>
+                )}
+                <div className="result-count">
+                    {props.forms.length} Formularios
+                </div>
             </div>
 
             <div className="col-lg-12">
@@ -35,8 +42,14 @@ export default function Forms(props) {
                                     <td>{form.fields_count}</td>
                                     <td>
                                         <Link
-                                            href={route("forms.edit", form.id)}
+                                            href={route('forms.edit', form.id)}
                                             className="btn btn-info btn-sm waves-effect waves-light"
+                                            disabled={
+                                                !can(
+                                                    'Editar Formularios',
+                                                    props.auth.user.abilities
+                                                )
+                                            }
                                         >
                                             <i className="fa fa-pencil" />
                                         </Link>
@@ -57,5 +70,5 @@ export default function Forms(props) {
                 </div>
             </div>
         </AuthenticatedLayout>
-    );
+    )
 }

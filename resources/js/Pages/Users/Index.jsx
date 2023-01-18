@@ -6,6 +6,7 @@ import UsersEditModal from '@/Components/Users/UsersEditModal'
 import { useState, useEffect } from 'react'
 import useToasts from '@/Hooks/Toasts'
 import { Inertia } from '@inertiajs/inertia'
+import useUsers from '@/Hooks/Users'
 
 export default function Users({ auth, users, roles }) {
     const [user, setUser] = useState(() => {
@@ -13,6 +14,8 @@ export default function Users({ auth, users, roles }) {
     })
 
     const { prompt, info } = useToasts()
+
+    const { can } = useUsers()
 
     const onUserSelect = (user) => {
         prompt(
@@ -37,14 +40,16 @@ export default function Users({ auth, users, roles }) {
                 <div className="row">
                     <div className="col-xs-12">
                         <h1>Usuarios</h1>
-                        <button
-                            type="button"
-                            className="btn btn-primary margin-bottom-10 waves-effect waves-light"
-                            data-toggle="modal"
-                            data-target="#users-create-modal"
-                        >
-                            Crear usuario
-                        </button>
+                        {can('Crear Usuarios', auth.user.abilities) && (
+                            <button
+                                type="button"
+                                className="btn btn-primary margin-bottom-10 waves-effect waves-light"
+                                data-toggle="modal"
+                                data-target="#users-create-modal"
+                            >
+                                Crear usuario
+                            </button>
+                        )}
                     </div>
 
                     <div className="col-xs-12">
@@ -77,26 +82,36 @@ export default function Users({ auth, users, roles }) {
                                                 </span>
                                             </td>
                                             <td>
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-warning btn-xs"
-                                                    onClick={() => {
-                                                        setUser(user)
-                                                    }}
-                                                    data-toggle="modal"
-                                                    data-target="#users-edit-modal"
-                                                >
-                                                    <i className="fa fa-pencil" />
-                                                </button>
+                                                {can(
+                                                    'Editar Usuarios',
+                                                    auth.user.abilities
+                                                ) && (
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-warning btn-xs"
+                                                        onClick={() => {
+                                                            setUser(user)
+                                                        }}
+                                                        data-toggle="modal"
+                                                        data-target="#users-edit-modal"
+                                                    >
+                                                        <i className="fa fa-pencil" />
+                                                    </button>
+                                                )}
 
-                                                <button
-                                                    className="btn btn-danger btn-xs"
-                                                    onClick={() => {
-                                                        onUserSelect(user)
-                                                    }}
-                                                >
-                                                    <i className="fa fa-trash" />
-                                                </button>
+                                                {can(
+                                                    'Eliminar Usuarios',
+                                                    auth.user.abilities
+                                                ) && (
+                                                    <button
+                                                        className="btn btn-danger btn-xs"
+                                                        onClick={() => {
+                                                            onUserSelect(user)
+                                                        }}
+                                                    >
+                                                        <i className="fa fa-trash" />
+                                                    </button>
+                                                )}
                                             </td>
                                         </tr>
                                     ))}

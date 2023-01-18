@@ -12,7 +12,8 @@ class Project extends Model
 
     protected $fillable = [
         'project_name',
-        'project_description'
+        'project_description',
+        'global_goal',
     ];
 
     public function getRouteKeyName()
@@ -38,7 +39,7 @@ class Project extends Model
     }
 
     public function users(){
-        return $this->belongsToMany(User::class)->withPivot(['role_id']);
+        return $this->belongsToMany(User::class);
     }
 
     public function forms(){

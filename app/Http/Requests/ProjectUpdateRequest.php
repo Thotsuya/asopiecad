@@ -34,6 +34,7 @@ class ProjectUpdateRequest extends FormRequest
             'programs.*.order' => ['required', 'integer'],
             'forms' => ['sometimes', 'array'],
             'forms.*' => ['exists:forms,id'],
+            'global_goal' => ['sometimes', 'numeric', 'min:0'],
         ];
     }
 
@@ -61,17 +62,15 @@ class ProjectUpdateRequest extends FormRequest
             'programs.*.order.integer' => 'El orden del programa debe ser un número entero',
             'forms.array' => 'Los formularios deben ser un arreglo',
             'forms.*.exists' => 'El formulario no existe',
+            'global_goal.numeric' => 'La meta global debe ser un número',
+            'global_goal.min' => 'La meta global debe ser mayor o igual a 0',
         ];
     }
 
     public function validated($key = null, $default = null)
     {
         return array_merge(parent::validated($key, $default), [
-            'users' => collect($this->input('users', []))->mapWithKeys(function ($user) {
-                return [$user['id'] => [
-                    'role_id' => $user['role_id'],
-                ]];
-            })->toArray(),
+            'users' => collect($this->input('users', []))->pluck('id')->toArray(),
             'programs' => collect($this->programs)->map(function ($program) {
                 return [
                     'uuid' => array_key_exists('uuid', $program) ? $program['uuid'] : null,

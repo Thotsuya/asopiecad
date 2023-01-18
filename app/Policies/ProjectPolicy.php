@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Database\Eloquent\Collection;
 
-class ProjectPolicy
+class   ProjectPolicy
 {
     use HandlesAuthorization;
 
@@ -21,114 +21,89 @@ class ProjectPolicy
         $this->project = $project;
     }
 
-    public function edit(User $user, Project $project, Collection $roles)
+    public function edit(User $user, Project $project)
     {
         return $user->projects->contains($project->id) &&
-            $roles
-                ->where('id', $project->users->where('id', $user->id)->first()->pivot->role_id)
-                ->first()
-                ->hasPermissionTo('Editar Proyectos');
+            $user->hasPermissionTo('Editar Proyectos');
     }
 
-    public function view(User $user, Project $project, Collection $roles)
+    public function view(User $user, Project $project)
     {
         return $user->projects->contains($project->id) &&
-            $roles
-                ->where('id', $project->users->where('id', $user->id)->first()->pivot->role_id)
-                ->first()
-                ->hasPermissionTo('Ver Proyectos');
+            $user->hasPermissionTo('Ver Proyectos');
     }
 
-    public function registerBeneficiaries(User $user, Project $project, Collection $roles)
+    public function registerBeneficiaries(User $user, Project $project)
     {
         // Check if the project has forms to register beneficiaries and that the user has the permission to register beneficiaries
         return $user->projects->contains($project->id) &&
             $project->forms->count() > 0 &&
-            $roles
-                ->where('id', $project->users->where('id', $user->id)->first()->pivot->role_id)
-                ->first()
-                ->hasPermissionTo('Registrar Beneficiarios');
+            $user->hasPermissionTo('Registrar Beneficiarios');
 
     }
 
-    public function approveBeneficiaries(User $user, Project $project, Collection $roles)
+    public function approveBeneficiaries(User $user, Project $project)
     {
         // Check if the project has forms to register beneficiaries and that the user has the permission to register beneficiaries
         return $user->projects->contains($project->id) &&
             $project->forms->count() > 0 &&
-            $roles
-                ->where('id', $project->users->where('id', $user->id)->first()->pivot->role_id)
-                ->first()
+            $user
                 ->hasPermissionTo('Aprobar Beneficiarios');
 
     }
 
-    public function editBeneficiaries(User $user, Project $project, Collection $roles)
+    public function editBeneficiaries(User $user, Project $project)
     {
         // Check if the project has forms to register beneficiaries and that the user has the permission to register beneficiaries
         return $user->projects->contains($project->id) &&
             $project->forms->count() > 0 &&
-            $roles
-                ->where('id', $project->users->where('id', $user->id)->first()->pivot->role_id)
-                ->first()
-                ->hasPermissionTo('Editar Beneficiarios');
+            $user->hasPermissionTo('Editar Beneficiarios');
 
     }
 
-    public function deleteBeneficiaries(User $user, Project $project, Collection $roles)
+    public function deleteBeneficiaries(User $user, Project $project)
     {
         // Check if the project has forms to register beneficiaries and that the user has the permission to register beneficiaries
         return $user->projects->contains($project->id) &&
             $project->forms->count() > 0 &&
-            $roles
-                ->where('id', $project->users->where('id', $user->id)->first()->pivot->role_id)
-                ->first()
-                ->hasPermissionTo('Eliminar Beneficiarios');
+            $user->hasPermissionTo('Eliminar Beneficiarios');
 
     }
 
     // Appointments
 
-    public function registerAppointments(User $user, Project $project, Collection $roles)
+    public function registerAppointments(User $user, Project $project)
     {
         // Check if the project has forms to register beneficiaries and that the user has the permission to register beneficiaries
         return $user->projects->contains($project->id) &&
-            $roles
-                ->where('id', $project->users->where('id', $user->id)->first()->pivot->role_id)
-                ->first()
+            $user
                 ->hasPermissionTo('Registrar Visitas');
 
     }
 
-    public function editAppointments(User $user, Project $project, Collection $roles)
+    public function editAppointments(User $user, Project $project)
     {
         // Check if the project has forms to register beneficiaries and that the user has the permission to register beneficiaries
         return $user->projects->contains($project->id) &&
-            $roles
-                ->where('id', $project->users->where('id', $user->id)->first()->pivot->role_id)
-                ->first()
+            $user
                 ->hasPermissionTo('Editar Visitas');
 
     }
 
-    public function registerGoals(User $user, Project $project, Collection $roles)
+    public function registerGoals(User $user, Project $project)
     {
         // Check if the project has forms to register beneficiaries and that the user has the permission to register beneficiaries
         return $user->projects->contains($project->id) &&
-            $roles
-                ->where('id', $project->users->where('id', $user->id)->first()->pivot->role_id)
-                ->first()
+            $user
                 ->hasPermissionTo('Registrar Metas');
 
     }
 
-    public function registerGoalProgress(User $user, Project $project, Collection $roles)
+    public function registerGoalProgress(User $user, Project $project)
     {
         // Check if the project has forms to register beneficiaries and that the user has the permission to register beneficiaries
         return $user->projects->contains($project->id) &&
-            $roles
-                ->where('id', $project->users->where('id', $user->id)->first()->pivot->role_id)
-                ->first()
+            $user
                 ->hasPermissionTo('Registrar avance de Metas');
 
     }

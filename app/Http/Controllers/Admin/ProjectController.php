@@ -73,9 +73,7 @@ class ProjectController extends Controller
         $project = Project::create($request->validated());
         $role = Role::where('name', '!=', 'Super Admin')->first();
 
-        $project->users()->attach(auth()->id(), [
-            'role_id' => $role->id,
-        ]);
+        $project->users()->attach(auth()->id());
         return redirect()->route('projects.edit', $project);
     }
 
@@ -92,6 +90,7 @@ class ProjectController extends Controller
             'beneficiaries' => $project->beneficiaries()
                 ->latest('id')
                 ->with('programs', 'appointments')
+                ->withTrashed()
                 ->paginate(6)
                 ->through(function ($beneficiary) {
                     return BeneficiaryResource::make($beneficiary);
@@ -148,6 +147,7 @@ class ProjectController extends Controller
         $project->update([
             'project_name' => $request->project_name,
             'project_description' => $request->project_description,
+            'global_goal' => $request->global_goal,
         ]);
 
         if ($request->validated()['users']) {

@@ -17,6 +17,7 @@ class BeneficiariesController extends Controller
 
     public function __construct()
     {
+        $this->middleware('can:Ver Beneficiarios')->only('index');
         $this->middleware('can:Registrar Beneficiarios')->only('create', 'store');
         $this->middleware('can:Editar Beneficiarios')->only('edit', 'update');
         $this->middleware('can:Eliminar Beneficiarios')->only('destroy');
@@ -26,6 +27,7 @@ class BeneficiariesController extends Controller
     {
         return Inertia::render('Beneficiares/Index', [
             'beneficiaries_paginated' => Benefitiary::query()
+                ->withTrashed()
                 ->withCount('projects')
                 ->with('projects')
                 ->latest('id')

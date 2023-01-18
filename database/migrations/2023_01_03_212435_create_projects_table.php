@@ -18,6 +18,7 @@ return new class extends Migration
             $table->uuid('uuid')->unique();
             $table->string('project_name');
             $table->string('project_description')->default('Descripción del proyecto');
+            $table->float('global_goal')->default(0);
             $table->softDeletes();
             $table->timestamps();
         });

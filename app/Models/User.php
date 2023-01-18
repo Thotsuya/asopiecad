@@ -48,8 +48,10 @@ class User extends Authenticatable
 
     protected $touches = ['projects'];
 
+    protected $appends = ['abilities'];
+
     public function projects(){
-        return $this->belongsToMany(Project::class)->withPivot(['role_id']);
+        return $this->belongsToMany(Project::class);
     }
 
     public function appointments(){
@@ -62,6 +64,10 @@ class User extends Authenticatable
 
     public function goalProgresses(){
         return $this->hasMany(GoalProgress::class);
+    }
+
+    public function getAbilitiesAttribute(){
+        return $this->getAllPermissions()->pluck('name');
     }
 
 }

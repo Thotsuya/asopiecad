@@ -80,6 +80,7 @@ export default function Dashboard({
                                     onBeneficiarySelected={
                                         setSelectedBeneficiary
                                     }
+                                    auth={auth}
                                 />
                                 <Goals
                                     goals={goals}

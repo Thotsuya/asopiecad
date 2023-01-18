@@ -45,7 +45,7 @@ class Benefitiary extends Model
     {
         parent::boot();
         static::creating(function ($model) {
-            $lastInternalId = self::orderBy('internal_id', 'desc')->first()->internal_id ?? 0;
+            $lastInternalId = self::withTrashed()->orderBy('internal_id', 'desc')->first()->internal_id ?? 0;
 
             $model->internal_id = str_pad($lastInternalId + 1, 8, '0', STR_PAD_LEFT);
             $model->uuid = (string) Str::uuid();

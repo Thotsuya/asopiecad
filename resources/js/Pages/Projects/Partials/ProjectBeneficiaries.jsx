@@ -7,6 +7,7 @@ export default function ProjectBeneficiaries({
     beneficiaries = [],
     project,
     onBeneficiarySelected,
+    auth,
 }) {
     const { promptWithInput, info } = useToasts()
 
@@ -117,63 +118,71 @@ export default function ProjectBeneficiaries({
                                                     <ul className="dropdown-menu">
                                                         {project.can[
                                                             'register-appointments'
-                                                        ] && (
-                                                            <li>
-                                                                <a
-                                                                    href="#"
-                                                                    onClick={() => {
-                                                                        onBeneficiarySelected(
-                                                                            beneficiary
-                                                                        )
-                                                                    }}
-                                                                    data-toggle="modal"
-                                                                    data-target="#modal-register-appointment"
-                                                                >
-                                                                    Registrar
-                                                                    visita
-                                                                </a>
-                                                            </li>
-                                                        )}
+                                                        ] &&
+                                                            !beneficiary.is_trashed && (
+                                                                <li>
+                                                                    <a
+                                                                        href="#"
+                                                                        onClick={() => {
+                                                                            onBeneficiarySelected(
+                                                                                beneficiary
+                                                                            )
+                                                                        }}
+                                                                        data-toggle="modal"
+                                                                        data-target="#modal-register-appointment"
+                                                                    >
+                                                                        Registrar
+                                                                        visita
+                                                                    </a>
+                                                                </li>
+                                                            )}
                                                         {project.can[
                                                             'edit-beneficiary'
-                                                        ] && (
-                                                            <li>
-                                                                <Link
-                                                                    href={route(
-                                                                        'projects.forms.edit',
-                                                                        {
-                                                                            project:
-                                                                                project.uuid,
-                                                                            beneficiary:
-                                                                                beneficiary.uuid,
-                                                                        }
-                                                                    )}
-                                                                >
-                                                                    Editar
-                                                                </Link>
-                                                            </li>
+                                                        ] &&
+                                                            !beneficiary.is_trashed && (
+                                                                <li>
+                                                                    <Link
+                                                                        href={route(
+                                                                            'projects.forms.edit',
+                                                                            {
+                                                                                project:
+                                                                                    project.uuid,
+                                                                                beneficiary:
+                                                                                    beneficiary.uuid,
+                                                                            }
+                                                                        )}
+                                                                    >
+                                                                        Editar
+                                                                    </Link>
+                                                                </li>
+                                                            )}
+                                                        {console.log(
+                                                            beneficiary
                                                         )}
 
                                                         {project.can[
                                                             'delete-beneficiary'
-                                                        ] && (
-                                                            <li>
-                                                                {project['can'][
-                                                                    'delete-beneficiary'
-                                                                ] && (
-                                                                    <a
-                                                                        href="#"
-                                                                        onClick={() =>
-                                                                            handleDelete(
-                                                                                beneficiary
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        Eliminar
-                                                                    </a>
-                                                                )}
-                                                            </li>
-                                                        )}
+                                                        ] &&
+                                                            !beneficiary.is_trashed && (
+                                                                <li>
+                                                                    {project[
+                                                                        'can'
+                                                                    ][
+                                                                        'delete-beneficiary'
+                                                                    ] && (
+                                                                        <a
+                                                                            href="#"
+                                                                            onClick={() =>
+                                                                                handleDelete(
+                                                                                    beneficiary
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            Eliminar
+                                                                        </a>
+                                                                    )}
+                                                                </li>
+                                                            )}
                                                     </ul>
                                                 </div>
                                             </td>

@@ -9,13 +9,12 @@ export default function FormsAndMembers({
     onFormSelect,
     onMemberRemove,
     onFormRemove,
-    onRoleChange,
+    onGlobalGoalChange,
     roles,
 }) {
     const [member, setMember] = useState({
         id: users[0].id,
         name: users[0].name,
-        role_id: roles[0] ? roles[0].id : null,
     })
 
     const handleMemberSelect = (e) => {
@@ -26,7 +25,6 @@ export default function FormsAndMembers({
         setMember({
             id: selectedMember.id,
             name: selectedMember.name,
-            role_id: roles[0] ? roles[0].id : null,
         })
     }
 
@@ -112,33 +110,8 @@ export default function FormsAndMembers({
                             {project.users.map((user) => (
                                 <li key={user.id} className="list-group-item">
                                     <div className="row">
-                                        <div className="col-lg-4 col-xs-12">
+                                        <div className="col-lg-10 col-xs-12">
                                             {user.name}
-                                        </div>
-                                        <div className="col-lg-6 col-xs-12">
-                                            <select
-                                                className="form-control"
-                                                onChange={(e) => {
-                                                    onRoleChange(
-                                                        user.id,
-                                                        e.target.value
-                                                    )
-                                                }}
-                                                defaultValue={
-                                                    user.role_id
-                                                        ? user.role_id
-                                                        : roles[0].id
-                                                }
-                                            >
-                                                {roles.map((role) => (
-                                                    <option
-                                                        key={role.id}
-                                                        value={role.id}
-                                                    >
-                                                        {role.name}
-                                                    </option>
-                                                ))}
-                                            </select>
                                         </div>
                                         <div className="col-lg-2 col-xs-12">
                                             <button
@@ -154,6 +127,29 @@ export default function FormsAndMembers({
                                 </li>
                             ))}
                         </ul>
+                    </div>
+                </div>
+
+                <div className="box-content">
+                    <h4>Meta Global</h4>
+                    <p className="font-13">
+                        Establece la meta global de beneficiarios del proyecto.
+                        Esta meta se utilizará para calcular el progreso del
+                        proyecto.
+                    </p>
+                    <div className="row">
+                        <div className="col-xs-12">
+                            <div className="form-group">
+                                <input
+                                    type="number"
+                                    className="form-control"
+                                    id="global_goal"
+                                    name="global_goal"
+                                    value={project.global_goal}
+                                    onChange={onGlobalGoalChange}
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

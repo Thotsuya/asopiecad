@@ -15,19 +15,12 @@ use Spatie\Permission\Models\Role;
 
 class ProjectFormController extends Controller
 {
-    public function __construct()
-    {
-        $this->roles = Role::query()
-            ->where('name', '!=', 'Super Admin')
-            ->with('permissions')
-            ->get();
-    }
 
     public function create(Request $request, Project $project)
     {
 
 
-        $this->authorize('register-beneficiaries', [$project, $this->roles]);
+        $this->authorize('register-beneficiaries', $project);
         $this->validate($request, [
             'is_new_beneficiary' => ['required', Rule::in(['true', 'false'])],
             'beneficiary_name' => Rule::requiredIf(fn() => $request->input('is_new_beneficiary') === 'true'),
@@ -49,15 +42,15 @@ class ProjectFormController extends Controller
 
     public function store(BeneficiaryStoreRequest $request, Project $project)
     {
-        $this->authorize('register-beneficiaries', [$project, $this->roles]);
+        $this->authorize('register-beneficiaries', $project);
 
 
         $beneficiary = Benefitiary::create([
             'name' => $request->validated()['name'],
-            'internal_status' => auth()->user()->can('approve-beneficiaries', [$project, $this->roles])
+            'internal_status' => auth()->user()->can('approve-beneficiaries',$project)
                 ? Benefitiary::INTERNAL_STATUSES['approved']
                 : Benefitiary::INTERNAL_STATUSES['pending'],
-            'approved_at' => auth()->user()->can('approve-beneficiaries', [$project, $this->roles])
+            'approved_at' => auth()->user()->can('approve-beneficiaries', $project)
                 ? now()
                 : null,
         ]);
@@ -79,7 +72,7 @@ class ProjectFormController extends Controller
 
     public function edit(Request $request, Project $project, Benefitiary $beneficiary)
     {
-        $this->authorize('edit-beneficiaries', [$project, $this->roles]);
+        $this->authorize('edit-beneficiaries', $project);
 
         $forms = $project->forms()->get();
 
@@ -92,7 +85,7 @@ class ProjectFormController extends Controller
 
     public function update(BeneficiaryStoreRequest $request, Project $project, Benefitiary $beneficiary)
     {
-        $this->authorize('edit-beneficiaries', [$project, $this->roles]);
+        $this->authorize('edit-beneficiaries', $project);
 
         $beneficiary->update([
             'name' => $request->validated()['name'],
@@ -116,7 +109,7 @@ class ProjectFormController extends Controller
     public function destroy(Request $request, Project $project, Benefitiary $beneficiary)
     {
 
-        $this->authorize('delete-beneficiaries', [$project, $this->roles]);
+        $this->authorize('delete-beneficiaries', $project);
 
         $beneficiary->update([
             'internal_status' => Benefitiary::INTERNAL_STATUSES['deleted'],

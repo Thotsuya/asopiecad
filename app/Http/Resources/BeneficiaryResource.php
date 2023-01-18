@@ -30,7 +30,7 @@ class BeneficiaryResource extends JsonResource
                 }, collect([]))->toArray();
             }),
             'badge' => match ($this->internal_status) {
-                'Pendiente' => 'warning',
+                'Pendiente de aprobación' => 'warning',
                 'Aprobado' => 'success',
                 'Rechazado', 'Eliminado' => 'danger',
                 default => 'secondary',
@@ -45,6 +45,7 @@ class BeneficiaryResource extends JsonResource
             'projects_count' => $this->whenCounted('projects'),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'is_trashed' => $this->trashed(),
         ];
     }
 

@@ -100,7 +100,7 @@ class UsersController extends Controller
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'password' =>  $request->password ? bcrypt($request->password) : $user->password,
         ]);
 
         $user->syncRoles($request->role_id);

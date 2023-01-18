@@ -4,6 +4,7 @@ import RegisterBeneficiaryModal from '@/Components/Beneficiaries/RegisterBenefic
 import Pagination from '@/Components/Pagination'
 import { useState } from 'react'
 import BeneficiaryProjectModal from '@/Components/Beneficiaries/BeneficiaryProjectModal'
+import useUsers from '@/Hooks/Users'
 
 export default function Index({
     beneficiaries_paginated,
@@ -14,20 +15,24 @@ export default function Index({
 }) {
     const [beneficiary, setBeneficiary] = useState(null)
 
+    const { can } = useUsers()
+
     return (
         <>
             <AuthenticatedLayout auth={auth}>
                 <Head title="Beneficiarios" />
 
                 <div className="prj-header margin-bottom-30">
-                    <button
-                        type="button"
-                        data-toggle="modal"
-                        data-target="#modal-register-beneficiary"
-                        className="btn btn-info btn-submit-prj btn-sm waves-effect waves-light"
-                    >
-                        Registrar Beneficiario
-                    </button>
+                    {can('Registrar Beneficiarios', auth.user.abilities) && (
+                        <button
+                            type="button"
+                            data-toggle="modal"
+                            data-target="#modal-register-beneficiary"
+                            className="btn btn-info btn-submit-prj btn-sm waves-effect waves-light"
+                        >
+                            Registrar Beneficiario
+                        </button>
+                    )}
                     <div className="result-count">
                         {beneficiaries_paginated.total} Beneficiarios
                     </div>
@@ -122,30 +127,48 @@ export default function Index({
                                                             </span>
                                                         </td>
                                                         <td>
-                                                            <Link
-                                                                href={route(
-                                                                    'beneficiaries.edit',
-                                                                    beneficiary.uuid
-                                                                )}
-                                                                className="btn btn-primary btn-sm"
-                                                            >
-                                                                <i className="fa fa-edit"></i>
-                                                            </Link>
+                                                            {!beneficiary.is_trashed && (
+                                                                <>
+                                                                    {can(
+                                                                        'Editar Beneficiarios',
+                                                                        auth
+                                                                            .user
+                                                                            .abilities
+                                                                    ) && (
+                                                                        <Link
+                                                                            href={route(
+                                                                                'beneficiaries.edit',
+                                                                                beneficiary.uuid
+                                                                            )}
+                                                                            className="btn btn-primary btn-sm"
+                                                                        >
+                                                                            <i className="fa fa-edit"></i>
+                                                                        </Link>
+                                                                    )}
 
-                                                            <button
-                                                                type="button"
-                                                                className="btn btn-info btn-sm"
-                                                                onClick={() =>
-                                                                    setBeneficiary(
-                                                                        beneficiary
-                                                                    )
-                                                                }
-                                                                title="Registrar en un proyecto"
-                                                                data-toggle="modal"
-                                                                data-target="#modal-beneficiary-project"
-                                                            >
-                                                                <i className="fa fa-book"></i>
-                                                            </button>
+                                                                    {can(
+                                                                        'Editar Beneficiarios',
+                                                                        auth
+                                                                            .user
+                                                                            .abilities
+                                                                    ) && (
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn btn-info btn-sm"
+                                                                            onClick={() =>
+                                                                                setBeneficiary(
+                                                                                    beneficiary
+                                                                                )
+                                                                            }
+                                                                            title="Registrar en un proyecto"
+                                                                            data-toggle="modal"
+                                                                            data-target="#modal-beneficiary-project"
+                                                                        >
+                                                                            <i className="fa fa-book"></i>
+                                                                        </button>
+                                                                    )}
+                                                                </>
+                                                            )}
                                                         </td>
                                                     </tr>
                                                 )

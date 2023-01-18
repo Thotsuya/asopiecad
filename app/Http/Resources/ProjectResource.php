@@ -13,10 +13,9 @@ class ProjectResource extends JsonResource
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
 
-    public function __construct($resource,$roles = [])
+    public function __construct($resource)
     {
         parent::__construct($resource);
-        $this->roles = $roles;
     }
 
     public function toArray($request)
@@ -36,26 +35,24 @@ class ProjectResource extends JsonResource
                    return [
                        'id' => $user->id,
                        'name' => $user->name,
-                       'email' => $user->email,
-                       'role' => $this->roles->where('id',$user->pivot->role_id)->first()->name,
-                       'abilities' => $this->roles->where('id',$user->pivot->role_id)->first()->permissions->pluck('name')->toArray(),
+                       'email' => $user->email
                    ];
                });
             }),
             'can' => [
-                'edit-project' => auth()->user()->can('edit-project', [$this->resource,$this->roles]),
-                'view-project' => auth()->user()->can('view-project', [$this->resource,$this->roles]),
+                'edit-project' => auth()->user()->can('edit-project', $this->resource),
+                'view-project' => auth()->user()->can('view-project', $this->resource),
 
-                'register-beneficiary' => auth()->user()->can('register-beneficiaries', [$this->resource,$this->roles]),
-                'approve-beneficiary' => auth()->user()->can('approve-beneficiaries', [$this->resource,$this->roles]),
-                'edit-beneficiary' => auth()->user()->can('edit-beneficiaries', [$this->resource,$this->roles]),
-                'delete-beneficiary' => auth()->user()->can('delete-beneficiaries', [$this->resource,$this->roles]),
+                'register-beneficiary' => auth()->user()->can('register-beneficiaries', $this->resource),
+                'approve-beneficiary' => auth()->user()->can('approve-beneficiaries', $this->resource),
+                'edit-beneficiary' => auth()->user()->can('edit-beneficiaries', $this->resource),
+                'delete-beneficiary' => auth()->user()->can('delete-beneficiaries', $this->resource),
 
-                'register-appointments' => auth()->user()->can('register-appointments', [$this->resource,$this->roles]),
-                'edit-appointments' => auth()->user()->can('edit-appointments', [$this->resource,$this->roles]),
+                'register-appointments' => auth()->user()->can('register-appointments', $this->resource),
+                'edit-appointments' => auth()->user()->can('edit-appointments', $this->resource),
 
-                'register-goals' => auth()->user()->can('register-goals', [$this->resource,$this->roles]),
-                'register-goal-progress' => auth()->user()->can('register-goal-progress', [$this->resource,$this->roles]),
+                'register-goals' => auth()->user()->can('register-goals', $this->resource),
+                'register-goal-progress' => auth()->user()->can('register-goal-progress', $this->resource),
             ],
             'forms' => $this->whenLoaded('forms',$this->forms),
             'programs' => $this->whenLoaded('programs',$this->programs),

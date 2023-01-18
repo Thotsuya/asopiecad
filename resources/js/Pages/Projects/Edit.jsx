@@ -31,6 +31,7 @@ export default function Edit({ auth, project, forms, users, roles }) {
                   })
                 : [],
             programs: project.programs,
+            global_goal: project.global_goal ?? 0,
         })
 
     const { success, error } = useToasts()
@@ -68,6 +69,10 @@ export default function Edit({ auth, project, forms, users, roles }) {
                 editing: false,
             },
         ])
+    }
+
+    const onGlobalGoalChange = (e) => {
+        setData('global_goal', e.target.value)
     }
 
     const toggleProgramEdit = (program_id) => {
@@ -126,16 +131,6 @@ export default function Edit({ auth, project, forms, users, roles }) {
         })
     }
 
-    const onRoleChange = (user_id, role_id) => {
-        const newUsers = data.users.map((user) => {
-            if (user.id === user_id) {
-                user.role_id = parseInt(role_id)
-            }
-            return user
-        })
-        setData('users', newUsers)
-    }
-
     return (
         <AuthenticatedLayout auth={auth}>
             <Head title={`Proyecto: ${project.project_name}`} />
@@ -167,7 +162,7 @@ export default function Edit({ auth, project, forms, users, roles }) {
                         onFormSelect={onFormSelect}
                         onMemberRemove={onMemberRemove}
                         onFormRemove={onFormRemove}
-                        onRoleChange={onRoleChange}
+                        onGlobalGoalChange={onGlobalGoalChange}
                     />
                 </div>
 
