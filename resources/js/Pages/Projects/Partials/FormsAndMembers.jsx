@@ -13,8 +13,8 @@ export default function FormsAndMembers({
     roles,
 }) {
     const [member, setMember] = useState({
-        id: users[0].id,
-        name: users[0].name,
+        id: users[0] ? users[0].id : null,
+        name: users[0] ? users[0].name : null,
     })
 
     const handleMemberSelect = (e) => {
@@ -36,8 +36,8 @@ export default function FormsAndMembers({
         // Set the member to the first user in the new users list
 
         setMember({
-            id: newUsers[0].id,
-            name: newUsers[0].name,
+            id: newUsers[0] ? newUsers[0].id : null,
+            name: newUsers[0] ? newUsers[0].name : null,
             role_id: roles[0] ? roles[0].id : null,
         })
     }

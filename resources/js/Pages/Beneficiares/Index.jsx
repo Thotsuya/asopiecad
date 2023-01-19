@@ -5,6 +5,9 @@ import Pagination from '@/Components/Pagination'
 import { useState } from 'react'
 import BeneficiaryProjectModal from '@/Components/Beneficiaries/BeneficiaryProjectModal'
 import useUsers from '@/Hooks/Users'
+import Filters from '@/Pages/Beneficiares/Partials/Filters'
+import useToasts from '@/Hooks/Toasts'
+import { Inertia } from '@inertiajs/inertia'
 
 export default function Index({
     beneficiaries_paginated,
@@ -12,16 +15,39 @@ export default function Index({
     projects,
     forms,
     auth,
+    fields,
 }) {
     const [beneficiary, setBeneficiary] = useState(null)
 
     const { can } = useUsers()
 
+    const { success, error, prompt } = useToasts()
+
+    const handleApprove = (beneficiary) => {
+        prompt(
+            '¿Estás seguro de aprobar este beneficiario?',
+            'Antes de aprobar al beneficiario, asegúrate de que todos los datos estén correctos.'
+        ).then((result) => {
+            if (result.value) {
+                Inertia.patch(
+                    route('beneficiaries.approve', beneficiary.uuid),
+                    {},
+                    {
+                        preserveScroll: true,
+                        preserveState: true,
+                        onSuccess: () => {
+                            success('El beneficiario ha sido aprobado.')
+                        },
+                    }
+                )
+            }
+        })
+    }
+
     return (
         <>
             <AuthenticatedLayout auth={auth}>
                 <Head title="Beneficiarios" />
-
                 <div className="prj-header margin-bottom-30">
                     {can('Registrar Beneficiarios', auth.user.abilities) && (
                         <button
@@ -37,6 +63,8 @@ export default function Index({
                         {beneficiaries_paginated.total} Beneficiarios
                     </div>
                 </div>
+
+                <Filters projects={projects} fields={fields} />
 
                 <div className="row">
                     <div className="col-xs-12">
@@ -169,6 +197,26 @@ export default function Index({
                                                                     )}
                                                                 </>
                                                             )}
+                                                            {!beneficiary.is_trashed &&
+                                                                can(
+                                                                    'Aprobar Beneficiarios',
+                                                                    auth.user
+                                                                        .abilities
+                                                                ) &&
+                                                                !beneficiary.is_approved && (
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-success btn-sm"
+                                                                        onClick={() => {
+                                                                            handleApprove(
+                                                                                beneficiary
+                                                                            )
+                                                                        }}
+                                                                        title="Aprobar"
+                                                                    >
+                                                                        <i className="fa fa-check"></i>
+                                                                    </button>
+                                                                )}
                                                         </td>
                                                     </tr>
                                                 )

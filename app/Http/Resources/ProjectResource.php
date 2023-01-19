@@ -58,7 +58,17 @@ class ProjectResource extends JsonResource
             'forms' => $this->whenLoaded('forms',$this->forms),
             'programs' => $this->whenLoaded('programs',$this->programs),
             'beneficiaries' => $this->whenLoaded('beneficiaries',$this->beneficiaries),
-            'global_progress' => ($this->beneficiaries_count / $this->global_goal * 100) > 100 ? 100 : ($this->beneficiaries_count / $this->global_goal * 100),
+            'global_progress' => $this->globalProgress(),
         ];
     }
+
+    private function globalProgress(){
+        if($this->global_goal == 0){
+            return 0;
+        }
+
+        return ($this->beneficiaries_count / $this->global_goal * 100) > 100 ? 100 : ($this->beneficiaries_count / $this->global_goal * 100);
+    }
 }
+
+

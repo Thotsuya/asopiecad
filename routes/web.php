@@ -33,6 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
     Route::resource('appointments', App\Http\Controllers\Admin\AppointmentController::class);
     Route::resource('beneficiaries', App\Http\Controllers\Admin\BeneficiariesController::class);
+    Route::patch('beneficiaries/{beneficiary}/approve', [App\Http\Controllers\Admin\BeneficiariesController::class, 'approve'])->name('beneficiaries.approve');
 
     Route::get('projects/{project}/forms', [App\Http\Controllers\Admin\ProjectFormController::class, 'create'])->name('projects.forms.create');
     Route::post('projects/{project}/forms', [App\Http\Controllers\Admin\ProjectFormController::class, 'store'])->name('projects.forms.store');

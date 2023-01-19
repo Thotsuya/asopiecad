@@ -21,6 +21,7 @@ class BeneficiariesController extends Controller
         $this->middleware('can:Registrar Beneficiarios')->only('create', 'store');
         $this->middleware('can:Editar Beneficiarios')->only('edit', 'update');
         $this->middleware('can:Eliminar Beneficiarios')->only('destroy');
+        $this->middleware('can:Aprobar Beneficiarios')->only('approve');
     }
 
     public function index()
@@ -51,6 +52,13 @@ class BeneficiariesController extends Controller
                 ->latest('id')
                 ->select('id', 'form_name')
                 ->get(),
+
+            'fields' => Form::query()
+                ->latest('id')
+                ->get()
+                ->map(function (Form $form) {
+                    return $form->getFormFieldsWithValues();
+                })->flatten(1),
         ]);
     }
 
@@ -147,6 +155,23 @@ class BeneficiariesController extends Controller
 
         $beneficiary->forms()->syncWithoutDetaching($forms);
 
+        return redirect()->route('beneficiaries.index');
+    }
+
+    public function destroy(Benefitiary $beneficiary)
+    {
+        $beneficiary->delete();
+        return redirect()->route('beneficiaries.index');
+    }
+
+
+    public function approve(Benefitiary $beneficiary)
+    {
+        $beneficiary->update([
+            'internal_status' => Benefitiary::INTERNAL_STATUSES['approved'],
+            'approved_at' => now(),
+            'approved_by' => auth()->user()->id,
+        ]);
         return redirect()->route('beneficiaries.index');
     }
 

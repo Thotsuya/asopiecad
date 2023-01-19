@@ -34,7 +34,7 @@ class ProjectUpdateRequest extends FormRequest
             'programs.*.order' => ['required', 'integer'],
             'forms' => ['sometimes', 'array'],
             'forms.*' => ['exists:forms,id'],
-            'global_goal' => ['sometimes', 'numeric', 'min:0'],
+            'global_goal' => ['sometimes', 'numeric', 'min:1'],
         ];
     }
 

@@ -31,7 +31,7 @@ export default function Edit({ auth, project, forms, users, roles }) {
                   })
                 : [],
             programs: project.programs,
-            global_goal: project.global_goal ?? 0,
+            global_goal: project.global_goal ?? 1,
         })
 
     const { success, error } = useToasts()
