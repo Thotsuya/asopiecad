@@ -117,8 +117,8 @@ class BeneficiariesController extends Controller
 
         $benefitiary = Benefitiary::create([
             'name' => $request->validated()['name'],
-            'internal_status' => auth()->user()->can('Aprobar beneficiarios') ? Benefitiary::INTERNAL_STATUSES['approved'] : Benefitiary::INTERNAL_STATUSES['pending'],
-            'approved_at' => auth()->user()->can('Aprobar beneficiarios') ? now() : null,
+            'internal_status' => auth()->user()->can('Aprobar Beneficiarios') ? Benefitiary::INTERNAL_STATUSES['approved'] : Benefitiary::INTERNAL_STATUSES['pending'],
+            'approved_at' => auth()->user()->can('Aprobar Beneficiarios') ? now() : null,
         ]);
 
         $benefitiary->forms()->attach($forms);
