@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('internal_status')->default(\App\Models\Benefitiary::INTERNAL_STATUSES['pending']);
             $table->timestamp('approved_at')->nullable();
+            $table->foreignId('approved_by')->nullable();
             $table->string('deletion_reason')->nullable();
             $table->softDeletes();
             $table->timestamps();

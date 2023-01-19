@@ -46,6 +46,7 @@ class BeneficiaryResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'is_trashed' => $this->trashed(),
+            'is_approved' => (bool)$this->approved_at,
         ];
     }
 

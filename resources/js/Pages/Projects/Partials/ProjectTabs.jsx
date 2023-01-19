@@ -25,12 +25,23 @@ export default function ProjectTabs({ project }) {
         <ul className="nav nav-tabs" id="myTabs" role="tablist">
             <li role="presentation" className="active">
                 <a
-                    href="#programs"
+                    href="#general-info"
                     id="programs-tab"
                     role="tab"
                     data-toggle="tab"
                     aria-controls="home"
                     aria-expanded="true"
+                >
+                    Información General <i className="fa fa-info-circle" />
+                </a>
+            </li>
+            <li role="presentation">
+                <a
+                    href="#programs"
+                    id="programs-tab"
+                    role="tab"
+                    data-toggle="tab"
+                    aria-controls="home"
                 >
                     Programas <i className="fa fa-book" aria-hidden="true" />
                 </a>

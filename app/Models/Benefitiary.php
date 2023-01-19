@@ -19,7 +19,8 @@ class Benefitiary extends Model
         'name',
         'internal_status',
         'approved_at',
-        'deletion_reason'
+        'deletion_reason',
+        'approved_by',
     ];
 
     public const INTERNAL_STATUSES = [
@@ -72,6 +73,11 @@ class Benefitiary extends Model
     public function forms()
     {
         return $this->belongsToMany(Form::class)->withPivot(['form_data']);
+    }
+
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
 }

@@ -19,6 +19,7 @@ import AppointmentShowModal from '@/Components/Appointments/AppointmentShowModal
 import GoalsCreateModal from '@/Components/Goals/GoalsCreateModal'
 import GoalsProgressModal from '@/Components/Goals/GoalsProgressModal'
 import GoalsViewProgressModal from '@/Components/Goals/GoalsViewProgressModal'
+import GeneralInformation from '@/Pages/Projects/Partials/GeneralInformation'
 
 export default function Dashboard({
     auth,
@@ -73,6 +74,7 @@ export default function Dashboard({
                             <ProjectTabs project={project} />
 
                             <div className="tab-content" id="myTabContent">
+                                <GeneralInformation project={project} />
                                 <Programs programs={project.programs} />
                                 <ProjectBeneficiaries
                                     beneficiaries={beneficiaries}

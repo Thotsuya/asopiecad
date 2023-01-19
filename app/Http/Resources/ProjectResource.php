@@ -30,6 +30,7 @@ class ProjectResource extends JsonResource
             'beneficiaries_count' => $this->beneficiaries_count,
             'users_count' => $this->users_count,
             'programs_count' => $this->programs_count,
+            'global_goal' => $this->global_goal,
             'users' => $this->whenLoaded('users',function ()  {
                return $this->users->map(function ($user) {
                    return [
@@ -57,6 +58,7 @@ class ProjectResource extends JsonResource
             'forms' => $this->whenLoaded('forms',$this->forms),
             'programs' => $this->whenLoaded('programs',$this->programs),
             'beneficiaries' => $this->whenLoaded('beneficiaries',$this->beneficiaries),
+            'global_progress' => ($this->beneficiaries_count / $this->global_goal * 100) > 100 ? 100 : ($this->beneficiaries_count / $this->global_goal * 100),
         ];
     }
 }

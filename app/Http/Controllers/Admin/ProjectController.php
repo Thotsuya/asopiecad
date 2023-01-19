@@ -108,10 +108,11 @@ class ProjectController extends Controller
                 ->whereDoesntHave('projects', fn($query) => $query->where('project_id', $project->id))
                 ->select('id', 'uuid', 'name')
                 ->get(),
-            'project' => new ProjectResource($project->load('beneficiaries', 'users', 'forms'), $this->roles),
+            'project' => new ProjectResource($project->load('beneficiaries', 'users', 'forms')->loadCount('beneficiaries', 'users', 'programs')),
             'goals' => $project->goals()
+                ->where('user_id', auth()->id())
                 ->latest('id')
-                ->with(['goalProgress','user'])
+                ->with(['goalProgress', 'user'])
                 ->paginate(6)
                 ->through(function ($goal) {
                     return GoalResource::make($goal);

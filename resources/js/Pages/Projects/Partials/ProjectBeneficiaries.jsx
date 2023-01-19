@@ -9,7 +9,7 @@ export default function ProjectBeneficiaries({
     onBeneficiarySelected,
     auth,
 }) {
-    const { promptWithInput, info } = useToasts()
+    const { promptWithInput, info, prompt, error } = useToasts()
 
     const handleDelete = (beneficiary) => {
         promptWithInput(
@@ -37,6 +37,33 @@ export default function ProjectBeneficiaries({
                         onSuccess: () => {
                             info('Beneficiario eliminado correctamente')
                         },
+                    }
+                )
+            }
+        })
+    }
+
+    const handleApprove = (beneficiary) => {
+        prompt(
+            '¿Está seguro de aprobar el beneficiario?',
+            'Esta acción no se puede deshacer. Revisa que los datos sean correctos antes de continuar.'
+        ).then((result) => {
+            if (result.isConfirmed) {
+                Inertia.patch(
+                    route('projects.forms.approve', {
+                        project: project.uuid,
+                        beneficiary: beneficiary.uuid,
+                    }),
+                    {},
+                    {
+                        preserveScroll: true,
+                        onSuccess: () => {
+                            info('Beneficiario aprobado correctamente')
+                        },
+                        onError: () => {
+                            error('Error al aprobar el beneficiario')
+                        },
+                        preserveState: true,
                     }
                 )
             }
@@ -153,12 +180,10 @@ export default function ProjectBeneficiaries({
                                                                         )}
                                                                     >
                                                                         Editar
+                                                                        Información
                                                                     </Link>
                                                                 </li>
                                                             )}
-                                                        {console.log(
-                                                            beneficiary
-                                                        )}
 
                                                         {project.can[
                                                             'delete-beneficiary'
@@ -181,6 +206,24 @@ export default function ProjectBeneficiaries({
                                                                             Eliminar
                                                                         </a>
                                                                     )}
+                                                                </li>
+                                                            )}
+                                                        {project.can[
+                                                            'approve-beneficiary'
+                                                        ] &&
+                                                            !beneficiary.is_trashed &&
+                                                            !beneficiary.is_approved && (
+                                                                <li>
+                                                                    <a
+                                                                        href="#"
+                                                                        onClick={() =>
+                                                                            handleApprove(
+                                                                                beneficiary
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        Aprobar
+                                                                    </a>
                                                                 </li>
                                                             )}
                                                     </ul>

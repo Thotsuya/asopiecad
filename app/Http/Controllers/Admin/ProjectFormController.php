@@ -120,4 +120,17 @@ class ProjectFormController extends Controller
 
         return redirect()->route('projects.show', $project);
     }
+
+    public function approve(Request $request, Project $project, Benefitiary $beneficiary)
+    {
+        $this->authorize('approve-beneficiaries', $project);
+
+        $beneficiary->update([
+            'internal_status' => Benefitiary::INTERNAL_STATUSES['approved'],
+            'approved_at' => now(),
+            'approved_by' => auth()->user()->id,
+        ]);
+
+        return redirect()->route('projects.show', $project);
+    }
 }

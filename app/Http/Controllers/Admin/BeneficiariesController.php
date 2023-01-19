@@ -149,4 +149,6 @@ class BeneficiariesController extends Controller
 
         return redirect()->route('beneficiaries.index');
     }
+
+
 }
