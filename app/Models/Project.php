@@ -35,7 +35,7 @@ class Project extends Model
     }
 
     public function beneficiaries(){
-        return $this->belongsToMany(Benefitiary::class);
+        return $this->belongsToMany(Benefitiary::class)->withTimestamps();
     }
 
     public function users(){

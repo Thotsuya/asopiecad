@@ -110,7 +110,6 @@ class ProjectController extends Controller
                 ->get(),
             'project' => new ProjectResource($project->load('beneficiaries', 'users', 'forms')->loadCount('beneficiaries', 'users', 'programs')),
             'goals' => $project->goals()
-                ->where('user_id', auth()->id())
                 ->latest('id')
                 ->with(['goalProgress', 'user'])
                 ->paginate(6)

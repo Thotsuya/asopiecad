@@ -57,12 +57,12 @@ class Benefitiary extends Model
 
     public function projects()
     {
-        return $this->belongsToMany(Project::class);
+        return $this->belongsToMany(Project::class)->withTimestamps();
     }
 
     public function programs()
     {
-        return $this->belongsToMany(Program::class);
+        return $this->belongsToMany(Program::class)->withTimestamps();
     }
 
     public function appointments()
