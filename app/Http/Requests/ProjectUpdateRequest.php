@@ -28,13 +28,6 @@ class ProjectUpdateRequest extends FormRequest
             'project_description' => ['sometimes', 'string', 'max:255'],
             'users' => ['sometimes', 'array'],
             'users.*.id' => ['exists:users,id'],
-            'programs' => ['sometimes', 'array'],
-            'programs.*.uuid' => ['sometimes'],
-            'programs.*.program_name' => ['required', 'string', 'max:255'],
-            'programs.*.order' => ['required', 'integer'],
-            'forms' => ['sometimes', 'array'],
-            'forms.*' => ['exists:forms,id'],
-            'global_goal' => ['sometimes', 'numeric', 'min:1'],
         ];
     }
 
@@ -71,14 +64,6 @@ class ProjectUpdateRequest extends FormRequest
     {
         return array_merge(parent::validated($key, $default), [
             'users' => collect($this->input('users', []))->pluck('id')->toArray(),
-            'programs' => collect($this->programs)->map(function ($program) {
-                return [
-                    'uuid' => array_key_exists('uuid', $program) ? $program['uuid'] : null,
-                    'project_id' => $this->route('project')->id,
-                    'program_name' => $program['program_name'],
-                    'order' => $program['order'],
-                ];
-            })->toArray(),
         ]);
     }
 }

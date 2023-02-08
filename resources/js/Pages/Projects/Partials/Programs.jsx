@@ -1,32 +1,82 @@
-import { useState } from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { useEffect, useState } from 'react'
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
+import Select from 'react-select'
+import ProgramRow from '@/Pages/Projects/Partials/ProgramRow'
 
 export default function Programs({
     programs,
     onProgramAdd,
-    toggleProgramEdit,
-    onProgramEdit,
-    onProgramDelete,
     handleDrop,
+    forms,
 }) {
-    const [program, setProgram] = useState("");
+    const [program, setProgram] = useState({
+        program_name: '',
+        forms: [],
+    })
+
+    const [options, setOptions] = useState([])
+
+    useEffect(() => {
+        if (forms) {
+            setOptions(
+                forms.map((form) => ({
+                    value: form.id,
+                    label: form.form_name,
+                }))
+            )
+        }
+    }, [])
+
+    const handleOptionChange = (options) => {
+        setProgram({
+            ...program,
+            forms: options.map((option) => option.value),
+        })
+    }
+
     return (
         <div className="box-content">
             <h4>Programas</h4>
-            <input
-                type="text"
-                className="form-control"
-                placeholder="Nombre del programa"
-                value={program}
-                onChange={(e) => setProgram(e.target.value)}
-            />
-            <button
-                className="btn btn-primary btn-block margin-top-10"
-                disabled={program.length === 0}
-                onClick={() => onProgramAdd(program)}
-            >
-                Agregar programa
-            </button>
+            <div className="row">
+                <div className="col-xs-12 col-lg-6">
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Nombre del programa"
+                        value={program.program_name}
+                        onChange={(e) => {
+                            setProgram((program) => ({
+                                ...program,
+                                program_name: e.target.value,
+                            }))
+                        }}
+                    />
+                </div>
+
+                <div className="col-xs-12 col-lg-6">
+                    <Select
+                        options={options}
+                        isMulti
+                        isSearchable
+                        closeMenuOnSelect={false}
+                        noOptionsMessage={() => 'No hay opciones'}
+                        placeholder="Selecciona un formulario"
+                        onChange={handleOptionChange}
+                    />
+                </div>
+
+                <div className="col-xs-12 margin-top-10">
+                    <button
+                        className="btn btn-primary btn-block"
+                        disabled={
+                            program.name === '' || program.forms.length === 0
+                        }
+                        onClick={() => onProgramAdd(program)}
+                    >
+                        Agregar programa
+                    </button>
+                </div>
+            </div>
 
             <div className="margin-top-10">
                 {programs.length > 0 ? (
@@ -53,61 +103,10 @@ export default function Programs({
                                                         {...provided.draggableProps}
                                                         {...provided.dragHandleProps}
                                                     >
-                                                        <div className="row">
-                                                            <div className="col-xs-8 col-lg-10">
-                                                                {program.editing ? (
-                                                                    <input
-                                                                        type="text"
-                                                                        className="form-control"
-                                                                        value={
-                                                                            program.program_name
-                                                                        }
-                                                                        onChange={(
-                                                                            e
-                                                                        ) => {
-                                                                            onProgramEdit(
-                                                                                program.id,
-                                                                                e
-                                                                                    .target
-                                                                                    .value
-                                                                            );
-                                                                        }}
-                                                                    />
-                                                                ) : (
-                                                                    program.program_name
-                                                                )}
-                                                            </div>
-                                                            <div className="col-xs-4 col-lg-2">
-                                                                <button
-                                                                    className={`btn btn-${
-                                                                        program.editing
-                                                                            ? "danger"
-                                                                            : "primary"
-                                                                    } btn-sm`}
-                                                                    onClick={() =>
-                                                                        toggleProgramEdit(
-                                                                            program.id
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    {program.editing ? (
-                                                                        <i className="fa fa-times" />
-                                                                    ) : (
-                                                                        <i className="fa fa-pencil" />
-                                                                    )}
-                                                                </button>
-                                                                <button
-                                                                    className="btn btn-danger btn-sm"
-                                                                    onClick={() =>
-                                                                        onProgramDelete(
-                                                                            program.id
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    <i className="fa fa-trash" />
-                                                                </button>
-                                                            </div>
-                                                        </div>
+                                                        <ProgramRow
+                                                            program={program}
+                                                            options={options}
+                                                        />
                                                     </li>
                                                 )}
                                             </Draggable>
@@ -124,5 +123,5 @@ export default function Programs({
                 )}
             </div>
         </div>
-    );
+    )
 }

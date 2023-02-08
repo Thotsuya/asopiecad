@@ -42,6 +42,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('projects/{project}/beneficiaries/{beneficiary}', [App\Http\Controllers\Admin\ProjectFormController::class, 'destroy'])->name('projects.forms.destroy');
     Route::patch('projects/{project}/beneficiaries/{beneficiary}/approve', [App\Http\Controllers\Admin\ProjectFormController::class, 'approve'])->name('projects.forms.approve');
 
+    Route::post('/projects/{project}/programs', [App\Http\Controllers\Admin\ProgramController::class, 'store'])->name('projects.programs.store');
+    Route::put('/programs/{program}', [App\Http\Controllers\Admin\ProgramController::class, 'update'])->name('projects.programs.update');
+    Route::delete('/programs/{program}', [App\Http\Controllers\Admin\ProgramController::class, 'destroy'])->name('projects.programs.destroy');
+    Route::patch('/projects/{project}/programs/order', [App\Http\Controllers\Admin\ProgramController::class, 'order'])->name('projects.programs.order');
+
     Route::post('/projects/{project}/goals', [App\Http\Controllers\Admin\GoalController::class, 'store'])->name('projects.goals.store');
     Route::post('/projects/{goal}/progress', [App\Http\Controllers\Admin\GoalProgressController::class, 'store'])->name('projects.goals.progress.store');
 

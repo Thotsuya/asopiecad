@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import useSelect from '@/Hooks/Select'
 
 export default function FormsAndMembers({
-    forms,
     users,
     project,
     onMemberSelect,
@@ -52,20 +51,6 @@ export default function FormsAndMembers({
     return (
         <div className="row">
             <div className="col-xs-12">
-                <div className="box-content">
-                    <h4>Formularios</h4>
-                    <p>
-                        Selecciona el formulario que será utilizado para
-                        registrar a los beneficiarios del proyecto.
-                    </p>
-                    <select className="form-control select2">
-                        {forms.map((form) => (
-                            <option key={form.id} value={form.id}>
-                                {form.form_name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
                 <div className="box-content">
                     <h4>Miembros del proyecto</h4>
                     <p className="font-13">
@@ -127,29 +112,6 @@ export default function FormsAndMembers({
                                 </li>
                             ))}
                         </ul>
-                    </div>
-                </div>
-
-                <div className="box-content">
-                    <h4>Meta Global</h4>
-                    <p className="font-13">
-                        Establece la meta global de beneficiarios del proyecto.
-                        Esta meta se utilizará para calcular el progreso del
-                        proyecto.
-                    </p>
-                    <div className="row">
-                        <div className="col-xs-12">
-                            <div className="form-group">
-                                <input
-                                    type="number"
-                                    className="form-control"
-                                    id="global_goal"
-                                    name="global_goal"
-                                    value={project.global_goal}
-                                    onChange={onGlobalGoalChange}
-                                />
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

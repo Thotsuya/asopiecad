@@ -1,12 +1,15 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head, useForm } from '@inertiajs/inertia-react'
+import { Inertia } from '@inertiajs/inertia'
 import useToasts from '@/Hooks/Toasts'
-import { useState, useEffect } from 'react'
 import ProjectTitleHeaderAndForm from '@/Pages/Projects/Partials/ProjectTitleHeaderAndForm'
 import FormsAndMembers from '@/Pages/Projects/Partials/FormsAndMembers'
 import Programs from '@/Pages/Projects/Partials/Programs'
+import { useEffect, useState } from 'react'
 
 export default function Edit({ auth, project, forms, users, roles }) {
+    const [programs, setPrograms] = useState(project.programs ?? [])
+
     const { data, setData, put, processing, errors, reset, transform } =
         useForm({
             id: project.id,
@@ -30,7 +33,6 @@ export default function Edit({ auth, project, forms, users, roles }) {
                       }
                   })
                 : [],
-            programs: project.programs,
             global_goal: project.global_goal ?? 1,
         })
 
@@ -57,18 +59,14 @@ export default function Edit({ auth, project, forms, users, roles }) {
     }
 
     const onProgramAdd = (program) => {
-        setData('programs', [
-            ...data.programs,
-            {
-                id: data.programs.length > 0 ? data.programs.length + 1 : 1,
-                program_name: program,
-                order:
-                    data.programs.length > 0
-                        ? data.programs[data.programs.length - 1].order + 1
-                        : 1,
-                editing: false,
+        Inertia.post(route('projects.programs.store', project.uuid), program, {
+            onSuccess: () => {
+                success('Programa agregado correctamente')
             },
-        ])
+            onError: (err) => {
+                error('No se pudo agregar el programa')
+            },
+        })
     }
 
     const onGlobalGoalChange = (e) => {
@@ -76,23 +74,26 @@ export default function Edit({ auth, project, forms, users, roles }) {
     }
 
     const toggleProgramEdit = (program_id) => {
-        const newPrograms = data.programs.map((program) => {
+        const newPrograms = programs.map((program) => {
             if (program.id === program_id) {
-                program.editing = !program.editing
+                program.edit_mode = !program.edit_mode
             }
+
             return program
         })
-        setData('programs', newPrograms)
+
+        setPrograms(newPrograms)
     }
 
     const onProgramEdit = (program_id, program_name) => {
-        const newPrograms = data.programs.map((program) => {
-            if (program.id === program_id) {
-                program.program_name = program_name
-            }
-            return program
-        })
-        setData('programs', newPrograms)
+        console.log(program_id, program_name)
+        // const newPrograms = data.programs.map((program) => {
+        //     if (program.id === program_id) {
+        //         program.program_name = program_name
+        //     }
+        //     return program
+        // })
+        // setData('programs', newPrograms)
     }
 
     const onProgramDelete = (program_id) => {
@@ -105,17 +106,31 @@ export default function Edit({ auth, project, forms, users, roles }) {
     const handleDrop = (droppedItem) => {
         if (!droppedItem.destination) return
 
-        let updatedPrograms = [...data.programs]
+        let updatedPrograms = [...project.programs]
         const [removed] = updatedPrograms.splice(droppedItem.source.index, 1)
 
         updatedPrograms.splice(droppedItem.destination.index, 0, removed)
 
-        setData(
-            'programs',
+        setPrograms(
             updatedPrograms.map((program, index) => {
                 program.order = index + 1
                 return program
             })
+        )
+
+        Inertia.patch(
+            route('projects.programs.order', project.uuid),
+            {
+                programs: updatedPrograms,
+            },
+            {
+                onSuccess: () => {
+                    success('Programas ordenados correctamente')
+                },
+                onError: (err) => {
+                    error('No se pudo ordenar los programas')
+                },
+            }
         )
     }
 
@@ -130,6 +145,10 @@ export default function Edit({ auth, project, forms, users, roles }) {
             },
         })
     }
+
+    useEffect(() => {
+        setPrograms(project.programs)
+    }, [project])
 
     return (
         <AuthenticatedLayout auth={auth}>
@@ -168,7 +187,8 @@ export default function Edit({ auth, project, forms, users, roles }) {
 
                 <div className="col-lg-8 col-xs-12">
                     <Programs
-                        programs={data.programs}
+                        programs={programs}
+                        forms={forms}
                         onProgramAdd={onProgramAdd}
                         toggleProgramEdit={toggleProgramEdit}
                         onProgramEdit={onProgramEdit}

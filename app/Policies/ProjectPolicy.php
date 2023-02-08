@@ -37,7 +37,6 @@ class   ProjectPolicy
     {
         // Check if the project has forms to register beneficiaries and that the user has the permission to register beneficiaries
         return $user->projects->contains($project->id) &&
-            $project->forms->count() > 0 &&
             $user->hasPermissionTo('Registrar Beneficiarios');
 
     }
@@ -46,7 +45,6 @@ class   ProjectPolicy
     {
         // Check if the project has forms to register beneficiaries and that the user has the permission to register beneficiaries
         return $user->projects->contains($project->id) &&
-            $project->forms->count() > 0 &&
             $user
                 ->hasPermissionTo('Aprobar Beneficiarios');
 
@@ -56,7 +54,6 @@ class   ProjectPolicy
     {
         // Check if the project has forms to register beneficiaries and that the user has the permission to register beneficiaries
         return $user->projects->contains($project->id) &&
-            $project->forms->count() > 0 &&
             $user->hasPermissionTo('Editar Beneficiarios');
 
     }
@@ -65,7 +62,6 @@ class   ProjectPolicy
     {
         // Check if the project has forms to register beneficiaries and that the user has the permission to register beneficiaries
         return $user->projects->contains($project->id) &&
-            $project->forms->count() > 0 &&
             $user->hasPermissionTo('Eliminar Beneficiarios');
 
     }

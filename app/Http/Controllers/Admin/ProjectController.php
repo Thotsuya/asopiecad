@@ -8,6 +8,7 @@ use App\Http\Requests\ProjectUpdateRequest;
 use App\Http\Resources\AppointmentResource;
 use App\Http\Resources\BeneficiaryResource;
 use App\Http\Resources\GoalResource;
+use App\Http\Resources\ProjectEditResource;
 use App\Http\Resources\ProjectResource;
 use App\Models\Benefitiary;
 use App\Models\Form;
@@ -108,7 +109,7 @@ class ProjectController extends Controller
                 ->whereDoesntHave('projects', fn($query) => $query->where('project_id', $project->id))
                 ->select('id', 'uuid', 'name')
                 ->get(),
-            'project' => new ProjectResource($project->load('beneficiaries', 'users', 'forms')->loadCount('beneficiaries', 'users', 'programs')),
+            'project' => new ProjectResource($project->load('beneficiaries', 'users')->loadCount('beneficiaries', 'users', 'programs')),
             'goals' => $project->goals()
                 ->latest('id')
                 ->with(['goalProgress', 'user'])
@@ -128,7 +129,7 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         return inertia('Projects/Edit', [
-            'project' => $project->load('forms', 'users', 'beneficiaries', 'programs'),
+            'project' => new ProjectEditResource($project->load( 'users', 'beneficiaries', 'programs.forms')),
             'forms' => Form::select('id', 'form_name')->get(),
             'users' => User::all(),
             'roles' => Role::where('name', '!=', User::SUPER_ADMIN)->get(),
@@ -147,36 +148,10 @@ class ProjectController extends Controller
         $project->update([
             'project_name' => $request->project_name,
             'project_description' => $request->project_description,
-            'global_goal' => $request->global_goal,
         ]);
 
         if ($request->validated()['users']) {
             $project->users()->sync($request->validated()['users']);
-        }
-
-        if ($request->validated()['programs']) {
-            // If the program was deleted, delete the program based on the uuid, check if the uuid is in the request
-            $programsWithUuid = $project->programs->pluck('uuid')->toArray();
-            $programsWithUuidInRequest = collect($request->validated()['programs'])->pluck('uuid')->toArray();
-
-
-            $programsToDelete = array_diff($programsWithUuid, $programsWithUuidInRequest);
-
-            foreach ($programsToDelete as $programToDelete) {
-                $project->programs()->where('uuid', $programToDelete)->delete();
-            }
-
-            // If the program was edited, update the program based on the uuid, if not create a new program
-            foreach ($request->validated()['programs'] as $program) {
-                $project->programs()->updateOrCreate(['uuid' => $program['uuid']], [
-                    'program_name' => $program['program_name'],
-                    'order' => $program['order'],
-                ]);
-            }
-        }
-
-        if ($request->validated()['forms']) {
-            $project->forms()->sync($request->validated()['forms']);
         }
 
         return redirect()->route('projects.index');

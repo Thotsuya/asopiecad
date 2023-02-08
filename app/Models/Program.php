@@ -18,11 +18,14 @@ class Program extends Model
 
     protected $touches = ['project'];
 
+    protected $appends = ['edit_mode'];
+
     protected static function booted()
     {
         parent::boot();
         static::creating(function($model){
             $model->uuid = (string) Str::uuid();
+            $model->order = $model->project->programs()->count() + 1;
         });
 
     }
@@ -33,6 +36,14 @@ class Program extends Model
 
     public function beneficiaries(){
         return $this->belongsToMany(Benefitiary::class)->withTimestamps();
+    }
+
+    public function forms(){
+        return $this->belongsToMany(Form::class)->withTimestamps();
+    }
+
+    public function getEditModeAttribute(){
+        return false;
     }
 
 

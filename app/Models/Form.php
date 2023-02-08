@@ -26,7 +26,7 @@ class Form extends Model
     ];
 
 
-    protected $touches = ['projects'];
+    protected $touches = ['programs', 'benefitiaries'];
 
     /**
      * Get the options for generating the slug.
@@ -45,13 +45,13 @@ class Form extends Model
         })->sum();
     }
 
-    public function projects()
-    {
-        return $this->belongsToMany(Project::class);
-    }
-
     public function benefitiaries()
     {
         return $this->belongsToMany(Benefitiary::class)->withPivot(['form_data']);
+    }
+
+    public function programs()
+    {
+        return $this->belongsToMany(Program::class);
     }
 }
