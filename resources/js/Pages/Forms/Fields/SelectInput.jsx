@@ -73,28 +73,36 @@ export default function SelectInput({
             }
         } else {
             // Check that the value value is not in the options array
-            if (
-                options.findIndex((option) => {
-                    return option.value === value
-                }) === -1
-            ) {
-                // Add the value to the options array
-                let newOptions = [
-                    ...field.options.map((option) => {
-                        return {
-                            value: option.value,
-                            label: option.name,
-                        }
-                    }),
-                    {
-                        value: value,
-                        label:
-                            value.replace(/_/g, ' ').charAt(0).toUpperCase() +
-                            value.replace(/_/g, ' ').slice(1).toLowerCase(),
-                    },
-                ]
 
-                setOptions(newOptions)
+            let customOption = field.options.filter((option) => {
+                return option.value === value
+            })
+
+            if (
+                customOption.length === 0 &&
+                value !== null &&
+                value !== undefined
+            ) {
+                if (options.length <= field.options.length) {
+                    setOptions((prevOptions) => {
+                        return [
+                            ...prevOptions,
+                            {
+                                value: value,
+                                label:
+                                    // Replace underscores with spaces, and capitalize the first letter
+                                    value
+                                        .replace(/_/g, ' ')
+                                        .charAt(0)
+                                        .toUpperCase() +
+                                    value
+                                        .replace(/_/g, ' ')
+                                        .slice(1)
+                                        .toLowerCase(),
+                            },
+                        ]
+                    })
+                }
             }
         }
     }, [value, options])
