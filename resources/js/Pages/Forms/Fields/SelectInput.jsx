@@ -24,6 +24,7 @@ export default function SelectInput({
     }, [])
 
     useEffect(() => {
+        // Set the selected option when value is updated
         if (field.type === 'select multiple') {
             setSelected(() => {
                 return value.map((option) => {
@@ -38,6 +39,7 @@ export default function SelectInput({
             })
         }
 
+        // Check if there are custom options
         if (field.type === 'select multiple') {
             let customOptions = value.filter((option) => {
                 // Return the option that are not in the options array
@@ -83,6 +85,9 @@ export default function SelectInput({
                 value !== null &&
                 value !== undefined
             ) {
+                // This is to avoid adding the same option twice and
+                // prevent the component from getting stuck in an infinite loop
+                // as the options array is updated, which triggers the useEffect
                 if (options.length <= field.options.length) {
                     setOptions((prevOptions) => {
                         return [
