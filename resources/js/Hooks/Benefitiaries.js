@@ -5,7 +5,8 @@ export default function useBenefitiaries(
     forms,
     isNew = false,
     project = null,
-    beneficiary = null
+    beneficiary = null,
+    programs = null
 ) {
     const { success, error } = useToasts()
     const { data, setData, post, put, processing, errors, reset, isDirty } =
@@ -15,6 +16,8 @@ export default function useBenefitiaries(
 
             formData['name'] = isNew ? beneficiary : beneficiary.name
             formData['forms'] = forms
+            formData['programs'] = programs
+
             forms.forEach((form) => {
                 form.tabs.forEach((tab) => {
                     tab.fields.forEach((field) => {

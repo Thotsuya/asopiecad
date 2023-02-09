@@ -85,17 +85,6 @@ export default function Edit({ auth, project, forms, users, roles }) {
         setPrograms(newPrograms)
     }
 
-    const onProgramEdit = (program_id, program_name) => {
-        console.log(program_id, program_name)
-        // const newPrograms = data.programs.map((program) => {
-        //     if (program.id === program_id) {
-        //         program.program_name = program_name
-        //     }
-        //     return program
-        // })
-        // setData('programs', newPrograms)
-    }
-
     const onProgramDelete = (program_id) => {
         const newPrograms = data.programs.filter(
             (program) => program.id !== program_id
@@ -191,7 +180,6 @@ export default function Edit({ auth, project, forms, users, roles }) {
                         forms={forms}
                         onProgramAdd={onProgramAdd}
                         toggleProgramEdit={toggleProgramEdit}
-                        onProgramEdit={onProgramEdit}
                         onProgramDelete={onProgramDelete}
                         handleDrop={handleDrop}
                     />

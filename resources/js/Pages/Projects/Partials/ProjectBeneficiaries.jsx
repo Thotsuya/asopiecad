@@ -106,7 +106,32 @@ export default function ProjectBeneficiaries({
                                             <td>
                                                 {beneficiary.programs.length >
                                                 0 ? (
-                                                    <></>
+                                                    <>
+                                                        {/*    Show only the first 3, the rest in a + */}
+                                                        {beneficiary.programs
+                                                            .slice(0, 3)
+                                                            .map((program) => (
+                                                                <span
+                                                                    key={
+                                                                        program.uuid
+                                                                    }
+                                                                    className="badge bg-primary"
+                                                                >
+                                                                    {
+                                                                        program.program_name
+                                                                    }
+                                                                </span>
+                                                            ))}
+                                                        {beneficiary.programs
+                                                            .length > 3 && (
+                                                            <span className="badge bg-primary">
+                                                                +{' '}
+                                                                {beneficiary
+                                                                    .programs
+                                                                    .length - 3}
+                                                            </span>
+                                                        )}
+                                                    </>
                                                 ) : (
                                                     'No hay programas registrados'
                                                 )}

@@ -21,7 +21,7 @@ import GoalsProgressModal from '@/Components/Goals/GoalsProgressModal'
 import GoalsViewProgressModal from '@/Components/Goals/GoalsViewProgressModal'
 import GeneralInformation from '@/Pages/Projects/Partials/GeneralInformation'
 
-export default function Dashboard({
+export default function Show({
     auth,
     project,
     beneficiaries,
@@ -75,7 +75,7 @@ export default function Dashboard({
 
                             <div className="tab-content" id="myTabContent">
                                 <GeneralInformation project={project} />
-                                <Programs programs={project.programs} />
+                                <Programs programs={programs} />
                                 <ProjectBeneficiaries
                                     beneficiaries={beneficiaries}
                                     project={project}

@@ -40,7 +40,15 @@ class BeneficiaryResource extends JsonResource
                     ? $this->appointments->sortByDesc('start_date')->first()->start_date->translatedFormat('d/m/Y H:i A')
                     : null;
             }),
-            'programs' => $this->whenLoaded('programs'),
+            'programs' => $this->whenLoaded('programs',function (){
+                return $this->programs->map(function ($program){
+                    return [
+                        'id' => $program->id,
+                        'uuid' => $program->uuid,
+                        'program_name' => $program->program_name,
+                    ];
+                });
+            }),
             'projects' => $this->whenLoaded('projects'),
             'projects_count' => $this->whenCounted('projects'),
             'created_at' => $this->created_at,

@@ -29,27 +29,6 @@ export default function GeneralInformation({ project }) {
                     <dt className="margin-top-10">Meta Global</dt>
                     <dd>{project.global_goal} Beneficiarios</dd>
                 </div>
-                <div className="col-xs-12 col-lg-4">
-                    <dt className="margin-top-10">Progreso</dt>
-                    <dd>
-                        {project.beneficiaries_count} / {project.global_goal}
-                    </dd>
-                    <dt className="margin-top-10">Porcentaje</dt>
-                    <dd>
-                        <div
-                            className="progress-bar active progress-bar-success progress-bar-striped"
-                            role="progressbar"
-                            aria-valuenow={project.global_progress}
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                            style={{
-                                width: `${project.global_progress}%`,
-                            }}
-                        >
-                            <span>{project.global_progress}%</span>
-                        </div>
-                    </dd>
-                </div>
             </div>
         </div>
     )

@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
-import { Inertia } from '@inertiajs/inertia'
 import { useForm } from '@inertiajs/inertia-react'
 import useToasts from '@/Hooks/Toasts'
+import Select from 'react-select'
+import { useState, useEffect } from 'react'
 
 export default function BeneficiaryCreateModal({ project, beneficiaries }) {
+    const [programs, setPrograms] = useState([])
     const { success, error } = useToasts()
 
     const { data, setData, get, processing, errors, reset, wasSuccessful } =
@@ -11,6 +12,7 @@ export default function BeneficiaryCreateModal({ project, beneficiaries }) {
             beneficiary_id: beneficiaries[0] ? beneficiaries[0].id : '',
             beneficiary_name: '',
             is_new_beneficiary: false,
+            forms: [],
         })
 
     const handleSubmit = () => {
@@ -27,6 +29,17 @@ export default function BeneficiaryCreateModal({ project, beneficiaries }) {
             preserveState: true,
         })
     }
+
+    useEffect(() => {
+        setPrograms(() => {
+            return project.programs.map((program) => {
+                return {
+                    value: program.id,
+                    label: program.program_name,
+                }
+            })
+        })
+    }, [])
 
     return (
         <div
@@ -154,6 +167,31 @@ export default function BeneficiaryCreateModal({ project, beneficiaries }) {
                                         )}
                                     </div>
                                 )}
+                            </div>
+                            <div className="col-xs-12">
+                                <div className="form-group">
+                                    <label htmlFor="programs">
+                                        Selecionar Programas
+                                    </label>
+                                    <Select
+                                        options={programs}
+                                        isMulti
+                                        placeholder="Programas"
+                                        isSearchable
+                                        closeMenuOnSelect={false}
+                                        noOptionsMessage={() =>
+                                            'No hay opciones'
+                                        }
+                                        onChange={(options) => {
+                                            setData(
+                                                'forms',
+                                                options.map(
+                                                    (option) => option.value
+                                                )
+                                            )
+                                        }}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -10,9 +10,15 @@ import SelectInput from '@/Pages/Forms/Fields/SelectInput'
 import RadioInput from '@/Pages/Forms/Fields/RadioInput'
 import SmallInput from '@/Pages/Forms/Fields/SmallInput'
 
-export default function Edit({ auth, forms, project, beneficiary = null }) {
+export default function Edit({
+    auth,
+    forms,
+    project,
+    beneficiary = null,
+    programs,
+}) {
     const { data, setData, errors, handleSubmitUpdate, isDirty, processing } =
-        useBenefitiaries(forms, false, project, beneficiary)
+        useBenefitiaries(forms, false, project, beneficiary, programs)
 
     useEffect(() => {
         Object.keys(beneficiary.beneficiary_data).forEach((key) => {
@@ -179,13 +185,11 @@ export default function Edit({ auth, forms, project, beneficiary = null }) {
                                                                         false
                                                                     }
                                                                     onChange={(
-                                                                        e
+                                                                        value
                                                                     ) => {
                                                                         setData(
                                                                             `${field.slug}-${form.form_slug}-${form.id}`,
-                                                                            e
-                                                                                .target
-                                                                                .value
+                                                                            value
                                                                         )
                                                                     }}
                                                                     value={
@@ -201,7 +205,6 @@ export default function Edit({ auth, forms, project, beneficiary = null }) {
                                                                 />
                                                             )
                                                         }
-
                                                         if (
                                                             field.type ===
                                                             'select multiple'
@@ -216,22 +219,11 @@ export default function Edit({ auth, forms, project, beneficiary = null }) {
                                                                         false
                                                                     }
                                                                     onChange={(
-                                                                        e
+                                                                        values
                                                                     ) => {
-                                                                        // Push or remove from array
                                                                         setData(
                                                                             `${field.slug}-${form.form_slug}-${form.id}`,
-                                                                            Object.values(
-                                                                                e
-                                                                                    .target
-                                                                                    .selectedOptions
-                                                                            ).map(
-                                                                                (
-                                                                                    option
-                                                                                ) => {
-                                                                                    return option.value
-                                                                                }
-                                                                            )
+                                                                            values
                                                                         )
                                                                     }}
                                                                     value={

@@ -14,11 +14,12 @@ export default function Create({
     auth,
     forms,
     project,
+    programs,
     is_new = false,
     beneficiary = null,
 }) {
     const { data, setData, errors, handleSubmit, processing } =
-        useBenefitiaries(forms, is_new, project, beneficiary)
+        useBenefitiaries(forms, is_new, project, beneficiary, programs)
 
     useEffect(() => {
         if (!is_new) {
@@ -182,13 +183,11 @@ export default function Create({
                                                                         false
                                                                     }
                                                                     onChange={(
-                                                                        e
+                                                                        value
                                                                     ) => {
                                                                         setData(
                                                                             `${field.slug}-${form.form_slug}-${form.id}`,
-                                                                            e
-                                                                                .target
-                                                                                .value
+                                                                            value
                                                                         )
                                                                     }}
                                                                     value={
@@ -219,22 +218,12 @@ export default function Create({
                                                                         false
                                                                     }
                                                                     onChange={(
-                                                                        e
+                                                                        value
                                                                     ) => {
                                                                         // Push or remove from array
                                                                         setData(
                                                                             `${field.slug}-${form.form_slug}-${form.id}`,
-                                                                            Object.values(
-                                                                                e
-                                                                                    .target
-                                                                                    .selectedOptions
-                                                                            ).map(
-                                                                                (
-                                                                                    option
-                                                                                ) => {
-                                                                                    return option.value
-                                                                                }
-                                                                            )
+                                                                            value
                                                                         )
                                                                     }}
                                                                     value={

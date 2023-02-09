@@ -8,6 +8,7 @@ use App\Http\Resources\BeneficiaryFormsResource;
 use App\Http\Resources\BeneficiaryResource;
 use App\Models\Benefitiary;
 use App\Models\Form;
+use App\Models\Program;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -18,22 +19,32 @@ class ProjectFormController extends Controller
 
     public function create(Request $request, Project $project)
     {
-
-
         $this->authorize('register-beneficiaries', $project);
         $this->validate($request, [
             'is_new_beneficiary' => ['required', Rule::in(['true', 'false'])],
             'beneficiary_name' => Rule::requiredIf(fn() => $request->input('is_new_beneficiary') === 'true'),
             'beneficiary_id' => [Rule::requiredIf(fn() => $request->input('is_new_beneficiary') === 'false')],
+            'forms' => ['required', 'array'],
         ], [
             'beneficiary_name.required' => 'El nombre del nuevo beneficiario es requerido',
             'beneficiary_id.required' => 'Debe seleccionar un beneficiario existente o crear uno nuevo',
+            'forms.required' => 'Debe seleccionar al menos un formulario',
+            'forms.array' => 'Debe seleccionar al menos un formulario',
         ]);
 
-        $forms = $project->forms()->get();
+        $programs = $project
+            ->programs()
+            ->with('forms')
+            ->whereIn('id',
+                collect($request->input('forms'))
+                    ->map(fn($form) => (int) $form)
+                    ->toArray())
+            ->get();
+        $forms = $programs->map(fn($program) => $program->forms)->flatten()->unique('id');
 
         return inertia('Beneficiares/Create', [
             'project' => $project,
+            'programs' => $programs->pluck('id'),
             'forms' => BeneficiaryFormsResource::collection($forms),
             'is_new' => $request->is_new_beneficiary === 'true',
             'beneficiary' => $request->is_new_beneficiary === 'true' ? $request->beneficiary_name : BeneficiaryResource::make(Benefitiary::findOrFail($request->beneficiary_id)->load('forms')),
@@ -43,7 +54,6 @@ class ProjectFormController extends Controller
     public function store(BeneficiaryStoreRequest $request, Project $project)
     {
         $this->authorize('register-beneficiaries', $project);
-
 
         $beneficiary = Benefitiary::create([
             'name' => $request->validated()['name'],
@@ -55,17 +65,24 @@ class ProjectFormController extends Controller
                 : null,
         ]);
 
-        $forms = $project->forms()->get()->mapWithKeys(function(Form $form) use($request) {
-            $fields = $form->getFormFields();
+        $programs = Program::find($request->validated()['programs']);
 
-            return [$form->id => [
-                'form_data' => json_encode(collect($request->validated())->only($fields)->toArray())
-            ]];
+        $forms = $programs
+            ->map(fn($program) => $program->forms)
+            ->flatten()->unique('id')
+            ->mapWithKeys(function(Form $form) use($request) {
+                $fields = $form->getFormFields();
+                return [$form->id => [
+                    'form_data' => json_encode(collect($request->validated())->only($fields)->toArray())
+                ]];
+            })->toArray();
 
-        })->toArray();
+        $programs->each(function(Program $program) use($beneficiary, $forms) {
+            $beneficiary->programs()->attach($program->id);
+        });
 
-        $project->beneficiaries()->attach($beneficiary->id);
         $beneficiary->forms()->attach($forms);
+        $beneficiary->projects()->attach($project->id);
 
         return redirect()->route('projects.show', $project);
     }
@@ -74,11 +91,12 @@ class ProjectFormController extends Controller
     {
         $this->authorize('edit-beneficiaries', $project);
 
-        $forms = $project->forms()->get();
+        $forms = $beneficiary->forms()->get();
 
         return inertia('Beneficiares/Edit', [
             'project' => $project,
             'forms' => BeneficiaryFormsResource::collection($forms),
+            'programs' => $beneficiary->programs()->get()->pluck('id'),
             'beneficiary' => BeneficiaryResource::make($beneficiary->load('forms')),
         ]);
     }
@@ -91,14 +109,21 @@ class ProjectFormController extends Controller
             'name' => $request->validated()['name'],
         ]);
 
-        $forms = $project->forms()->get()->mapWithKeys(function(Form $form) use($request) {
-            $fields = $form->getFormFields();
+        $programs = Program::find($request->validated()['programs']);
 
-            return [$form->id => [
-                'form_data' => json_encode(collect($request->validated())->only($fields)->toArray())
-            ]];
+        $forms = $programs
+            ->map(fn($program) => $program->forms)
+            ->flatten()->unique('id')
+            ->mapWithKeys(function(Form $form) use($request) {
+                $fields = $form->getFormFields();
+                return [$form->id => [
+                    'form_data' => json_encode(collect($request->validated())->only($fields)->toArray())
+                ]];
+            })->toArray();
 
-        })->toArray();
+        $programs->each(function(Program $program) use($beneficiary, $forms) {
+            $beneficiary->programs()->syncWithoutDetaching($program->id);
+        });
 
         $project->beneficiaries()->syncWithoutDetaching($beneficiary->id);
         $beneficiary->forms()->syncWithoutDetaching($forms);
