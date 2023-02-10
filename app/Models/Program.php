@@ -46,5 +46,9 @@ class Program extends Model
         return false;
     }
 
+    public function goals(){
+        return $this->hasMany(Goal::class);
+    }
+
 
 }

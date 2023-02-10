@@ -1,7 +1,56 @@
 import useGoals from '@/Hooks/Goals'
-export default function GoalsCreateModal({ project }) {
-    const { data, processing, errors, setData, handleGoalSubmit } =
-        useGoals(project)
+import Select from 'react-select'
+import { useEffect, useState } from 'react'
+import Conditions from '@/Components/Goals/Conditions'
+
+export default function GoalsCreateModal({ project, programs }) {
+    const [options, setOptions] = useState([])
+    const [forms, setForms] = useState([])
+    const [program, setProgram] = useState([])
+
+    useEffect(() => {
+        setOptions(
+            programs.map((program) => {
+                return {
+                    value: program.id,
+                    label: program.program_name,
+                }
+            })
+        )
+    }, [])
+
+    const {
+        data,
+        processing,
+        errors,
+        setData,
+        handleGoalSubmit,
+        handleNewCondition,
+    } = useGoals(project)
+
+    useEffect(() => {
+        if (data) {
+            const program = programs.find(
+                (program) => program.id === data.program_id
+            )
+            setForms(() => {
+                // Find the program whose program id matches the program id in the data
+                return program?.forms?.map((form) => {
+                    return {
+                        value: form.id,
+                        label: form.form_name,
+                    }
+                })
+            })
+
+            setProgram(program)
+        }
+    }, [data.program_id])
+
+    useEffect(() => {
+        console.log('data', data)
+    }, [data])
+
     return (
         <div
             className="modal fade"
@@ -71,7 +120,7 @@ export default function GoalsCreateModal({ project }) {
                                     }
                                 >
                                     <label htmlFor="goal_target">
-                                        Meta numérica
+                                        Meta del Proyecto Pluri-Annual
                                     </label>
                                     <input
                                         type="number"
@@ -94,7 +143,74 @@ export default function GoalsCreateModal({ project }) {
                                     )}
                                 </div>
                             </div>
+                            <div className="col-xs-12">
+                                <div className="form-group">
+                                    <label htmlFor="goal_program">
+                                        Vincular a un programa
+                                    </label>
+
+                                    <Select
+                                        options={options}
+                                        placeholder="Programas"
+                                        isSearchable
+                                        noOptionsMessage={() =>
+                                            'No hay opciones'
+                                        }
+                                        onChange={(option) => {
+                                            setData((data) => ({
+                                                ...data,
+                                                program_id: option.value,
+                                            }))
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="col-xs-12">
+                                <button
+                                    type="button"
+                                    className="btn btn-primary btn-block"
+                                    onClick={handleNewCondition}
+                                >
+                                    Agregar Campos
+                                </button>
+                            </div>
                         </div>
+
+                        <div className="row margin-top-15">
+                            <div className="col-xs-12">
+                                <div className="alert alert-info">
+                                    <p>
+                                        <i className="fa fa-info-circle" />{' '}
+                                        Puedes agregar campos a tu objetivo,
+                                        estos campos se mostraran en el reporte
+                                        de avance del mismo. Puedes dejar en
+                                        blanco estos campos si no deseas agregar
+                                        campos a tu objetivo.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {data.conditions.map((condition, index) => (
+                            <Conditions
+                                key={index}
+                                options={forms}
+                                program={program}
+                                onFormChange={(form) => {
+                                    setData((data) => {
+                                        data.conditions[index].form_id = form
+                                        return data
+                                    })
+                                }}
+                                onFieldChange={(field) => {
+                                    setData((data) => {
+                                        data.conditions[index].field_id = field
+                                        return data
+                                    })
+                                }}
+                            />
+                        ))}
                     </div>
                     <div className="modal-footer">
                         <button

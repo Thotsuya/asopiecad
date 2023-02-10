@@ -90,16 +90,6 @@ export default function Goals({ goals = [], auth, onGoalSelected, can }) {
                                                             <i className="fa fa-eye" />
                                                         </button>
 
-                                                        {goal.user.id ===
-                                                            auth.user.id && (
-                                                            <button
-                                                                className="btn btn-primary btn-xs"
-                                                                data-toggle="modal"
-                                                                data-target="#modal-edit-goal"
-                                                            >
-                                                                <i className="fa fa-edit" />
-                                                            </button>
-                                                        )}
                                                         {can[
                                                             'register-goal-progress'
                                                         ] && (

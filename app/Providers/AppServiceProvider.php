@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Goal;
 use App\Policies\ProjectPolicy;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Gate;
@@ -52,5 +53,7 @@ class AppServiceProvider extends ServiceProvider
         Inertia::share('permissions', function(){
             return auth()->check() ? auth()->user()->getAllPermissions()->pluck('name') : [];
         });
+
+
     }
 }

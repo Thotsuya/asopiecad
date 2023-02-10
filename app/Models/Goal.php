@@ -12,32 +12,26 @@ class Goal extends Model
     protected $fillable = [
         'goal_description',
         'project_id',
-        'user_id',
+        'program_id',
         'goal_target',
-        'goal_status',
+        'conditions',
     ];
 
-    public const GOAL_STATUS = [
-        0 => 'No iniciado',
-        1 => 'En progreso',
-        2 => 'Completado',
+    protected $casts = [
+        'conditions' => 'array',
     ];
-
 
     public function project()
     {
         return $this->belongsTo(Project::class);
     }
 
-    public function user()
+
+    public function program()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Program::class);
     }
 
-    public function goalProgress()
-    {
-        return $this->hasMany(GoalProgress::class);
-    }
 
 
 

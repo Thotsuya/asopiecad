@@ -18,10 +18,6 @@ class GoalResource extends JsonResource
             'id' => $this->id,
             'goal_description' => $this->goal_description,
             'goal_target' => $this->goal_target,
-            'user' => [
-                'id' => $this->user->id,
-                'name' => $this->user->name,
-            ],
             'project_id' => $this->project_id,
             'progress' => $this->whenLoaded('goalProgress', function () {
                 return $this->goalProgress->map(function ($progress) {

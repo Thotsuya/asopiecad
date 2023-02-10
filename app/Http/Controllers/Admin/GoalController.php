@@ -22,7 +22,6 @@ class GoalController extends Controller
     public function store(Project $project,GoalRequest $request)
     {
         $project->goals()->create($request->validated());
-
         return redirect()->route('projects.show',$project);
     }
 }

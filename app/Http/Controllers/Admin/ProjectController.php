@@ -8,6 +8,7 @@ use App\Http\Requests\ProjectUpdateRequest;
 use App\Http\Resources\AppointmentResource;
 use App\Http\Resources\BeneficiaryResource;
 use App\Http\Resources\GoalResource;
+use App\Http\Resources\ProgramsResource;
 use App\Http\Resources\ProjectEditResource;
 use App\Http\Resources\ProjectResource;
 use App\Models\Benefitiary;
@@ -96,10 +97,14 @@ class ProjectController extends Controller
                 ->through(function ($beneficiary) {
                     return BeneficiaryResource::make($beneficiary);
                 }),
-            'programs' => $project->programs()
+            'paginated_programs' => $project->programs()
                 ->withCount('beneficiaries')
                 ->latest('id')
                 ->paginate(6),
+            'programs' => ProgramsResource::collection($project->programs()
+                ->with('forms')
+                ->latest('id')
+                ->get()),
             'appointments' => AppointmentResource::collection($project->appointments->load('user', 'benefitiary')),
             'paginated_appointments' => $project->appointments()
                 ->with(['benefitiary', 'user'])
@@ -115,7 +120,7 @@ class ProjectController extends Controller
             'project' => new ProjectResource($project->load('beneficiaries', 'users')->loadCount('beneficiaries', 'users', 'programs')),
             'goals' => $project->goals()
                 ->latest('id')
-                ->with(['goalProgress', 'user'])
+                ->with(['project', 'program'])
                 ->paginate(6)
                 ->through(function ($goal) {
                     return GoalResource::make($goal);

@@ -27,7 +27,7 @@ export default function SelectInput({
         // Set the selected option when value is updated
         if (field.type === 'select multiple') {
             setSelected(() => {
-                return value.map((option) => {
+                return value?.map((option) => {
                     return options.findIndex((opt) => {
                         return opt.value === option
                     })
@@ -41,7 +41,7 @@ export default function SelectInput({
 
         // Check if there are custom options
         if (field.type === 'select multiple') {
-            let customOptions = value.filter((option) => {
+            let customOptions = value?.filter((option) => {
                 // Return the option that are not in the options array
                 return (
                     options.findIndex((opt) => {
@@ -51,7 +51,7 @@ export default function SelectInput({
             })
 
             // Add the custom options to the options array
-            if (customOptions.length > 0) {
+            if (customOptions?.length > 0) {
                 setOptions((prevOptions) => {
                     return [
                         ...prevOptions,

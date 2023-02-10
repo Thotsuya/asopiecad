@@ -127,12 +127,25 @@ trait HasValidationRulesAndMessages {
         return $fields;
     }
 
+    public function getFormFieldsWithKeys(){
+        $fields = [];
+
+        collect($this->form_fields)->each(function ($tab) use (&$fields) {
+            collect($tab['fields'])->each(function ($field) use (&$fields) {
+                $fields[$field['id']] = $field['name'];
+            });
+        });
+
+        return $fields;
+    }
+
     public function getFormFieldsWithValues(){
         $fields = [];
 
         collect($this->form_fields)->each(function ($tab) use (&$fields) {
             collect($tab['fields'])->each(function ($field) use (&$fields) {
                 $fields[] = [
+                    'id' => $field['id'],
                     'name' => $field['name'],
                     'slug' => $field['slug'] . '-' . $this->form_slug . '-' . $this->id,
                     'type' => $field['type'],

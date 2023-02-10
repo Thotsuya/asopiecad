@@ -5,6 +5,8 @@ export default function useGoals(project) {
     const { data, setData, post, processing, reset, errors } = useForm({
         goal_description: '',
         goal_target: 0,
+        program_id: null,
+        conditions: [],
     })
 
     const { success, error } = useToasts()
@@ -22,5 +24,23 @@ export default function useGoals(project) {
             },
         })
     }
-    return { data, setData, processing, errors, handleGoalSubmit }
+
+    const handleNewCondition = () => {
+        setData('conditions', [
+            ...data.conditions,
+            {
+                form_id: null,
+                field_id: null,
+            },
+        ])
+    }
+
+    return {
+        data,
+        setData,
+        processing,
+        errors,
+        handleGoalSubmit,
+        handleNewCondition,
+    }
 }

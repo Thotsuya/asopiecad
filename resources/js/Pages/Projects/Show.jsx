@@ -25,6 +25,7 @@ export default function Show({
     auth,
     project,
     beneficiaries,
+    paginated_programs,
     programs,
     appointments,
     goals,
@@ -75,7 +76,7 @@ export default function Show({
 
                             <div className="tab-content" id="myTabContent">
                                 <GeneralInformation project={project} />
-                                <Programs programs={programs} />
+                                <Programs programs={paginated_programs} />
                                 <ProjectBeneficiaries
                                     beneficiaries={beneficiaries}
                                     project={project}
@@ -121,7 +122,7 @@ export default function Show({
             />
             <AppointmentShowModal appointment={selectedAppointment} />
 
-            <GoalsCreateModal project={project} />
+            <GoalsCreateModal project={project} programs={programs} />
             <GoalsProgressModal goal={selectedGoal} project={project} />
             <GoalsViewProgressModal goal={selectedGoal} />
         </>

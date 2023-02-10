@@ -17,10 +17,9 @@ return new class extends Migration
             $table->id();
             $table->string('goal_description');
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('program_id')->constrained()->cascadeOnDelete();
             $table->float('goal_target')->default(0);
-            $table->float('goal_current')->default(0);
-            $table->string('goal_status')->default(\App\Models\Goal::GOAL_STATUS[1]);
+            $table->json('conditions')->nullable();
             $table->timestamps();
         });
     }

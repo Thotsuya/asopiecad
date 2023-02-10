@@ -26,6 +26,8 @@ class GoalRequest extends FormRequest
         return [
             'goal_description' => ['required', 'string', 'max:255'],
             'goal_target' => ['required', 'numeric', 'min:1'],
+            'program_id' => ['required', 'numeric', 'min:1', 'exists:programs,id'],
+            'conditions' => ['required', 'array'],
         ];
     }
 
@@ -37,12 +39,5 @@ class GoalRequest extends FormRequest
             'goal_target.numeric' => 'El objetivo debe ser un número',
             'goal_target.min' => 'El objetivo debe ser mayor a 0',
         ];
-    }
-
-    public function validated($key = null, $default = null)
-    {
-        return array_merge(parent::validated(), [
-            'user_id' => auth()->id(),
-        ]);
     }
 }
