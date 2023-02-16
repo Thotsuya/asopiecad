@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import useSelect from '@/Hooks/Select'
 
 export default function FormsAndMembers({
@@ -8,7 +8,6 @@ export default function FormsAndMembers({
     onFormSelect,
     onMemberRemove,
     onFormRemove,
-    onGlobalGoalChange,
     roles,
 }) {
     const [member, setMember] = useState({
@@ -112,6 +111,22 @@ export default function FormsAndMembers({
                                 </li>
                             ))}
                         </ul>
+                    </div>
+                </div>
+            </div>
+            <div className="col-xs-12">
+                <div className="box-content">
+                    <div className="form-group">
+                        <label htmlFor="forms">
+                            Duración del Proyecto en años
+                        </label>
+                        <input
+                            type="number"
+                            className="form-control"
+                            name="duration"
+                            id="duration"
+                            defaultValue={project.duration}
+                        />
                     </div>
                 </div>
             </div>

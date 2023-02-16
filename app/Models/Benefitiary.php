@@ -80,4 +80,8 @@ class Benefitiary extends Model
         return $this->belongsTo(User::class, 'approved_by');
     }
 
+    public function answers(){
+        return $this->belongsToMany(Field::class, 'answers')->using(Answer::class)->withPivot(['value','type'])->withTimestamps();
+    }
+
 }

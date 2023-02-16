@@ -172,27 +172,27 @@ export default function SelectInput({
     }
 
     return (
-        <div
-            className={`${field.size} margin-bottom-10 form-group ${
-                error ? 'has-error' : ''
-            }`}
-        >
-            <label htmlFor={field.slug}>
-                {field.name}
-                {field.required && <span className="text-danger">*</span>}
-                {editable && <i className="fa fa-times" onClick={onClick} />}
-            </label>
+        <div className={field.size}>
+            <div className={`form-group ${error ? 'has-error' : ''}`}>
+                <label htmlFor={field.slug}>
+                    {field.name}
+                    {field.required && <span className="text-danger">*</span>}
+                    {editable && (
+                        <i className="fa fa-times" onClick={onClick} />
+                    )}
+                </label>
 
-            <CreatableSelect
-                options={options}
-                onCreateOption={handleCreate}
-                value={setSelectedOptions()}
-                placeholder={'Selecciona una opción'}
-                id={`${field.slug}-${field.id}`}
-                isMulti={field.type === 'select multiple'}
-                onChange={handleChange}
-            />
-            {error && <span className="help-block">{error}</span>}
+                <CreatableSelect
+                    options={options}
+                    onCreateOption={handleCreate}
+                    value={setSelectedOptions()}
+                    placeholder={'Selecciona una opción'}
+                    id={`${field.slug}-${field.id}`}
+                    isMulti={field.type === 'select multiple'}
+                    onChange={handleChange}
+                />
+                {error && <span className="help-block">{error}</span>}
+            </div>
         </div>
     )
 }

@@ -1,20 +1,20 @@
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head } from "@inertiajs/inertia-react";
-import { useEffect, useState } from "react";
-import useUserForms from "@/Hooks/Forms";
-import { FIELD_SIZE, FORMS_TYPES } from "@/Constants/Forms";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import LargeInput from "@/Pages/Forms/Fields/LargeInput";
-import CheckboxInput from "@/Pages/Forms/Fields/CheckboxInput";
-import SelectInput from "@/Pages/Forms/Fields/SelectInput";
-import RadioInput from "@/Pages/Forms/Fields/RadioInput";
-import SmallInput from "@/Pages/Forms/Fields/SmallInput";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
+import { Head } from '@inertiajs/inertia-react'
+import { useEffect, useState } from 'react'
+import useUserForms from '@/Hooks/Forms'
+import { FIELD_SIZE, FORMS_TYPES } from '@/Constants/Forms'
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
+import LargeInput from '@/Pages/Forms/Fields/LargeInput'
+import CheckboxInput from '@/Pages/Forms/Fields/CheckboxInput'
+import SelectInput from '@/Pages/Forms/Fields/SelectInput'
+import RadioInput from '@/Pages/Forms/Fields/RadioInput'
+import SmallInput from '@/Pages/Forms/Fields/SmallInput'
+import Tabs from './Edit/Tabs'
 
 export default function Edit({ form, auth }) {
     const {
         field,
         option,
-        tab,
         data,
         setData,
         processing,
@@ -23,21 +23,15 @@ export default function Edit({ form, auth }) {
         handleFieldOptionsChange,
         handleOptionEdit,
         handleDrop,
-        handleTabDrop,
-        handleTabChange,
-        handleTabEdit,
         toggleOptionEditMode,
-        toggleTabEditMode,
-        addFieldToForm,
         buttonEnabled,
         removeOptionFromField,
         removeFieldFromForm,
-        removeTabFromForm,
-        addTabToForm,
         handleFormEditSubmit,
-        tabInputRef,
+        loading,
+        storeFieldToTab,
         optionInputRef,
-    } = useUserForms();
+    } = useUserForms()
 
     useEffect(() => {
         setData({
@@ -46,8 +40,8 @@ export default function Edit({ form, auth }) {
             form_name: form.form_name,
             fields: form.fields,
             tabs: form.tabs,
-        });
-    }, []);
+        })
+    }, [form])
 
     return (
         <AuthenticatedLayout auth={auth}>
@@ -109,7 +103,7 @@ export default function Edit({ form, auth }) {
 
                             <div className="col-lg-12 margin-bottom-10">
                                 <label htmlFor="name">
-                                    Selecciona la pestana a la que pertenece
+                                    Selecciona la pestaña a la que pertenece
                                 </label>
                                 <select
                                     className="form-control"
@@ -128,8 +122,8 @@ export default function Edit({ form, auth }) {
                                 </select>
                             </div>
 
-                            {field.type === "select" ||
-                            field.type === "select multiple" ? (
+                            {field.type === 'select' ||
+                            field.type === 'select multiple' ? (
                                 <>
                                     <div className="col-lg-12 margin-bottom-10">
                                         <label htmlFor="options">
@@ -148,11 +142,11 @@ export default function Edit({ form, auth }) {
                                             ref={optionInputRef}
                                             onKeyDown={(e) => {
                                                 if (
-                                                    e.key === "Enter" &&
-                                                    option !== ""
+                                                    e.key === 'Enter' &&
+                                                    option !== ''
                                                 ) {
-                                                    e.preventDefault();
-                                                    handleFieldOptionsChange();
+                                                    e.preventDefault()
+                                                    handleFieldOptionsChange()
                                                 }
                                             }}
                                             id="options"
@@ -165,7 +159,7 @@ export default function Edit({ form, auth }) {
                                             className="btn btn-primary btn-block"
                                             type="button"
                                             onClick={handleFieldOptionsChange}
-                                            disabled={option === ""}
+                                            disabled={option === ''}
                                         >
                                             <i className="fa fa-plus w-full" />
                                         </button>
@@ -247,8 +241,8 @@ export default function Edit({ form, auth }) {
                                                                                         <button
                                                                                             className={`btn btn-xs btn-${
                                                                                                 option.editMode
-                                                                                                    ? "success"
-                                                                                                    : "warning"
+                                                                                                    ? 'success'
+                                                                                                    : 'warning'
                                                                                             }
                                                                                             pull-right`}
                                                                                             type="button"
@@ -314,143 +308,14 @@ export default function Edit({ form, auth }) {
                                     type="button"
                                     className="btn btn-info btn-submit-prj btn-sm btn-block waves-effect waves-light"
                                     disabled={buttonEnabled()}
-                                    onClick={addFieldToForm}
+                                    onClick={storeFieldToTab}
                                 >
                                     Agregar
                                 </button>
                             </div>
                         </div>
                     </div>
-                    <div className="box-content">
-                        <h4 className="box-title">Pestañas del formulario</h4>
-                        <div className="row">
-                            <div className="col-lg-12 margin-bottom-10">
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Nombre de la pestaña"
-                                    id="tab"
-                                    name="tab"
-                                    onChange={handleTabChange}
-                                    ref={tabInputRef}
-                                    onKeyDown={(e) => {
-                                        if (e.key === "Enter") {
-                                            addTabToForm();
-                                        }
-                                    }}
-                                    value={tab}
-                                />
-                            </div>
-                            <div className="col-lg-12 margin-bottom-10">
-                                <button
-                                    className="btn btn-primary btn-block"
-                                    type="button"
-                                    onClick={addTabToForm}
-                                    disabled={tab === ""}
-                                >
-                                    <i className="fa fa-plus w-full" />
-                                </button>
-                            </div>
-                            <div className="col-lg-12 margin-bottom-10">
-                                {data.tabs.length > 0 && (
-                                    <DragDropContext onDragEnd={handleTabDrop}>
-                                        <Droppable droppableId="list-tab-group">
-                                            {(provided) => (
-                                                <div
-                                                    className="list-group"
-                                                    {...provided.droppableProps}
-                                                    ref={provided.innerRef}
-                                                >
-                                                    {data.tabs.map(
-                                                        (tab, index) => (
-                                                            <Draggable
-                                                                key={tab.id}
-                                                                draggableId={tab.id.toString()}
-                                                                index={index}
-                                                            >
-                                                                {(provided) => (
-                                                                    <div
-                                                                        className="list-group-item"
-                                                                        ref={
-                                                                            provided.innerRef
-                                                                        }
-                                                                        {...provided.draggableProps}
-                                                                        {...provided.dragHandleProps}
-                                                                    >
-                                                                        <div className="row">
-                                                                            <div className="col-lg-9">
-                                                                                {tab.editMode ? (
-                                                                                    <input
-                                                                                        type="text"
-                                                                                        className="form-control"
-                                                                                        placeholder="Nombre de la pestaña"
-                                                                                        id="tab_name"
-                                                                                        name="tab_name"
-                                                                                        value={
-                                                                                            tab.name
-                                                                                        }
-                                                                                        onChange={(
-                                                                                            e
-                                                                                        ) => {
-                                                                                            handleTabEdit(
-                                                                                                tab.id,
-                                                                                                e
-                                                                                                    .target
-                                                                                                    .value
-                                                                                            );
-                                                                                        }}
-                                                                                    />
-                                                                                ) : (
-                                                                                    tab.name
-                                                                                )}
-                                                                            </div>
-                                                                            <div className="col-lg-3">
-                                                                                <button
-                                                                                    className="btn btn-danger btn-xs pull-right"
-                                                                                    type="button"
-                                                                                    onClick={() =>
-                                                                                        removeTabFromForm(
-                                                                                            tab
-                                                                                        )
-                                                                                    }
-                                                                                >
-                                                                                    <i className="fa fa-trash" />
-                                                                                </button>
-                                                                                <button
-                                                                                    className={`btn btn-xs pull-right ${
-                                                                                        tab.editMode
-                                                                                            ? "btn-success"
-                                                                                            : "btn-info"
-                                                                                    }`}
-                                                                                    type="button"
-                                                                                    onClick={() =>
-                                                                                        toggleTabEditMode(
-                                                                                            tab.id
-                                                                                        )
-                                                                                    }
-                                                                                >
-                                                                                    {tab.editMode ? (
-                                                                                        <i className="fa fa-check" />
-                                                                                    ) : (
-                                                                                        <i className="fa fa-pencil" />
-                                                                                    )}
-                                                                                </button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-                                                            </Draggable>
-                                                        )
-                                                    )}
-                                                    {provided.placeholder}
-                                                </div>
-                                            )}
-                                        </Droppable>
-                                    </DragDropContext>
-                                )}
-                            </div>
-                        </div>
-                    </div>
+                    <Tabs data={data} />
                 </div>
                 <div className="col-lg-8 col-xs-12">
                     <div className="box-content">
@@ -462,7 +327,7 @@ export default function Edit({ form, auth }) {
                                     <li
                                         key={tab.id}
                                         role="presentation"
-                                        className={index === 0 ? "active" : ""}
+                                        className={index === 0 ? 'active' : ''}
                                     >
                                         <a
                                             href={`#tab-${tab.slug}-${tab.id}`}
@@ -486,7 +351,7 @@ export default function Edit({ form, auth }) {
                                             key={tab.id}
                                             role="tabpanel"
                                             className={`tab-pane fade ${
-                                                index === 0 ? "active in" : ""
+                                                index === 0 ? 'active in' : ''
                                             }
                                             `}
                                             id={`tab-${tab.slug}-${tab.id}`}
@@ -503,7 +368,7 @@ export default function Edit({ form, auth }) {
                                                     .map((field, index) => {
                                                         if (
                                                             field.type ===
-                                                            "textarea"
+                                                            'textarea'
                                                         ) {
                                                             return (
                                                                 <LargeInput
@@ -517,12 +382,12 @@ export default function Edit({ form, auth }) {
                                                                         )
                                                                     }
                                                                 />
-                                                            );
+                                                            )
                                                         }
 
                                                         if (
                                                             field.type ===
-                                                            "checkbox"
+                                                            'checkbox'
                                                         ) {
                                                             return (
                                                                 <CheckboxInput
@@ -536,14 +401,14 @@ export default function Edit({ form, auth }) {
                                                                         )
                                                                     }
                                                                 />
-                                                            );
+                                                            )
                                                         }
 
                                                         if (
                                                             field.type ===
-                                                                "select" ||
+                                                                'select' ||
                                                             field.type ===
-                                                                "select multiple"
+                                                                'select multiple'
                                                         ) {
                                                             return (
                                                                 <SelectInput
@@ -557,12 +422,12 @@ export default function Edit({ form, auth }) {
                                                                         )
                                                                     }
                                                                 />
-                                                            );
+                                                            )
                                                         }
 
                                                         if (
                                                             field.type ===
-                                                            "radio"
+                                                            'radio'
                                                         ) {
                                                             return (
                                                                 <RadioInput
@@ -576,7 +441,7 @@ export default function Edit({ form, auth }) {
                                                                         )
                                                                     }
                                                                 />
-                                                            );
+                                                            )
                                                         }
 
                                                         return (
@@ -589,7 +454,7 @@ export default function Edit({ form, auth }) {
                                                                     )
                                                                 }
                                                             />
-                                                        );
+                                                        )
                                                     })}
                                             </div>
                                         </div>
@@ -617,17 +482,17 @@ export default function Edit({ form, auth }) {
                                     type="button"
                                     disabled={
                                         data.fields.length === 0 &&
-                                        data.form_name === ""
+                                        data.form_name === ''
                                     }
                                     onClick={handleFormEditSubmit}
                                 >
                                     {processing ? (
                                         <>
-                                            Guardando{" "}
+                                            Guardando{' '}
                                             <i className="fa fa-spin fa-spinner" />
                                         </>
                                     ) : (
-                                        "Guardar Formulario"
+                                        'Guardar Formulario'
                                     )}
                                 </button>
                             </div>
@@ -636,5 +501,5 @@ export default function Edit({ form, auth }) {
                 </div>
             </div>
         </AuthenticatedLayout>
-    );
+    )
 }

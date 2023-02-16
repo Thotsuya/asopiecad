@@ -26,6 +26,8 @@ export default function GoalsCreateModal({ project, programs }) {
         setData,
         handleGoalSubmit,
         handleNewCondition,
+        handleRemoveCondition,
+        handleNewConditionItem,
     } = useGoals(project)
 
     useEffect(() => {
@@ -47,10 +49,6 @@ export default function GoalsCreateModal({ project, programs }) {
         }
     }, [data.program_id])
 
-    useEffect(() => {
-        console.log('data', data)
-    }, [data])
-
     return (
         <div
             className="modal fade"
@@ -59,7 +57,7 @@ export default function GoalsCreateModal({ project, programs }) {
             role="dialog"
             aria-labelledby="modal-register-goal-label"
         >
-            <div className="modal-dialog" role="document">
+            <div className="modal-dialog modal-lg" role="document">
                 <div className="modal-content">
                     <div className="modal-header">
                         <button
@@ -197,17 +195,14 @@ export default function GoalsCreateModal({ project, programs }) {
                                 key={index}
                                 options={forms}
                                 program={program}
-                                onFormChange={(form) => {
-                                    setData((data) => {
-                                        data.conditions[index].form_id = form
-                                        return data
-                                    })
+                                fieldIndex={index}
+                                setData={setData}
+                                condition={condition}
+                                handleRemoveCondition={() => {
+                                    handleRemoveCondition(index)
                                 }}
-                                onFieldChange={(field) => {
-                                    setData((data) => {
-                                        data.conditions[index].field_id = field
-                                        return data
-                                    })
+                                handleNewConditionItem={() => {
+                                    handleNewConditionItem(index)
                                 }}
                             />
                         ))}

@@ -1,61 +1,63 @@
-import { useState, useRef } from "react";
-import useToasts from "@/Hooks/Toasts";
-import { useForm } from "@inertiajs/inertia-react";
+import { useState, useRef } from 'react'
+import useToasts from '@/Hooks/Toasts'
+import { useForm } from '@inertiajs/inertia-react'
+import { Inertia } from '@inertiajs/inertia'
 
 export default function useUserForms() {
-    const [option, setOption] = useState("");
-    const [tab, setTab] = useState("");
-    const optionInputRef = useRef();
-    const tabInputRef = useRef();
+    const [option, setOption] = useState('')
+    const [tab, setTab] = useState('')
+    const optionInputRef = useRef()
+    const tabInputRef = useRef()
+    const [loading, setLoading] = useState(false)
 
-    const { success, error } = useToasts();
+    const { success, error } = useToasts()
 
     const { data, setData, post, put, processing, errors, reset } = useForm({
         id: null,
-        form_name: "",
+        form_name: '',
         tabs: [],
         fields: [],
-    });
+    })
 
     const [field, setField] = useState({
-        name: "",
-        type: "text",
+        name: '',
+        type: 'text',
         required: false,
-        size: "col-xs-12 col-sm-6 col-md-4 col-lg-3",
-        tab_id: data.tabs.length > 0 ? data.tabs[0].id : "1",
+        size: 'col-xs-12 col-sm-6 col-md-4 col-lg-3',
+        tab_id: data.tabs.length > 0 ? data.tabs[0].id : '1',
         options: [],
-    });
+    })
 
     const handleFormSubmit = (e) => {
-        post(route("forms.store"), {
+        post(route('forms.store'), {
             onSuccess: () => {
-                success("Formulario creado correctamente");
+                success('Formulario creado correctamente')
             },
             onError: () => {
-                error("Error al crear el formulario");
+                error('Error al crear el formulario')
             },
-        });
-    };
+        })
+    }
 
     const normalizeText = (text) => {
         // Remove special characters and symbols
         return text
             .toLowerCase()
-            .replace(/\s/g, "-")
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/ñ/g, "n")
-            .replace(/[^a-zA-Z0-9-]/g, "");
-    };
+            .replace(/\s/g, '-')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/ñ/g, 'n')
+            .replace(/[^a-zA-Z0-9-]/g, '')
+    }
 
     const addTabToForm = () => {
-        if (tab === "") return;
+        if (tab === '') return
 
         // remove spaces
         // replace accents with their non-accented equivalent
         // replace non-alphanumeric characters with a space
         // replace ñ with n
-        let tabSlug = normalizeText(tab);
+        let tabSlug = normalizeText(tab)
 
         setData({
             ...data,
@@ -75,23 +77,23 @@ export default function useUserForms() {
                             : 1,
                 },
             ],
-        });
-        setTab("");
-        tabInputRef.current.focus();
-    };
+        })
+        setTab('')
+        tabInputRef.current.focus()
+    }
 
     const toggleTabEditMode = (tabId) => {
         setData({
             ...data,
             tabs: data.tabs.map((tab) => {
                 if (tab.id === tabId) {
-                    tab.editMode = !tab.editMode;
+                    tab.editMode = !tab.editMode
                 }
 
-                return tab;
+                return tab
             }),
-        });
-    };
+        })
+    }
 
     const toggleOptionEditMode = (optionId) => {
         setField((field) => {
@@ -99,27 +101,27 @@ export default function useUserForms() {
                 ...field,
                 options: field.options.map((option) => {
                     if (option.id === optionId) {
-                        option.editMode = !option.editMode;
+                        option.editMode = !option.editMode
                     }
 
-                    return option;
+                    return option
                 }),
-            };
-        });
-    };
+            }
+        })
+    }
 
     const handleTabEdit = (tabId, newName) => {
         setData({
             ...data,
             tabs: data.tabs.map((tab) => {
                 if (tab.id === tabId) {
-                    tab.name = newName;
+                    tab.name = newName
                 }
 
-                return tab;
+                return tab
             }),
-        });
-    };
+        })
+    }
 
     const handleOptionEdit = (optionId, newName) => {
         setField((field) => {
@@ -127,35 +129,35 @@ export default function useUserForms() {
                 ...field,
                 options: field.options.map((option) => {
                     if (option.id === optionId) {
-                        option.name = newName;
+                        option.name = newName
                     }
 
-                    return option;
+                    return option
                 }),
-            };
-        });
-    };
+            }
+        })
+    }
 
     const handleTabChange = (e) => {
-        setTab(e.target.value);
-    };
+        setTab(e.target.value)
+    }
 
     const handleFieldChange = (e) => {
         setField({
             ...field,
             [e.target.name]:
-                e.target.type === "checkbox"
+                e.target.type === 'checkbox'
                     ? e.target.checked
                     : e.target.value,
-        });
-    };
+        })
+    }
 
     const handleOptionChange = (e) => {
-        setOption(e.target.value);
-    };
+        setOption(e.target.value)
+    }
 
     const handleFieldOptionsChange = (e) => {
-        let OptionValue = normalizeText(option);
+        let OptionValue = normalizeText(option)
 
         setField({
             ...field,
@@ -174,16 +176,16 @@ export default function useUserForms() {
                     editMode: false,
                 },
             ],
-        });
+        })
         // Clear the option input
-        setOption("");
-        optionInputRef.current.focus();
-    };
+        setOption('')
+        optionInputRef.current.focus()
+    }
 
     const addFieldToForm = (e) => {
-        let fieldSlug = normalizeText(field.name);
-        fieldSlug = fieldSlug.replace(/[\u0300-\u036f]/g, "");
-        fieldSlug = fieldSlug.replace(/ñ/g, "n");
+        let fieldSlug = normalizeText(field.name)
+        fieldSlug = fieldSlug.replace(/[\u0300-\u036f]/g, '')
+        fieldSlug = fieldSlug.replace(/ñ/g, 'n')
 
         setData({
             ...data,
@@ -198,17 +200,34 @@ export default function useUserForms() {
                             : 1,
                 },
             ],
-        });
+        })
 
         setField({
-            name: "",
-            type: "text",
+            name: '',
+            type: 'text',
             required: false,
-            size: "col-xs-12 col-sm-6 col-md-4 col-lg-3",
-            tab_id: "1",
+            size: 'col-xs-12 col-sm-6 col-md-4 col-lg-3',
+            tab_id: '1',
             options: [],
-        });
-    };
+        })
+    }
+
+    const storeFieldToTab = () => {
+        Inertia.post(route('tabs.fields.store', field.tab_id), field, {
+            onBefore: () => {
+                setLoading(true)
+            },
+            onSuccess: () => {
+                success('Campo creado correctamente')
+            },
+            onError: () => {
+                error('Error al crear el campo')
+            },
+            onFinish: () => {
+                setLoading(false)
+            },
+        })
+    }
 
     const removeOptionFromField = (option) => {
         setField({
@@ -216,11 +235,11 @@ export default function useUserForms() {
             options: field.options
                 .filter((item) => item.id !== option.id)
                 .map((item, index) => {
-                    return { ...item, order: index + 1 };
+                    return { ...item, order: index + 1 }
                 })
                 .sort((a, b) => a.order - b.order),
-        });
-    };
+        })
+    }
 
     const removeTabFromForm = (tab) => {
         setData({
@@ -228,73 +247,74 @@ export default function useUserForms() {
             tabs: data.tabs
                 .filter((item) => item.id !== tab.id)
                 .map((item, index) => {
-                    return { ...item, order: index + 1 };
+                    return { ...item, order: index + 1 }
                 })
                 .sort((a, b) => a.order - b.order),
-        });
-    };
+        })
+    }
 
     const removeFieldFromForm = (field) => {
         setData({
             ...data,
             fields: data.fields.filter((item) => item.id !== field.id),
-        });
-    };
+        })
+    }
 
     const buttonEnabled = () => {
         return (
-            field.name === "" ||
-            field.type === "" ||
-            field.size === "" ||
-            field.tab_id === "" ||
-            ((field.type === "select" || field.type === "select multiple") &&
-                field.options.length === 0)
-        );
-    };
+            field.name === '' ||
+            field.type === '' ||
+            field.size === '' ||
+            field.tab_id === '' ||
+            ((field.type === 'select' || field.type === 'select multiple') &&
+                field.options.length === 0) ||
+            loading
+        )
+    }
 
     // Function to update options order on drop
     const handleDrop = (droppedItem) => {
-        if (!droppedItem.destination) return;
+        if (!droppedItem.destination) return
 
-        let updatedOptions = [...field.options];
-        const [removed] = updatedOptions.splice(droppedItem.source.index, 1);
+        let updatedOptions = [...field.options]
+        const [removed] = updatedOptions.splice(droppedItem.source.index, 1)
 
-        updatedOptions.splice(droppedItem.destination.index, 0, removed);
+        updatedOptions.splice(droppedItem.destination.index, 0, removed)
 
         setField({
             ...field,
             options: updatedOptions.map((item, index) => {
-                return { ...item, order: index + 1 };
+                return { ...item, order: index + 1 }
             }),
-        });
-    };
+        })
+    }
 
     const handleTabDrop = (droppedItem) => {
-        if (!droppedItem.destination) return;
+        if (!droppedItem.destination) return
 
-        let updatedTabs = [...data.tabs];
-        const [removed] = updatedTabs.splice(droppedItem.source.index, 1);
+        let updatedTabs = [...data.tabs]
+        const [removed] = updatedTabs.splice(droppedItem.source.index, 1)
 
-        updatedTabs.splice(droppedItem.destination.index, 0, removed);
+        updatedTabs.splice(droppedItem.destination.index, 0, removed)
 
         setData({
             ...data,
             tabs: updatedTabs.map((item, index) => {
-                return { ...item, order: index + 1 };
+                return { ...item, order: index + 1 }
             }),
-        });
-    };
+        })
+    }
 
     const handleFormEditSubmit = (e) => {
-        put(route("forms.update", { form: data.id }), {
+        put(route('forms.update', { form: data.id }), {
             onSuccess: (data) => {
-                success("Form updated successfully");
+                success('Form updated successfully')
             },
             onError: (err) => {
-                error("Error updating form");
+                error('Error updating form')
             },
-        });
-    };
+        })
+    }
 
     return {
         option,
@@ -331,5 +351,7 @@ export default function useUserForms() {
         addTabToForm,
         handleFormEditSubmit,
         tabInputRef,
-    };
+        storeFieldToTab,
+        loading,
+    }
 }

@@ -13,14 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('projects', function (Blueprint $table) {
+        Schema::create('answers', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid')->unique();
-            $table->string('project_name');
-            $table->string('project_description')->default('Descripción del proyecto');
-            $table->integer('project_duration')->default(0);
-            $table->date('project_start_date')->default(now());
-            $table->softDeletes();
+            $table->foreignId('benefitiary_id')->constrained();
+            $table->foreignId('field_id')->constrained();
+            $table->string('value');
+            $table->string('type')->nullable();
             $table->timestamps();
         });
     }
@@ -32,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('projects');
+        Schema::dropIfExists('answers');
     }
 };

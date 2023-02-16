@@ -52,6 +52,13 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/projects/{project}/reports', [App\Http\Controllers\Admin\ProjectReportsController::class, 'index'])->name('projects.reports.index');
 
+    Route::post('/forms/{form}/tabs', [App\Http\Controllers\Admin\TabController::class, 'store'])->name('forms.tabs.store');
+    Route::put('/tabs/{tab}', [App\Http\Controllers\Admin\TabController::class, 'update'])->name('forms.tabs.update');
+    Route::delete('/tabs/{tab}', [App\Http\Controllers\Admin\TabController::class, 'destroy'])->name('forms.tabs.destroy');
+    Route::patch('/forms/{form}/tabs/order', [App\Http\Controllers\Admin\TabController::class, 'order'])->name('forms.tabs.order');
+
+    Route::post('/tabs/{tab}/fields', [App\Http\Controllers\Admin\FieldController::class, 'store'])->name('tabs.fields.store');
+
 
 });
 

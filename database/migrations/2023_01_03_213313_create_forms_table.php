@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('form_name');
             $table->string('form_slug');
-            $table->text('form_fields');
+            //$table->text('form_fields');
             $table->timestamps();
         });
     }

@@ -6,10 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\FormsRequest;
 use App\Http\Resources\FormsResource;
 use App\Models\Form;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use App\Traits\FieldFormatter;
 
 class FormController extends Controller
 {
+
+    use FieldFormatter;
+
     public function __construct()
     {
         $this->middleware('can:Ver Formularios')->only('index');
@@ -20,7 +26,7 @@ class FormController extends Controller
 
     public function index(){
         return Inertia::render('Forms/Index',[
-            'forms' => Form::all()
+            'forms' => Form::withCount('fields')->get(),
         ]);
     }
 
@@ -30,65 +36,35 @@ class FormController extends Controller
 
     public function edit(Form $form){
         return Inertia::render('Forms/Edit',[
-            'form' => new FormsResource($form)
+            'form' => new FormsResource($form->load('tabs','fields'))
         ]);
     }
 
     public function store(FormsRequest $request)
     {
 
-        //return collect($request->validated()['fields'])->toArray();
+        $form_fields = $this->formatFields($request);
 
-        $form_fields = collect($request->validated()['tabs'])->map(function ($tab) use ($request) {
-            return [
-                'tab_id' => $tab['id'],
-                'tab_name' => $tab['name'],
-                'tab_slug' => $tab['slug'],
-                'editMode' => false,
-                'order' => $tab['order'],
-                'fields' => // Group fields whose tab_id is equal to the current tab_id
-                    collect($request->validated()['fields'])->filter(function ($field) use ($tab) {
-                        // Convert the field's tab_id to an integer
-                        $field_tab_id = (int)$field['tab_id'];
-                        return $field_tab_id === $tab['id'];
-                    })->toArray()
-            ];
-        })->toArray();
+        DB::transaction(function () use ($request, $form_fields) {
+            $form = Form::create([
+                'form_name' => $request->validated()['form_name'],
+            ]);
 
-        $form_data = [
-            'form_name' => $request->validated()['form_name'],
-            'form_fields' => $form_fields
-        ];
-
-        Form::create($form_data);
+            $form_fields->each(function ($tab) use ($form) {
+                $form->tabs()->create([
+                    'tab_name' => $tab['tab_name'],
+                ])->fields()->createMany($tab['fields']);
+            });
+        });
 
         return redirect()->route('forms.index');
     }
 
-    public function update(FormsRequest $request, Form $form)
+    public function update(Request $request, Form $form)
     {
-        $form_fields = collect($request->validated()['tabs'])->map(function ($tab) use ($request) {
-            return [
-                'tab_id' => $tab['id'],
-                'tab_name' => $tab['name'],
-                'tab_slug' => $tab['slug'],
-                'editMode' => false,
-                'order' => $tab['order'],
-                'fields' => // Group fields whose tab_id is equal to the current tab_id
-                    collect($request->validated()['fields'])->filter(function ($field) use ($tab) {
-                        // Convert the field's tab_id to an integer
-                        $field_tab_id = (int)$field['tab_id'];
-                        return $field_tab_id === $tab['id'];
-                    })->toArray()
-            ];
-        })->toArray();
-
-        $form_data = [
-            'form_name' => $request->validated()['form_name'],
-            'form_fields' => $form_fields
-        ];
-
-        $form->update($form_data);
+        $form->update([
+            'form_name' => $request->form_name,
+        ]);
 
         return redirect()->route('forms.index');
     }

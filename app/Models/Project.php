@@ -14,6 +14,8 @@ class Project extends Model
         'project_name',
         'project_description',
         'global_goal',
+        'project_duration',
+        'project_start_date',
     ];
 
     public function getRouteKeyName()

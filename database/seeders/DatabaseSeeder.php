@@ -20,7 +20,6 @@ class DatabaseSeeder extends Seeder
         $this->call([
             FormSeeder::class,
             RolePermissionSeeder::class,
-           // UserSeeder::class,
         ]);
 
         User::create([
@@ -32,6 +31,11 @@ class DatabaseSeeder extends Seeder
         \App\Models\User::factory(10)->create()->each(function ($user) {
             $user->assignRole('Gerente');
         });
+
+        $this->call([
+            ProjectSeeder::class,
+            BenefitiarySeeder::class,
+        ]);
 
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',

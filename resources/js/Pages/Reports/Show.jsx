@@ -30,142 +30,125 @@ export default function Show({ auth, project, results }) {
                         <div className="box-content">
                             <div className="row">
                                 <div className="col-md-12">
-                                    <table className="table table-bordered table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th
-                                                    rowSpan={2}
-                                                    className="text-center bg-primary"
-                                                >
-                                                    #
-                                                </th>
-                                                <th
-                                                    rowSpan={2}
-                                                    className="text-center bg-primary"
-                                                >
-                                                    Descripción de los
-                                                    indicadores
-                                                </th>
-                                                <th
-                                                    rowSpan={2}
-                                                    className="text-center bg-primary"
-                                                >
-                                                    Meta
-                                                </th>
-                                                <th
-                                                    rowSpan={2}
-                                                    className="text-center bg-primary"
-                                                >
-                                                    Progreso
-                                                </th>
-                                                <th className="text-center bg-primary">
-                                                    Porcentaje completado
-                                                </th>
-                                                {result.conditions &&
-                                                    result.conditions.map(
-                                                        (condition) => (
-                                                            <th className="text-center bg-primary">
-                                                                {
-                                                                    condition.form_name
-                                                                }
-                                                            </th>
-                                                        )
-                                                    )}
-                                                {result.conditions &&
-                                                    result.conditions.map(
-                                                        (condition) => (
-                                                            <th className="text-center bg-primary">
-                                                                {
-                                                                    condition.field_name
-                                                                }
-                                                            </th>
-                                                        )
-                                                    )}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td className="text-center">
-                                                    {index + 1}
-                                                </td>
-                                                <td className="text-center">
-                                                    {result.goal_description}
-                                                </td>
-                                                <td className="text-center bg-warning">
-                                                    <span className="text-white">
-                                                        {result.goal_target}
-                                                    </span>
-                                                </td>
-                                                <td className="text-center bg-success">
-                                                    <span className="text-white">
+                                    <div className="table-responsive">
+                                        <table className="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th
+                                                        rowSpan={2}
+                                                        className="text-center bg-primary"
+                                                    >
+                                                        #
+                                                    </th>
+                                                    <th
+                                                        rowSpan={2}
+                                                        className="text-center bg-primary"
+                                                    >
+                                                        Descripción de los
+                                                        indicadores
+                                                    </th>
+                                                    <th
+                                                        rowSpan={2}
+                                                        className="text-center bg-primary"
+                                                    >
+                                                        Meta
+                                                    </th>
+                                                    <th
+                                                        rowSpan={2}
+                                                        className="text-center bg-primary"
+                                                    >
+                                                        Progreso
+                                                    </th>
+                                                    <th className="text-center bg-primary">
+                                                        Porcentaje completado
+                                                    </th>
+                                                    {result.conditions &&
+                                                        result.conditions.map(
+                                                            (condition) => (
+                                                                <th className="text-center bg-primary">
+                                                                    {
+                                                                        condition.label
+                                                                    }
+                                                                </th>
+                                                            )
+                                                        )}
+                                                    <th className="text-center bg-primary">
+                                                        Número total de personas
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td className="text-center">
+                                                        {index + 1}
+                                                    </td>
+                                                    <td className="text-center">
                                                         {
-                                                            result.program
-                                                                .beneficiaries_count
+                                                            result.goal_description
                                                         }
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <div className="progress">
-                                                        <div
-                                                            className="progress-bar progress-bar-striped progress-bar-success active"
-                                                            role="progressbar"
-                                                            aria-valuenow="40"
-                                                            aria-valuemin="0"
-                                                            aria-valuemax="100"
-                                                            style={{
-                                                                width:
-                                                                    result
-                                                                        .program
-                                                                        .completed_percentage +
-                                                                    '%',
-                                                            }}
-                                                        >
-                                                            <span>
-                                                                {parseInt(
-                                                                    result
-                                                                        .program
-                                                                        .completed_percentage
-                                                                )}
-                                                                %
-                                                            </span>
+                                                    </td>
+                                                    <td className="text-center bg-warning">
+                                                        <span className="text-white">
+                                                            {result.goal_target}
+                                                        </span>
+                                                    </td>
+                                                    <td className="text-center bg-success">
+                                                        <span className="text-white">
+                                                            {
+                                                                result.program
+                                                                    .beneficiaries_count
+                                                            }
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <div className="progress">
+                                                            <div
+                                                                className="progress-bar progress-bar-striped progress-bar-success active"
+                                                                role="progressbar"
+                                                                aria-valuenow="40"
+                                                                aria-valuemin="0"
+                                                                aria-valuemax="100"
+                                                                style={{
+                                                                    width:
+                                                                        result
+                                                                            .program
+                                                                            .completed_percentage +
+                                                                        '%',
+                                                                }}
+                                                            >
+                                                                <span>
+                                                                    {parseInt(
+                                                                        result
+                                                                            .program
+                                                                            .completed_percentage
+                                                                    )}
+                                                                    %
+                                                                </span>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </td>
-                                                {result.conditions &&
-                                                    result.conditions.map(
-                                                        (condition) => (
-                                                            <td className="text-center">
-                                                                {
-                                                                    condition.form_count
-                                                                }
-                                                            </td>
-                                                        )
-                                                    )}
-                                                {/*  Stacked row  */}
-                                                {result.conditions &&
-                                                    result.conditions.map(
-                                                        (condition) => (
-                                                            <td>
-                                                                {Object.keys(
-                                                                    condition.field_count
-                                                                ).map((key) => (
-                                                                    <span>
-                                                                        {key}:{' '}
-                                                                        {
-                                                                            condition
-                                                                                .field_count[
-                                                                                key
-                                                                            ]
-                                                                        }
-                                                                        <br />
-                                                                    </span>
-                                                                ))}
-                                                            </td>
-                                                        )
-                                                    )}
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                                    </td>
+                                                    {result.conditions &&
+                                                        result.conditions.map(
+                                                            (condition) => (
+                                                                <td className="text-center">
+                                                                    {
+                                                                        condition.value
+                                                                    }
+                                                                </td>
+                                                            )
+                                                        )}
+                                                    <td className="text-center">
+                                                        <strong>
+                                                            {
+                                                                result.program
+                                                                    .beneficiaries_count
+                                                            }
+                                                        </strong>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -41,3 +41,64 @@ export const OPERATORS = [
         types: ['text', 'select'],
     },
 ]
+
+export const OPERANDS = [
+    {
+        value: '==',
+        label: 'Igual a',
+        form_type: [
+            'text',
+            'number',
+            'date',
+            'select',
+            'select multiple',
+            'checkbox',
+            'radio',
+        ],
+    },
+    {
+        value: '!=',
+        label: 'Diferente a',
+        form_type: [
+            'text',
+            'number',
+            'date',
+            'select',
+            'select multiple',
+            'checkbox',
+            'radio',
+        ],
+    },
+    { value: '>', label: 'Mayor a', form_type: ['number', 'date'] },
+    {
+        value: '>=',
+        label: 'Mayor o igual a',
+        form_type: ['number', 'date'],
+    },
+    { value: '<', label: 'Menor a', form_type: ['number', 'date'] },
+    {
+        value: '<=',
+        label: 'Menor o igual a',
+        form_type: ['number', 'date'],
+    },
+    {
+        value: 'contains',
+        label: 'Contiene',
+        form_type: ['text', 'select', 'select multiple', 'checkbox', 'radio'],
+    },
+    {
+        value: 'not contains',
+        label: 'No contiene',
+        form_type: ['text', 'select', 'select multiple', 'checkbox', 'radio'],
+    },
+    {
+        value: 'starts with',
+        label: 'Empieza con',
+        form_type: ['text', 'select', 'select multiple', 'checkbox', 'radio'],
+    },
+    {
+        value: 'ends with',
+        label: 'Termina con',
+        form_type: ['text', 'select', 'select multiple', 'checkbox', 'radio'],
+    },
+]

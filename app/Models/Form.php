@@ -14,15 +14,6 @@ class Form extends Model
 
     protected $fillable = [
         'form_name',
-        'form_fields'
-    ];
-
-    protected $casts = [
-        'form_fields' => 'array'
-    ];
-
-    protected $appends = [
-        'fields_count'
     ];
 
 
@@ -38,20 +29,24 @@ class Form extends Model
             ->saveSlugsTo('form_slug');
     }
 
-    public function getFieldsCountAttribute(): int
-    {
-        return collect($this->form_fields)->map(function ($tab) {
-            return count($tab['fields']);
-        })->sum();
-    }
 
     public function benefitiaries()
     {
-        return $this->belongsToMany(Benefitiary::class)->withPivot(['form_data']);
+        return $this->belongsToMany(Benefitiary::class)->withTimestamps();
     }
 
     public function programs()
     {
-        return $this->belongsToMany(Program::class);
+        return $this->belongsToMany(Program::class)->withTimestamps();
+    }
+
+    public function tabs()
+    {
+        return $this->hasMany(Tab::class);
+    }
+
+    public function fields()
+    {
+        return $this->hasManyThrough(Field::class, Tab::class);
     }
 }

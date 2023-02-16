@@ -19,7 +19,8 @@ export default function useGoals(project) {
                 success('Meta registrada con éxito')
                 document.getElementById('modal-register-goal-close').click()
             },
-            onError: () => {
+            onError: (err) => {
+                console.log(err)
                 error('No se pudo registrar la meta')
             },
         })
@@ -29,10 +30,40 @@ export default function useGoals(project) {
         setData('conditions', [
             ...data.conditions,
             {
-                form_id: null,
-                field_id: null,
+                label: '',
+                conditions: [
+                    {
+                        form_id: null,
+                        form_slug: null,
+                        field_id: null,
+                        field_slug: null,
+                        field_type: null,
+                        field_value: null,
+                        operand: null,
+                    },
+                ],
             },
         ])
+    }
+
+    const handleRemoveCondition = (index) => {
+        console.log(index)
+        let conditions = data.conditions.filter((condition, i) => i !== index)
+        setData('conditions', conditions)
+    }
+
+    const handleNewConditionItem = (index) => {
+        let conditions = data.conditions
+        conditions[index].conditions.push({
+            form_id: null,
+            form_slug: null,
+            field_id: null,
+            field_slug: null,
+            field_type: null,
+            field_value: null,
+            operand: null,
+        })
+        setData('conditions', conditions)
     }
 
     return {
@@ -42,5 +73,7 @@ export default function useGoals(project) {
         errors,
         handleGoalSubmit,
         handleNewCondition,
+        handleRemoveCondition,
+        handleNewConditionItem,
     }
 }
