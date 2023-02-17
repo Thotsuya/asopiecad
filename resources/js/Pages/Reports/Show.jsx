@@ -75,6 +75,9 @@ export default function Show({ auth, project, results }) {
                                                     <th className="text-center bg-primary">
                                                         Número total de personas
                                                     </th>
+                                                    <th className="text-center bg-primary">
+                                                        Pendientes
+                                                    </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -143,6 +146,13 @@ export default function Show({ auth, project, results }) {
                                                                 result.program
                                                                     .beneficiaries_count
                                                             }
+                                                        </strong>
+                                                    </td>
+                                                    <td className="text-center">
+                                                        <strong>
+                                                            {result.goal_target -
+                                                                result.program
+                                                                    .beneficiaries_count}
                                                         </strong>
                                                     </td>
                                                 </tr>

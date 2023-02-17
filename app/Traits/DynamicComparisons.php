@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
@@ -16,6 +17,7 @@ trait DynamicComparisons{
         '>='  => 'greaterThanOrEqual',
         '<='  => 'lessThanOrEqual',
         'contains' => 'contains',
+        'not contains' => 'doesNotContain',
         'doesNotContain' => 'doesNotContain',
         'startsWith' => 'startsWith',
         'endsWith' => 'endsWith',
@@ -106,7 +108,6 @@ trait DynamicComparisons{
     }
 
     private function doesNotContain($value_a, $value_b){
-
         if(is_array($value_a) && is_array($value_b)){
             return count(array_intersect($value_a, $value_b)) == 0;
         }
@@ -123,6 +124,7 @@ trait DynamicComparisons{
     }
 
     private function startsWith($value_a, $value_b){
+
 
 
         if(is_array($value_b)){
@@ -151,6 +153,4 @@ trait DynamicComparisons{
 
         return Str::endsWith($value_a, $value_b);
     }
-
-
 }

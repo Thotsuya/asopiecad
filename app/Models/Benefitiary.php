@@ -72,7 +72,7 @@ class Benefitiary extends Model
 
     public function forms()
     {
-        return $this->belongsToMany(Form::class)->withPivot(['form_data']);
+        return $this->belongsToMany(Form::class);
     }
 
     public function approvedBy()
@@ -81,7 +81,7 @@ class Benefitiary extends Model
     }
 
     public function answers(){
-        return $this->belongsToMany(Field::class, 'answers')->using(Answer::class)->withPivot(['value','type'])->withTimestamps();
+        return $this->belongsToMany(Field::class, 'answers')->using(Answer::class)->withPivot(['value'])->withTimestamps();
     }
 
 }

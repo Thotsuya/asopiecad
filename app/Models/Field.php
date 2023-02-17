@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
+use AjCastro\EagerLoadPivotRelations\EagerLoadPivotTrait;
 
 
 class Field extends Model
 {
-    use HasFactory, HasSlug;
+    use HasFactory, HasSlug, EagerLoadPivotTrait;
 
     protected $fillable = [
         'name',
@@ -53,5 +54,9 @@ class Field extends Model
         )->withTimestamps();
     }
 
+
+    public function getFieldFormattedSlug(){
+        return $this->slug . '-' . $this->tab->form->form_slug . '-' . $this->tab->form->id;
+    }
 
 }

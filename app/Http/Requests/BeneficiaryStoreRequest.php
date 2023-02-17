@@ -28,11 +28,11 @@ class BeneficiaryStoreRequest extends FormRequest
         $programs = Program::find($this->programs);
 
         $forms = $programs->map(function ($program) {
-            return $program->forms;
+            return $program->forms->load('tabs.fields');
         })->flatten()->unique('id');
 
 
-        $merged_rules = $forms
+        return $forms
             ->map(function (Form $form) {
                 return $form->getFormValidationRules();
             })->collapse()
@@ -41,9 +41,6 @@ class BeneficiaryStoreRequest extends FormRequest
                 'programs' => ['sometimes', 'array'],
                 'programs.*' => ['exists:programs,id'],
             ])->toArray();
-
-
-        return $merged_rules;
     }
 
     public function messages()
@@ -54,7 +51,7 @@ class BeneficiaryStoreRequest extends FormRequest
             return $program->forms;
         })->flatten()->unique('id');
 
-        $merged_messages = $forms
+        return $forms
             ->map(function (Form $form) {
                 return $form->getFormValidationMessages();
             })->collapse()
@@ -65,7 +62,5 @@ class BeneficiaryStoreRequest extends FormRequest
                 'programs.array' => 'Los programas deben ser un arreglo',
                 'programs.*.exists' => 'El programa no existe',
             ])->toArray();
-
-        return $merged_messages;
     }
 }

@@ -34,6 +34,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('appointments', App\Http\Controllers\Admin\AppointmentController::class);
     Route::resource('beneficiaries', App\Http\Controllers\Admin\BeneficiariesController::class);
     Route::patch('beneficiaries/{beneficiary}/approve', [App\Http\Controllers\Admin\BeneficiariesController::class, 'approve'])->name('beneficiaries.approve');
+    Route::patch('beneficiaries/{beneficiary}/reject', [App\Http\Controllers\Admin\BeneficiariesController::class, 'reject'])->name('beneficiaries.reject');
+    Route::patch('beneficiaries/{beneficiary}/restore', [App\Http\Controllers\Admin\BeneficiariesController::class, 'restore'])->name('beneficiaries.restore');
 
     Route::get('projects/{project}/forms', [App\Http\Controllers\Admin\ProjectFormController::class, 'create'])->name('projects.forms.create');
     Route::post('projects/{project}/forms', [App\Http\Controllers\Admin\ProjectFormController::class, 'store'])->name('projects.forms.store');

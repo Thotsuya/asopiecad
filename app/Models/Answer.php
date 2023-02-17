@@ -30,22 +30,4 @@ class Answer extends Pivot
     {
         return $this->belongsTo(Field::class);
     }
-
-    public function value() : Attribute
-    {
-        // Infere the type of the field
-        $type = $this->type;
-
-        // Return the value casted to the correct type
-        return new Attribute(
-            get: fn($value) => match ($type) {
-                'checkbox', 'select', 'radio', 'select multiple' => json_decode($value, true),
-                default => $value,
-            },
-            set: fn($value) => match ($type) {
-                'checkbox', 'select', 'radio', 'select multiple' => json_encode($value),
-                default => $value,
-            }
-        );
-    }
 }

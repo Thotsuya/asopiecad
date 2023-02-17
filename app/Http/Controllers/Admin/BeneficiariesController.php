@@ -94,7 +94,7 @@ class BeneficiariesController extends Controller
     public function edit(Benefitiary $beneficiary)
     {
         return Inertia::render('Beneficiares/EditDataOnly', [
-            'beneficiary' => BeneficiaryResource::make($beneficiary->load('forms')),
+            'beneficiary' => BeneficiaryResource::make($beneficiary->load('answers.pivot.field.tab')),
             'forms' => BeneficiaryFormsResource::collection($beneficiary->forms()->get()),
         ]);
     }
@@ -175,5 +175,22 @@ class BeneficiariesController extends Controller
         return redirect()->route('beneficiaries.index');
     }
 
+    public function reject(Benefitiary $beneficiary)
+    {
+        $beneficiary->update([
+            'internal_status' => Benefitiary::INTERNAL_STATUSES['rejected'],
+        ]);
+        return redirect()->route('beneficiaries.index');
+    }
+
+    public function restore($id)
+    {
+        $beneficiary = Benefitiary::onlyTrashed()->findOrFail($id);
+        $beneficiary->restore();
+        $beneficiary->update([
+            'internal_status' => Benefitiary::INTERNAL_STATUSES['approved'],
+        ]);
+        return redirect()->route('beneficiaries.index');
+    }
 
 }

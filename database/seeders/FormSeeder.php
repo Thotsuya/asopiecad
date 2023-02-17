@@ -16,7 +16,6 @@ class FormSeeder extends Seeder
     {
         $fields = [
             [#4254
-                "id"       => 1,
                 "name"     => "Nombres y Apellidos",
                 "type"     => "text",
                 "required" => true,
@@ -25,18 +24,7 @@ class FormSeeder extends Seeder
                 "options"  => [],
                 "slug"     => "nombres-y-apellidos",
             ],
-            [#4253
-                "id"       => 2,
-                "name"     => "Edad",
-                "type"     => "number",
-                "required" => false,
-                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
-                "tab_id"   => "1",
-                "options"  => [],
-                "slug"     => "edad",
-            ],
             [#4252
-                "id"       => 3,
                 "name"     => "Sexo",
                 "type"     => "select",
                 "required" => true,
@@ -60,29 +48,18 @@ class FormSeeder extends Seeder
                 ],
                 "slug"     => "sexo",
             ],
-            [#4249
-                "id"       => 4,
-                "name"     => "Fecha de Nacimiento",
-                "type"     => "date",
+            [#4253
+                "name"     => "Edad",
+                "type"     => "number",
                 "required" => false,
                 "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
                 "tab_id"   => "1",
                 "options"  => [],
-                "slug"     => "fecha-de-nacimiento",
-            ],
-            [#4248
-                "id"       => 5,
-                "name"     => "Cédula de Identidad",
-                "type"     => "text",
-                "required" => false,
-                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
-                "tab_id"   => "1",
-                "options"  => [],
-                "slug"     => "cedula-de-identidad",
+                "slug"     => "edad",
             ],
             [#4247
-                "id"       => 6,
                 "name"     => "Tipo de Discapacidad o alteración en el desarrollo",
+                "slug"     => "tipo-de-discapacidad-o-alteracion-en-el-desarrollo",
                 "type"     => "select multiple",
                 "required" => true,
                 "size"     => "col-xs-12 col-sm-6 col-md-6 col-lg-6",
@@ -241,12 +218,85 @@ class FormSeeder extends Seeder
                         "value"    => "hipotoridome-congenito-22",
                         "order"    => 22,
                         "editMode" => false,
+                    ],
+                    [
+                        "id"       => 23,
+                        "name"     => "Trastorno por déficit de atención e hiperactividad (TDAH)",
+                        "value"    => "trastorno-por-deficit-de-atencion-e-hiperactividad-tdah-23",
+                        "order"    => 23,
+                        "editMode" => false,
+                    ],
+                    [
+                        "id"       => 24,
+                        "name"     => "Esclerosis múltiple",
+                        "value"    => "esclerosis-multiple-24",
+                        "order"    => 24,
+                        "editMode" => false,
+                    ],
+                    [
+                        "id"       => 25,
+                        "name"     => "Fibrosis quística",
+                        "value"    => "fibrosis-quistica-25",
+                        "order"    => 25,
+                        "editMode" => false,
+                    ],
+                    [
+                        "id"       => 26,
+                        "name"     => "Enfermedad de Huntington",
+                        "value"    => "enfermedad-de-huntington-26",
+                        "order"    => 26,
+                        "editMode" => false,
+                    ],
+                    [
+                        "id"       => 27,
+                        "name"     => "Síndrome de Asperger",
+                        "value"    => "sindrome-de-asperger-27",
+                        "order"    => 27,
+                        "editMode" => false,
+                    ],
+                    [
+                        "id"       => 28,
+                        "name"     => "Síndrome de Rett",
+                        "value"    => "sindrome-de-rett-28",
+                        "order"    => 28,
+                        "editMode" => false,
+                    ],
+                    [
+                        "id"       => 29,
+                        "name"     => "Síndrome de Prader-Willi",
+                        "value"    => "sindrome-de-prader-willi-29",
+                        "order"    => 29,
+                        "editMode" => false,
+                    ],
+                    [
+                        "id"       => 30,
+                        "name"     => "Síndrome de Angelman",
+                        "value"    => "sindrome-de-angelman-30",
+                        "order"    => 30,
+                        "editMode" => false,
                     ]
                 ],
-                "slug"     => "tipo-de-discapacidad-o-alteracion-en-el-desarrollo",
+
+            ],
+            [#4249
+                "name"     => "Fecha de Nacimiento",
+                "type"     => "date",
+                "required" => false,
+                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                "tab_id"   => "1",
+                "options"  => [],
+                "slug"     => "fecha-de-nacimiento",
+            ],
+            [#4248
+                "name"     => "Cédula de Identidad",
+                "type"     => "text",
+                "required" => false,
+                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                "tab_id"   => "1",
+                "options"  => [],
+                "slug"     => "cedula-de-identidad",
             ],
             [#4276
-                "id"       => 7,
                 "name"     => "Dirección",
                 "type"     => "text",
                 "required" => false,
@@ -256,7 +306,6 @@ class FormSeeder extends Seeder
                 "slug"     => "direccion",
             ],
             [#4277
-                "id"       => 8,
                 "name"     => "Barrio",
                 "type"     => "text",
                 "required" => false,
@@ -266,7 +315,6 @@ class FormSeeder extends Seeder
                 "slug"     => "barrio",
             ],
             [#4278
-                "id"       => 9,
                 "name"     => "Municipio",
                 "type"     => "text",
                 "required" => false,
@@ -276,7 +324,6 @@ class FormSeeder extends Seeder
                 "slug"     => "municipio",
             ],
             [
-                "id"       => 10,
                 "name"     => "Departamento",
                 "type"     => "select",
                 "required" => false,
@@ -406,7 +453,6 @@ class FormSeeder extends Seeder
                 "slug"     => "departamento",
             ],
             [#4297
-                "id"       => 11,
                 "name"     => "Teléfono",
                 "type"     => "text",
                 "required" => false,
@@ -416,7 +462,6 @@ class FormSeeder extends Seeder
                 "slug"     => "telefono",
             ],
             [#4298
-                "id"       => 12,
                 "name"     => "Tutor o Responsable",
                 "type"     => "text",
                 "required" => false,
@@ -433,7 +478,6 @@ class FormSeeder extends Seeder
                 "tab_id"   => "1",
                 "options"  => [],
                 "slug"     => "fecha-de-ingreso",
-                "id"       => 13,
             ],
         ];
 

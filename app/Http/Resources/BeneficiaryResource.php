@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
 
 class BeneficiaryResource extends JsonResource
 {
@@ -22,12 +23,13 @@ class BeneficiaryResource extends JsonResource
             'internal_status' => $this->internal_status,
             'approved_at' => $this->approved_at,
             'deletion_reason' => $this->deletion_reason,
-            'beneficiary_data' => $this->whenLoaded('forms',function(){
-                return collect($this->forms)->map(function($form){
-                    return json_decode($form->pivot->form_data);
-                })->reduce(function($carry, $item){
-                    return $carry->merge($item);
-                }, collect([]))->toArray();
+            'beneficiary_data' => $this->whenLoaded('answers',function(){
+                return $this->answers->map(function($answer){
+                    return [$answer->pivot->field->getFieldFormattedSlug() =>
+                        Str::startsWith($answer->pivot->value, '["') && Str::endsWith($answer->pivot->value, '"]')
+                            ? json_decode($answer->pivot->value) : $answer->pivot->value
+                    ];
+                })->collapse()->toArray();
             }),
             'badge' => match ($this->internal_status) {
                 'Pendiente de aprobación' => 'warning',

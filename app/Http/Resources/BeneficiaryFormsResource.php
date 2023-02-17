@@ -18,27 +18,25 @@ class BeneficiaryFormsResource extends JsonResource
             'id' => $this->id,
             'form_name' => $this->form_name,
             'form_slug' => $this->form_slug,
-            'tabs' => collect($this->form_fields)->map(function ($tab) {
+            'tabs' => $this->tabs->map(function($tab){
                 return [
-                    'id' => $tab['tab_id'],
-                    'name' => $tab['tab_name'],
-                    'slug' => $tab['tab_slug'],
-                    'editMode' => false,
-                    'order' => $tab['order'],
-                    'fields' => collect($tab['fields'])->map(function ($field) {
+                    'id' => $tab->id,
+                    'name' => $tab->tab_name,
+                    'slug' => $tab->tab_slug,
+                    'fields' => $tab->fields->map(function($field){
                         return [
-                            'id' => $field['id'],
-                            'name' => $field['name'],
-                            'type' => $field['type'],
-                            'required' => $field['required'],
-                            'size' => $field['size'],
-                            'tab_id' => $field['tab_id'],
-                            'options' => $field['options'],
-                            'slug' => $field['slug']
+                            'id' => $field->id,
+                            'name' => $field->name,
+                            'slug' => $field->slug,
+                            'type' => $field->type,
+                            'options' => $field->options,
+                            'size' => $field->size,
+                            'required' => (bool)$field->required,
+                            'tab_id' => $field->tab_id,
                         ];
                     })->toArray()
                 ];
-            })->toArray(),
+            })->toArray()
         ];
 
     }

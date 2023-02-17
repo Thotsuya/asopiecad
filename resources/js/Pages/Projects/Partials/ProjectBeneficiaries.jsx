@@ -70,6 +70,26 @@ export default function ProjectBeneficiaries({
         })
     }
 
+    const handleRestore = (beneficiary) => {
+        prompt(
+            '¿Está seguro de restaurar el beneficiario?',
+            'Esta acción no se puede deshacer.'
+        ).then((result) => {
+            if (result.isConfirmed) {
+                Inertia.patch(route('beneficiaries.restore', beneficiary), _, {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        info('Beneficiario restaurado correctamente')
+                    },
+                    onError: () => {
+                        error('Error al restaurar el beneficiario')
+                    },
+                    preserveState: true,
+                })
+            }
+        })
+    }
+
     return (
         <div
             className="tab-pane fade"
@@ -210,6 +230,23 @@ export default function ProjectBeneficiaries({
                                                                 </li>
                                                             )}
 
+                                                        {project.can[
+                                                            'delete-beneficiary'
+                                                        ] &&
+                                                            beneficiary.is_trashed && (
+                                                                <li>
+                                                                    <a
+                                                                        href="#"
+                                                                        onClick={() => {
+                                                                            handleRestore(
+                                                                                beneficiary.id
+                                                                            )
+                                                                        }}
+                                                                    >
+                                                                        Restaurar
+                                                                    </a>
+                                                                </li>
+                                                            )}
                                                         {project.can[
                                                             'delete-beneficiary'
                                                         ] &&

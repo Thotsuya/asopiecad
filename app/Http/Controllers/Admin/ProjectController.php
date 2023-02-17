@@ -102,7 +102,7 @@ class ProjectController extends Controller
                 ->latest('id')
                 ->paginate(6),
             'programs' => ProgramsResource::collection($project->programs()
-                ->with('forms')
+                ->with('forms.tabs','forms.fields')
                 ->latest('id')
                 ->get()),
             'appointments' => AppointmentResource::collection($project->appointments->load('user', 'benefitiary')),

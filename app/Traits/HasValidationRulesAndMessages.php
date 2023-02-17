@@ -7,8 +7,7 @@ trait HasValidationRulesAndMessages {
     {
         $rules = [];
 
-        collect($this->form_fields)->each(function ($tab) use (&$rules) {
-            collect($tab['fields'])->each(function ($field) use (&$rules) {
+            collect($this->fields)->each(function ($field) use (&$rules) {
 
                 $rule = [];
 
@@ -46,7 +45,6 @@ trait HasValidationRulesAndMessages {
 
                 $rules[$field['slug'] . '-' . $this->form_slug . '-' . $this->id] = $rule;
             });
-        });
 
         return $rules;
     }
@@ -54,9 +52,7 @@ trait HasValidationRulesAndMessages {
     public function getFormValidationMessages()
     {
         $messages = [];
-
-        collect($this->form_fields)->each(function ($tab) use (&$messages) {
-            collect($tab['fields'])->each(function ($field) use (&$messages) {
+            collect($this->fields)->each(function ($field) use (&$messages) {
                 if ($field['required']) {
                     $messages[$field['slug'] . '-' . $this->form_slug . '-' . $this->id . '.required'] = 'El campo ' . $field['name'] . ' es requerido';
                 }
@@ -86,33 +82,8 @@ trait HasValidationRulesAndMessages {
                     $messages[$field['slug'] . '-' . $this->form_slug . '-' . $this->id . '.max'] = 'El campo ' . $field['name'] . ' debe tener un máximo de 255 caracteres';
                 }
             });
-        });
 
         return $messages;
-    }
-
-    public function hasFileFields()
-    {
-        return collect($this->form_fields)->map(function ($tab) {
-            return collect($tab['fields'])->map(function ($field) {
-                return $field['type'] == 'file' || $field['type'] == 'image';
-            })->contains(true);
-        })->contains(true);
-    }
-
-    public function getFileFields()
-    {
-        $fields = [];
-
-        collect($this->form_fields)->each(function ($tab) use (&$fields) {
-            collect($tab['fields'])->each(function ($field) use (&$fields) {
-                if ($field['type'] == 'file' || $field['type'] == 'image') {
-                    $fields[] = $field['slug'] . '-' . $this->form_slug . '-' . $this->id;
-                }
-            });
-        });
-
-        return $fields;
     }
 
     public function getFormFields(){

@@ -89,24 +89,6 @@ export default function Goals({ goals = [], auth, onGoalSelected, can }) {
                                                         >
                                                             <i className="fa fa-eye" />
                                                         </button>
-
-                                                        {can[
-                                                            'register-goal-progress'
-                                                        ] && (
-                                                            <button
-                                                                className="btn btn-success btn-xs"
-                                                                data-toggle="modal"
-                                                                data-target="#modal-register-goal-progress"
-                                                                title="Actualizar progreso"
-                                                                onClick={() =>
-                                                                    onGoalSelected(
-                                                                        goal
-                                                                    )
-                                                                }
-                                                            >
-                                                                <i className="fa fa-check" />
-                                                            </button>
-                                                        )}
                                                     </div>
                                                 </td>
                                             </tr>

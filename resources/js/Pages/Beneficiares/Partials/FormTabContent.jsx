@@ -9,7 +9,9 @@ export default function FormTabContent({ form, tab, index, children }) {
                 aria-labelledby={`tab-${tab.slug}-tab`}
             >
                 <div className="row">
-                    <div className="col-xs-12">{children}</div>
+                    <div className="col-xs-12">
+                        <div className="row">{children}</div>
+                    </div>
                 </div>
             </div>
         </>
