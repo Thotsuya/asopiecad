@@ -26,8 +26,8 @@ export default function GeneralInformation({ project }) {
                     <dd>{project.beneficiaries_count} Beneficiarios</dd>
                     <dt className="margin-top-10">Usuarios</dt>
                     <dd>{project.users_count} Usuarios</dd>
-                    <dt className="margin-top-10">Meta Global</dt>
-                    <dd>{project.global_goal} Beneficiarios</dd>
+                    <dt className="margin-top-10">Duración</dt>
+                    <dd>{project.project_duration} años</dd>
                 </div>
             </div>
         </div>

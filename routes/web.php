@@ -61,6 +61,10 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/tabs/{tab}/fields', [App\Http\Controllers\Admin\FieldController::class, 'store'])->name('tabs.fields.store');
 
+    Route::get('/goals/{goal}/reports', [App\Http\Controllers\Admin\GoalController::class, 'show'])->name('goals.reports.index');
+
+    Route::get('/programs/{program}/forms', [App\Http\Controllers\Admin\ProgramFormController::class, 'create'])->name('programs.forms.create');
+    Route::post('/program/{program}/beneficiaries/remove', [App\Http\Controllers\Admin\ProgramFormController::class, 'remove'])->name('programs.beneficiaries.remove');
 
 });
 

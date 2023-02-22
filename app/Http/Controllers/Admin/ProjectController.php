@@ -8,6 +8,7 @@ use App\Http\Requests\ProjectUpdateRequest;
 use App\Http\Resources\AppointmentResource;
 use App\Http\Resources\BeneficiaryResource;
 use App\Http\Resources\GoalResource;
+use App\Http\Resources\PaginatedProgramsResource;
 use App\Http\Resources\ProgramsResource;
 use App\Http\Resources\ProjectEditResource;
 use App\Http\Resources\ProjectResource;
@@ -45,7 +46,7 @@ class ProjectController extends Controller
 
         return inertia('Projects/Index', [
             'projects' => $projects
-                ->withCount('beneficiaries', 'users', 'programs')
+                ->withCount('beneficiaries', 'users')
                 ->latest('id')
                 ->paginate(6)
                 ->through(function (Project $project) {
@@ -98,11 +99,15 @@ class ProjectController extends Controller
                     return BeneficiaryResource::make($beneficiary);
                 }),
             'paginated_programs' => $project->programs()
+                ->with('beneficiaries')
                 ->withCount('beneficiaries')
                 ->latest('id')
-                ->paginate(6),
+                ->paginate(6)
+                ->through(function ($program) {
+                    return PaginatedProgramsResource::make($program);
+                }),
             'programs' => ProgramsResource::collection($project->programs()
-                ->with('forms.tabs','forms.fields')
+                ->with(['forms.tabs','forms.fields','beneficiaries'])
                 ->latest('id')
                 ->get()),
             'appointments' => AppointmentResource::collection($project->appointments->load('user', 'benefitiary')),
@@ -114,10 +119,9 @@ class ProjectController extends Controller
                     return AppointmentResource::make($appointment);
                 }),
             'beneficiaries_not_in_project' => Benefitiary::query()
-                ->whereDoesntHave('projects', fn($query) => $query->where('project_id', $project->id))
                 ->select('id', 'uuid', 'name')
                 ->get(),
-            'project' => new ProjectResource($project->load('beneficiaries', 'users')->loadCount('beneficiaries', 'users', 'programs')),
+            'project' => new ProjectResource($project->load('beneficiaries', 'users','programs')->loadCount('beneficiaries', 'users', 'programs')),
             'goals' => $project->goals()
                 ->latest('id')
                 ->with(['project', 'program'])
@@ -156,6 +160,8 @@ class ProjectController extends Controller
         $project->update([
             'project_name' => $request->project_name,
             'project_description' => $request->project_description,
+            'project_duration' => $request->project_duration,
+            'project_start_date' => $request->project_start_date,
         ]);
 
         if ($request->validated()['users']) {

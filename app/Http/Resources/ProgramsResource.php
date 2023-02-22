@@ -21,6 +21,17 @@ class ProgramsResource extends JsonResource
                 // return a FormResource collection
                 return FormsResource::collection($this->forms);
             }),
+            'beneficiaries' => $this->whenLoaded('beneficiaries', function () {
+                return $this->beneficiaries->map(function ($beneficiary) {
+                    return [
+                        'id'          => $beneficiary->id,
+                        'uuid'        => $beneficiary->uuid,
+                        'internal_id' => $beneficiary->internal_id,
+                        'name'        => $beneficiary->name,
+                        'created_at'  => $beneficiary->pivot->created_at,
+                    ];
+                });
+            }),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

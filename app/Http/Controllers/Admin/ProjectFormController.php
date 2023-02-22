@@ -50,7 +50,7 @@ class ProjectFormController extends Controller
             'forms'       => BeneficiaryFormsResource::collection($forms),
             'is_new'      => $request->is_new_beneficiary === 'true',
             'beneficiary' => $request->is_new_beneficiary === 'true' ? $request->beneficiary_name : BeneficiaryResource::make(
-                Benefitiary::findOrFail($request->beneficiary_id)->load('forms')
+                Benefitiary::with('answers.pivot.field')->findOrFail($request->beneficiary_id)
             ),
         ]);
     }
@@ -147,7 +147,7 @@ class ProjectFormController extends Controller
             $beneficiary->answers()->syncWithoutDetaching($fields);
         });
 
-        $beneficiary->programs()->sync($programs->pluck('id'));
+        $beneficiary->programs()->syncWithoutDetaching($programs->pluck('id'));
         $project->beneficiaries()->syncWithoutDetaching($beneficiary->id);
         $beneficiary->forms()->syncWithoutDetaching($forms->pluck('id'));
 

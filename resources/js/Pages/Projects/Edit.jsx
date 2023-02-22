@@ -34,6 +34,8 @@ export default function Edit({ auth, project, forms, users, roles }) {
                   })
                 : [],
             global_goal: project.global_goal ?? 1,
+            project_duration: project.project_duration ?? 1,
+            project_start_date: project.project_start_date ?? '',
         })
 
     const { success, error } = useToasts()
@@ -71,6 +73,10 @@ export default function Edit({ auth, project, forms, users, roles }) {
 
     const onGlobalGoalChange = (e) => {
         setData('global_goal', e.target.value)
+    }
+
+    const onDurationChange = (e) => {
+        setData('project_duration', e.target.value)
     }
 
     const toggleProgramEdit = (program_id) => {
@@ -123,6 +129,10 @@ export default function Edit({ auth, project, forms, users, roles }) {
         )
     }
 
+    const onProjectStartDateChange = (e) => {
+        setData('project_start_date', e.target.value)
+    }
+
     const handleFormSubmit = (e) => {
         put(route('projects.update', project.uuid), {
             preserveScroll: true,
@@ -171,6 +181,8 @@ export default function Edit({ auth, project, forms, users, roles }) {
                         onMemberRemove={onMemberRemove}
                         onFormRemove={onFormRemove}
                         onGlobalGoalChange={onGlobalGoalChange}
+                        onProjectDurationChange={onDurationChange}
+                        onProjectStartDateChange={onProjectStartDateChange}
                     />
                 </div>
 

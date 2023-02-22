@@ -28,6 +28,8 @@ class ProjectResource extends JsonResource
             'created_at' => $this->created_at->translatedFormat('d F Y'),
             'updated_at' => $this->updated_at->diffForHumans(),
             'beneficiaries_count' => $this->beneficiaries_count,
+            'project_duration' => $this->project_duration,
+            'project_start_date' => $this->project_start_date,
             'users_count' => $this->users_count,
             'programs_count' => $this->programs_count,
             'global_goal' => $this->global_goal,

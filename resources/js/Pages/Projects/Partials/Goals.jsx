@@ -1,4 +1,5 @@
 import Pagination from '@/Components/Pagination'
+import { Link } from '@inertiajs/inertia-react'
 
 export default function Goals({ goals = [], auth, onGoalSelected, can }) {
     return (
@@ -76,19 +77,15 @@ export default function Goals({ goals = [], auth, onGoalSelected, can }) {
                                                 </td>
                                                 <td className="text-center">
                                                     <div className="btn-group">
-                                                        <button
-                                                            type="button"
+                                                        <Link
+                                                            href={route(
+                                                                'goals.reports.index',
+                                                                goal.id
+                                                            )}
                                                             className="btn btn-xs btn-info"
-                                                            data-toggle="modal"
-                                                            data-target="#modal-view-goal-progress"
-                                                            onClick={() =>
-                                                                onGoalSelected(
-                                                                    goal
-                                                                )
-                                                            }
                                                         >
                                                             <i className="fa fa-eye" />
-                                                        </button>
+                                                        </Link>
                                                     </div>
                                                 </td>
                                             </tr>

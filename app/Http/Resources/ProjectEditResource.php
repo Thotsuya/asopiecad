@@ -19,6 +19,8 @@ class ProjectEditResource extends JsonResource
             'uuid' => $this->uuid,
             'project_name' => $this->project_name,
             'project_description' => $this->project_description,
+            'project_duration' => $this->project_duration,
+            'project_start_date' => $this->project_start_date,
             'global_goal' => $this->global_goal,
             'users' => $this->users,
             'programs' => $this->whenLoaded('programs', function () {

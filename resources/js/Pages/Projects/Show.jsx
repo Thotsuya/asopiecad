@@ -9,6 +9,7 @@ import ProjectTabs from '@/Pages/Projects/Partials/ProjectTabs'
 // Modals
 import BeneficiaryCreateModal from '@/Components/Projects/BeneficiaryCreateModal'
 import AppointmentCreateModal from '@/Components/Appointments/AppointmentCreateModal'
+import ProgramShowModal from '@/Pages/Projects/Partials/ProgramShowModal'
 
 // Hooks
 import { useEffect, useState } from 'react'
@@ -20,6 +21,7 @@ import GoalsCreateModal from '@/Components/Goals/GoalsCreateModal'
 import GoalsProgressModal from '@/Components/Goals/GoalsProgressModal'
 import GoalsViewProgressModal from '@/Components/Goals/GoalsViewProgressModal'
 import GeneralInformation from '@/Pages/Projects/Partials/GeneralInformation'
+import ProgramBeneficiaryModal from '@/Pages/Projects/Partials/ProgramBeneficiaryModal'
 
 export default function Show({
     auth,
@@ -35,6 +37,7 @@ export default function Show({
     const [selectedBeneficiary, setSelectedBeneficiary] = useState(null)
     const [selectedAppointment, setSelectedAppointment] = useState(null)
     const [selectedGoal, setSelectedGoal] = useState(null)
+    const [selectedProgram, setSelectedProgram] = useState(null)
 
     return (
         <>
@@ -76,7 +79,11 @@ export default function Show({
 
                             <div className="tab-content" id="myTabContent">
                                 <GeneralInformation project={project} />
-                                <Programs programs={paginated_programs} />
+                                <Programs
+                                    programs={paginated_programs}
+                                    beneficiaries={beneficiaries_not_in_project}
+                                    setSelectedProgram={setSelectedProgram}
+                                />
                                 <ProjectBeneficiaries
                                     beneficiaries={beneficiaries}
                                     project={project}
@@ -125,6 +132,13 @@ export default function Show({
             <GoalsCreateModal project={project} programs={programs} />
             <GoalsProgressModal goal={selectedGoal} project={project} />
             <GoalsViewProgressModal goal={selectedGoal} />
+
+            <ProgramBeneficiaryModal
+                beneficiaries={beneficiaries_not_in_project}
+                program={selectedProgram}
+            />
+
+            <ProgramShowModal program={selectedProgram} />
         </>
     )
 }

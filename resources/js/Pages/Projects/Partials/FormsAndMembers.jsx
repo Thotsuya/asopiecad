@@ -8,6 +8,8 @@ export default function FormsAndMembers({
     onFormSelect,
     onMemberRemove,
     onFormRemove,
+    onProjectDurationChange,
+    onProjectStartDateChange,
     roles,
 }) {
     const [member, setMember] = useState({
@@ -118,14 +120,32 @@ export default function FormsAndMembers({
                 <div className="box-content">
                     <div className="form-group">
                         <label htmlFor="forms">
-                            Duración del Proyecto en años
+                            Duración del Proyecto (en años)
                         </label>
                         <input
                             type="number"
                             className="form-control"
                             name="duration"
                             id="duration"
-                            defaultValue={project.duration}
+                            defaultValue={project.project_duration}
+                            onChange={onProjectDurationChange}
+                        />
+                    </div>
+                </div>
+            </div>
+            <div className="col-xs-12">
+                <div className="box-content">
+                    <div className="form-group">
+                        <label htmlFor="start_date">
+                            Fecha de Inicio del Proyecto
+                        </label>
+                        <input
+                            type="date"
+                            className="form-control"
+                            name="start_date"
+                            id="start_date"
+                            defaultValue={project.project_start_date}
+                            onChange={onProjectStartDateChange}
                         />
                     </div>
                 </div>

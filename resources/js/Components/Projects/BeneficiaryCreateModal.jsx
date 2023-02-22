@@ -13,6 +13,7 @@ export default function BeneficiaryCreateModal({ project, beneficiaries }) {
             beneficiary_name: '',
             is_new_beneficiary: false,
             forms: [],
+            programs: [],
         })
 
     const handleSubmit = () => {
@@ -77,33 +78,37 @@ export default function BeneficiaryCreateModal({ project, beneficiaries }) {
                                     }`}
                                 >
                                     <label htmlFor="name">
-                                        Beneficiarios Existentes no registrados
-                                        en el proyecto
+                                        Beneficiarios Registrados
                                     </label>
-                                    <select
-                                        className="form-control"
-                                        id="beneficiary"
-                                        name="beneficiary"
-                                        disabled={
-                                            data.is_new_beneficiary ||
-                                            beneficiaries.length === 0
+                                    <Select
+                                        id="beneficiary_id"
+                                        name="beneficiary_id"
+                                        placeholder="Seleccione un beneficiario"
+                                        disabled={data.is_new_beneficiary}
+                                        noOptionsMessage={() =>
+                                            'No hay beneficiarios disponibles'
                                         }
-                                        onChange={(e) => {
-                                            setData({
+                                        options={beneficiaries.map(
+                                            (beneficiary) => {
+                                                return {
+                                                    value: beneficiary.id,
+                                                    label: beneficiary.name,
+                                                }
+                                            }
+                                        )}
+                                        isSearchable
+                                        isDisabled={
+                                            beneficiaries.length === 0 ||
+                                            data.is_new_beneficiary
+                                        }
+                                        onChange={(option) => {
+                                            setData((data) => ({
                                                 ...data,
-                                                beneficiary_id: e.target.value,
-                                            })
+                                                beneficiary_id: option.value,
+                                                beneficiary_name: option.label,
+                                            }))
                                         }}
-                                    >
-                                        {beneficiaries.map((beneficiary) => (
-                                            <option
-                                                key={beneficiary.id}
-                                                value={beneficiary.id}
-                                            >
-                                                {beneficiary.name}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    />
                                     {errors.beneficiary_id && (
                                         <span className="help-block">
                                             {errors.beneficiary_id}
@@ -158,7 +163,6 @@ export default function BeneficiaryCreateModal({ project, beneficiaries }) {
                                                     e.target.value
                                                 )
                                             }
-                                            disabled={!data.is_new_beneficiary}
                                         />
                                         {errors.beneficiary_name && (
                                             <span className="help-block">

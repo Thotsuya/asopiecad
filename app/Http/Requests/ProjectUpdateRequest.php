@@ -26,8 +26,10 @@ class ProjectUpdateRequest extends FormRequest
         return [
             'project_name' => ['required', 'string', 'max:255'],
             'project_description' => ['sometimes', 'string', 'max:255'],
+            'project_duration' => ['required', 'integer', 'min:1'],
             'users' => ['sometimes', 'array'],
             'users.*.id' => ['exists:users,id'],
+            'project_start_date' => ['required', 'date'],
         ];
     }
 
@@ -57,6 +59,12 @@ class ProjectUpdateRequest extends FormRequest
             'forms.*.exists' => 'El formulario no existe',
             'global_goal.numeric' => 'La meta global debe ser un número',
             'global_goal.min' => 'La meta global debe ser mayor o igual a 0',
+            'global_goal.max' => 'La meta global debe ser menor o igual a 100',
+            'project_duration.required' => 'La duración es requerida',
+            'project_duration.integer' => 'La duración debe ser un número entero',
+            'project_duration.min' => 'La duración debe ser mayor o igual a 1',
+            'project_start_date.required' => 'La fecha de inicio es requerida',
+            'project_start_date.date' => 'La fecha de inicio debe ser una fecha válida',
         ];
     }
 
