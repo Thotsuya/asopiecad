@@ -180,13 +180,11 @@ export default function CreateDataOnly({
                                                                         false
                                                                     }
                                                                     onChange={(
-                                                                        e
+                                                                        value
                                                                     ) => {
                                                                         setData(
                                                                             `${field.slug}-${form.form_slug}-${form.id}`,
-                                                                            e
-                                                                                .target
-                                                                                .value
+                                                                            value
                                                                         )
                                                                     }}
                                                                     value={
@@ -217,22 +215,12 @@ export default function CreateDataOnly({
                                                                         false
                                                                     }
                                                                     onChange={(
-                                                                        e
+                                                                        value
                                                                     ) => {
                                                                         // Push or remove from array
                                                                         setData(
                                                                             `${field.slug}-${form.form_slug}-${form.id}`,
-                                                                            Object.values(
-                                                                                e
-                                                                                    .target
-                                                                                    .selectedOptions
-                                                                            ).map(
-                                                                                (
-                                                                                    option
-                                                                                ) => {
-                                                                                    return option.value
-                                                                                }
-                                                                            )
+                                                                            value
                                                                         )
                                                                     }}
                                                                     value={

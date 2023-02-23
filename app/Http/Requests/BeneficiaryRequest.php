@@ -26,8 +26,7 @@ class BeneficiaryRequest extends FormRequest
     public function rules()
     {
         return [
-            'beneficiary_id' => [Rule::requiredIf($this->is_new_beneficiary === 'false'),
-                new BenefitiaryExistsInProject($this->beneficiary_id, $this->project_id, $this->is_new_beneficiary === 'true', $this->data_only === 'true')],
+            'beneficiary_id' => [Rule::requiredIf($this->is_new_beneficiary === 'false')],
             'is_new_beneficiary' => ['required'],
             'beneficiary_name' => [Rule::requiredIf($this->is_new_beneficiary === 'true')],
             'project_id' => [Rule::requiredIf(!$this->data_only == 'true')],

@@ -1,14 +1,64 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head } from '@inertiajs/inertia-react'
+import {
+    CategoryScale,
+    Chart as ChartJS,
+    Legend,
+    LinearScale,
+    LineElement,
+    PointElement,
+    Title,
+    Tooltip,
+} from 'chart.js'
+import { Line } from 'react-chartjs-2'
 
-export default function Show({ auth, project, results }) {
+export default function Show({ auth, project, results, beneficiaries }) {
+    ChartJS.register(
+        CategoryScale,
+        LinearScale,
+        PointElement,
+        LineElement,
+        Title,
+        Tooltip,
+        Legend
+    )
+
+    const options = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Beneficiarios en el proyecto: ' + project.project_name,
+            },
+        },
+    }
+
+    const data = {
+        labels: beneficiaries
+            ? beneficiaries.map((beneficiary) => beneficiary.label)
+            : [],
+        datasets: [
+            {
+                label: 'Beneficiarios a lo largo del tiempo',
+                data: beneficiaries
+                    ? beneficiaries.map((beneficiary) => beneficiary.value)
+                    : [],
+                borderColor: 'rgb(255, 99, 132)',
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            },
+        ],
+    }
+
     return (
         <AuthenticatedLayout auth={auth}>
             <Head title="Configurar reportes" />
             {console.log(results)}
             <div className="row">
                 <div className="col-xs-12">
-                    <h4 className="box-title">Configurar reportes</h4>
+                    <h4 className="box-title">Reportes</h4>
                     <div className="alert alert-info">
                         <p>
                             <i className="fa fa-info-circle" /> En esta sección
@@ -24,7 +74,6 @@ export default function Show({ auth, project, results }) {
             </div>
 
             <div className="row">
-                {console.log(results)}
                 {results.map((result, index) => (
                     <div className="col-xs-12 col-md-12">
                         <div className="box-content">
@@ -164,6 +213,18 @@ export default function Show({ auth, project, results }) {
                         </div>
                     </div>
                 ))}
+
+                {beneficiaries && (
+                    <div className="col-xs-12 col-md-12">
+                        <div className="box-content">
+                            <div className="row">
+                                <div className="col-xs-12">
+                                    <Line options={options} data={data} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </AuthenticatedLayout>
     )

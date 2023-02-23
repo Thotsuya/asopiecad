@@ -78,7 +78,6 @@ class ProjectFormController extends Controller
 
             $forms->each(function (Form $form) use ($beneficiary, $request) {
                 $fields = $form->fields->mapWithKeys(function ($field) use ($request) {
-                    //[$field['slug'] . '-' . $this->form_slug . '-' . $this->id]
                     return [$field->id => [
                             'value' => is_array(
                                 $request->validated()[$field->getFieldFormattedSlug()]

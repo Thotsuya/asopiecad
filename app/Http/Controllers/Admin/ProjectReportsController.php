@@ -21,6 +21,31 @@ class ProjectReportsController extends Controller
             ->with('program.beneficiaries.answers.pivot.field')
             ->get();
 
+        // Group the Beneficiaries by their month of registration in the following format
+        // [
+        //   'label' => 'Enero',
+        //   'value' => 10,
+        // ]
+        $beneficiaries = $project->beneficiaries()
+            ->with('forms')
+            ->with('answers.pivot.field')
+            ->get()
+            ->groupBy(function ($beneficiary) {
+                return $beneficiary->pivot->created_at->format('m');
+            })
+            ->map(function ($beneficiaries, $month) {
+                return [
+                    'label' => Str::title($beneficiaries->first()->pivot->created_at->translatedFormat('F')),
+                    'value' => $beneficiaries->count(),
+                ];
+            })
+            // Sort the collection by the month number
+            ->sortBy(function ($beneficiary) {
+                return $beneficiary['label'];
+            })
+            ->values();
+
+
         $results = $goals->map(function ($goal) {
             return [
                 'id'               => $goal->id,
@@ -74,6 +99,7 @@ class ProjectReportsController extends Controller
         return inertia('Reports/Show', [
             'project' => $project,
             'results' => $results,
+            'beneficiaries' => $beneficiaries,
         ]);
     }
 

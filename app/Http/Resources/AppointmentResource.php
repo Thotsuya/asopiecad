@@ -22,6 +22,8 @@ class AppointmentResource extends JsonResource
             'textColor' => '#ffffff',
             'backgroundColor' => '#ffffff',
             'formatted_date' => $this->start_date->translatedFormat('l, d F Y h:i A'),
+            // Next appointment in 3 months
+            'next_appointment' => $this->start_date->addMonths(3)->translatedFormat('l, d F Y h:i A'),
             'comments' => $this->comments,
             'user' => $this->whenLoaded('user', function () {
                 return [

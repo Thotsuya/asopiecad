@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('benefitiary_id')->constrained();
             $table->foreignId('field_id')->constrained();
-            $table->string('value');
+            $table->string('value')->nullable();
             $table->string('type')->nullable();
             $table->timestamps();
         });

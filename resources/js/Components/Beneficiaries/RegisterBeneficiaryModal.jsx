@@ -1,7 +1,7 @@
 import { useForm } from '@inertiajs/inertia-react'
 import useSelect from '@/Hooks/Select'
-import { useEffect } from 'react'
 import useToasts from '@/Hooks/Toasts'
+import Select from 'react-select'
 
 export default function RegisterBeneficiaryModal({
     projects,
@@ -13,6 +13,7 @@ export default function RegisterBeneficiaryModal({
         beneficiary_name: '',
         is_new_beneficiary: false,
         project_id: projects[0] ? projects[0].id : '',
+        programs: [],
         data_only: false,
         forms: [],
     })
@@ -29,18 +30,6 @@ export default function RegisterBeneficiaryModal({
             data.forms.filter((f) => f !== parseInt(form))
         )
     }
-
-    useSelect({
-        el: '.select2',
-        onChange: (form) => {
-            onFormSelect(form)
-        },
-        onRemove: (form) => {
-            onFormRemove(form)
-        },
-        placeholder: 'Selecciona uno o más formularios',
-        selected: data.forms ? data.forms : [],
-    })
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -97,30 +86,25 @@ export default function RegisterBeneficiaryModal({
                                     <label htmlFor="name">
                                         Beneficiarios Existentes
                                     </label>
-                                    <select
-                                        className="form-control"
-                                        id="beneficiary"
-                                        name="beneficiary"
-                                        disabled={
-                                            data.is_new_beneficiary ||
-                                            beneficiaries.length === 0
-                                        }
-                                        onChange={(e) => {
-                                            setData({
-                                                ...data,
-                                                beneficiary_id: e.target.value,
+                                    <Select
+                                        name="beneficiary_id"
+                                        options={beneficiaries.map(
+                                            (beneficiary) => ({
+                                                value: beneficiary.id,
+                                                label: beneficiary.name,
                                             })
+                                        )}
+                                        onChange={(beneficiary) => {
+                                            setData((data) => ({
+                                                ...data,
+                                                beneficiary_id:
+                                                    beneficiary.value,
+                                            }))
                                         }}
-                                    >
-                                        {beneficiaries.map((beneficiary) => (
-                                            <option
-                                                key={beneficiary.id}
-                                                value={beneficiary.id}
-                                            >
-                                                {beneficiary.name}
-                                            </option>
-                                        ))}
-                                    </select>
+                                        isDisabled={data.is_new_beneficiary}
+                                        noOptionsMessage={() => 'No hay datos'}
+                                        placeholder="Selecciona un beneficiario"
+                                    />
                                     {errors.beneficiary_id && (
                                         <span className="help-block">
                                             {errors.beneficiary_id}
@@ -192,31 +176,25 @@ export default function RegisterBeneficiaryModal({
                                     }`}
                                 >
                                     <label htmlFor="project">Proyecto</label>
-                                    <select
-                                        className="form-control"
-                                        id="project"
-                                        name="project"
-                                        onChange={(e) => {
-                                            setData(
-                                                'project_id',
-                                                e.target.value
-                                            )
+                                    <Select
+                                        name="project_id"
+                                        options={projects.map((project) => ({
+                                            value: project.id,
+                                            label: project.project_name,
+                                        }))}
+                                        onChange={(project) => {
+                                            setData((data) => ({
+                                                ...data,
+                                                project_id: project.value,
+                                            }))
                                         }}
-                                        value={data.project_id}
-                                        disabled={
+                                        noOptionsMessage={() => 'No hay datos'}
+                                        placeholder="Selecciona un proyecto"
+                                        isDisabled={
                                             projects.length === 0 ||
                                             data.data_only
                                         }
-                                    >
-                                        {projects.map((project) => (
-                                            <option
-                                                key={project.id}
-                                                value={project.id}
-                                            >
-                                                {project.project_name}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    />
                                 </div>
 
                                 <div className="checkbox">
@@ -252,22 +230,74 @@ export default function RegisterBeneficiaryModal({
                                             Formularios
                                         </label>
 
-                                        <select
-                                            className="form-control select2"
-                                            id="forms"
+                                        <Select
                                             name="forms"
-                                        >
-                                            {forms.map((form) => (
-                                                <option
-                                                    key={form.id}
-                                                    value={form.id}
-                                                >
-                                                    {form.form_name}
-                                                </option>
-                                            ))}
-                                        </select>
+                                            options={forms.map((form) => ({
+                                                value: form.id,
+                                                label: form.form_name,
+                                            }))}
+                                            isMulti
+                                            onChange={(form) => {
+                                                setData((data) => ({
+                                                    ...data,
+                                                    forms: form.map(
+                                                        (form) => form.value
+                                                    ),
+                                                }))
+                                            }}
+                                            noOptionsMessage={() =>
+                                                'No hay datos'
+                                            }
+                                            placeholder="Selecciona un formulario"
+                                            isDisabled={
+                                                forms.length === 0 ||
+                                                !data.data_only
+                                            }
+                                        />
                                     </div>
                                 )}
+                            </div>
+
+                            <div className="col-xs-12">
+                                <div
+                                    className={`form-group ${
+                                        errors.program_id ? 'has-error' : ''
+                                    }
+                                    `}
+                                >
+                                    <label htmlFor="program">Programa</label>
+                                    <Select
+                                        name="program_id"
+                                        options={projects
+                                            .find(
+                                                (project) =>
+                                                    project.id ===
+                                                    data.project_id
+                                            )
+                                            ?.programs.map((program) => ({
+                                                value: program.id,
+                                                label: program.program_name,
+                                            }))}
+                                        isMulti
+                                        onChange={(program) => {
+                                            setData((data) => ({
+                                                ...data,
+                                                programs: program.map(
+                                                    (program) => program.value
+                                                ),
+                                            }))
+                                        }}
+                                        noOptionsMessage={() => 'No hay datos'}
+                                        placeholder="Selecciona un programa"
+                                        isDisabled={
+                                            projects.find(
+                                                (project) =>
+                                                    project.id ===
+                                                    data.project_id
+                                            )?.programs.length === 0
+                                        }
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>

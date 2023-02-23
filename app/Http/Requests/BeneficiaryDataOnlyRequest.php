@@ -33,6 +33,7 @@ class BeneficiaryDataOnlyRequest extends FormRequest
             })->collapse()
             ->merge([
                 'name' => ['required', 'string', 'max:255'],
+                'forms' => ['sometimes', 'array'],
             ])->toArray();
     }
 
@@ -48,6 +49,7 @@ class BeneficiaryDataOnlyRequest extends FormRequest
                 'name.required' => 'El nombre del beneficiario es requerido',
                 'name.string' => 'El nombre del beneficiario debe ser un texto',
                 'name.max' => 'El nombre del beneficiario debe tener como máximo 255 caracteres',
+                'forms.array' => 'Los formularios deben ser un arreglo',
             ])->toArray();
     }
 }

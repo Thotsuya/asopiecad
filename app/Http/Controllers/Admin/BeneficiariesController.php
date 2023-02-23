@@ -46,6 +46,7 @@ class BeneficiariesController extends Controller
             'projects' => Project::query()
                 ->latest('id')
                 ->select('id', 'uuid', 'project_name')
+                ->with('programs')
                 ->get(),
 
             'forms' => Form::query()
@@ -64,38 +65,56 @@ class BeneficiariesController extends Controller
 
     public function create(BeneficiaryRequest $request)
     {
-
-        //return $request->validated();
-        // Remove query string from url
         if ($request->validated()['data_only'] === 'false') {
             $project = Project::findOrFail($request->validated()['project_id']);
+            $programs = $project
+                ->programs()
+                ->with('forms')
+                ->whereIn(
+                    'id',
+                    collect($request->input('programs'))
+                        ->map(fn($program) => (int)$program)
+                        ->toArray()
+                )
+                ->get();
+
+            $forms = $programs->map(fn($program) => $program->forms->load('tabs.fields'))->flatten()->unique('id');
+
             return inertia('Beneficiares/Create', [
-                'project' => $project,
-                'forms' => BeneficiaryFormsResource::collection($project->forms()->get()),
-                'is_new' => $request->validated()['is_new_beneficiary'] === 'true',
-                'beneficiary' => $request->validated()['is_new_beneficiary'] === 'true' ? $request->validated()['beneficiary_name'] : BeneficiaryResource::make(Benefitiary::findOrFail($request->validated()['beneficiary_id'])->load('forms')),
+                'project'     => $project,
+                'programs'    => $programs->pluck('id'),
+                'forms'       => BeneficiaryFormsResource::collection($forms),
+                'is_new'      => $request->validated()['is_new_beneficiary'] === 'true',
+                'beneficiary' => $request->is_new_beneficiary === 'true'
+                    ? $request->beneficiary_name
+                    : BeneficiaryResource::make(
+                        Benefitiary::with('answers.pivot.field')->findOrFail($request->beneficiary_id)
+                    ),
             ]);
         }
 
 
         return inertia('Beneficiares/CreateDataOnly', [
-            'forms' => BeneficiaryFormsResource::collection(
+            'forms'       => BeneficiaryFormsResource::collection(
                 Form::query()
                     ->whereIn('id', $request->validated()['forms'])
                     ->get()
             ),
-            'is_new' => $request->validated()['is_new_beneficiary'] === 'true',
-            'data_only' => $request->validated()['data_only'] === 'true',
-            'beneficiary' => $request->validated()['is_new_beneficiary'] === 'true' ? $request->validated()['beneficiary_name'] : BeneficiaryResource::make(Benefitiary::findOrFail($request->validated()['beneficiary_id'])->load('forms')),
+            'is_new'      => $request->validated()['is_new_beneficiary'] === 'true',
+            'data_only'   => $request->validated()['data_only'] === 'true',
+            'beneficiary' => $request->is_new_beneficiary === 'true'
+                ? $request->beneficiary_name
+                : BeneficiaryResource::make(
+                    Benefitiary::with('answers.pivot.field')->findOrFail($request->beneficiary_id)
+                ),
         ]);
-
     }
 
     public function edit(Benefitiary $beneficiary)
     {
         return Inertia::render('Beneficiares/EditDataOnly', [
             'beneficiary' => BeneficiaryResource::make($beneficiary->load('answers.pivot.field.tab')),
-            'forms' => BeneficiaryFormsResource::collection($beneficiary->forms()->get()),
+            'forms'       => BeneficiaryFormsResource::collection($beneficiary->forms()->get()),
         ]);
     }
 
@@ -103,8 +122,8 @@ class BeneficiariesController extends Controller
     {
         return Inertia::render('Beneficiares/Show', [
             'beneficiary' => BeneficiaryResource::make($beneficiary),
-            'projects' => $beneficiary->projects,
-            'forms' => BeneficiaryFormsResource::collection($beneficiary->forms()->get()),
+            'projects'    => $beneficiary->projects,
+            'forms'       => BeneficiaryFormsResource::collection($beneficiary->forms()->get()),
         ]);
     }
 
@@ -112,46 +131,69 @@ class BeneficiariesController extends Controller
     public function store(BeneficiaryDataOnlyRequest $request)
     {
 
+        $benefitiary = Benefitiary::create([
+            'name'            => $request->validated()['name'],
+            'internal_status' => auth()->user()->can(
+                'Aprobar Beneficiarios'
+            ) ? Benefitiary::INTERNAL_STATUSES['approved'] : Benefitiary::INTERNAL_STATUSES['pending'],
+            'approved_at'     => auth()->user()->can('Aprobar Beneficiarios') ? now() : null,
+        ]);
+
         $forms = Form::query()
             ->whereIn('id', collect($request->forms)->pluck('id')->toArray())
             ->get()
-            ->mapWithKeys(function (Form $form) use ($request) {
-                $fields = $form->getFormFields();
-                return [$form->id => [
-                    'form_data' => json_encode(collect($request->validated())->only($fields)->toArray())
-                ]];
+            ->each(function (Form $form) use ($benefitiary, $request) {
+                $fields = $form->fields->mapWithKeys(function ($field) use ($request) {
+                    //[$field['slug'] . '-' . $this->form_slug . '-' . $this->id]
+                    return [$field->id => [
+                        'value' => is_array(
+                            $request->validated()[$field->getFieldFormattedSlug()]
+                        )
+                            ? json_encode($request->validated()[$field->getFieldFormattedSlug()])
+                            : $request->validated()[$field->getFieldFormattedSlug()]
 
-            })->toArray();
+                    ]
+                    ];
+                })->toArray();
 
-        $benefitiary = Benefitiary::create([
-            'name' => $request->validated()['name'],
-            'internal_status' => auth()->user()->can('Aprobar Beneficiarios') ? Benefitiary::INTERNAL_STATUSES['approved'] : Benefitiary::INTERNAL_STATUSES['pending'],
-            'approved_at' => auth()->user()->can('Aprobar Beneficiarios') ? now() : null,
-        ]);
+                $benefitiary->answers()->syncWithoutDetaching($fields);
+            });
 
-        $benefitiary->forms()->attach($forms);
+        $benefitiary->forms()->syncWithoutDetaching($forms);
 
         return redirect()->route('beneficiaries.index');
     }
 
     public function update(BeneficiaryDataOnlyRequest $request, Benefitiary $beneficiary)
     {
+
+        $beneficiary->update([
+            'name'            => $request->validated()['name'],
+            'internal_status' => auth()->user()->can(
+                'Aprobar beneficiarios'
+            ) ? Benefitiary::INTERNAL_STATUSES['approved'] : Benefitiary::INTERNAL_STATUSES['pending'],
+            'approved_at'     => auth()->user()->can('Aprobar beneficiarios') ? now() : null,
+        ]);
+
         $forms = Form::query()
             ->whereIn('id', collect($request->forms)->pluck('id')->toArray())
             ->get()
-            ->mapWithKeys(function (Form $form) use ($request) {
-                $fields = $form->getFormFields();
-                return [$form->id => [
-                    'form_data' => json_encode(collect($request->validated())->only($fields)->toArray())
-                ]];
+            ->each(function (Form $form) use ($beneficiary, $request) {
+                $fields = $form->fields->mapWithKeys(function ($field) use ($request) {
+                    //[$field['slug'] . '-' . $this->form_slug . '-' . $this->id]
+                    return [$field->id => [
+                        'value' => is_array(
+                            $request->validated()[$field->getFieldFormattedSlug()]
+                        )
+                            ? json_encode($request->validated()[$field->getFieldFormattedSlug()])
+                            : $request->validated()[$field->getFieldFormattedSlug()]
 
-            })->toArray();
+                    ]
+                    ];
+                })->toArray();
 
-        $beneficiary->update([
-            'name' => $request->validated()['name'],
-            'internal_status' => auth()->user()->can('Aprobar beneficiarios') ? Benefitiary::INTERNAL_STATUSES['approved'] : Benefitiary::INTERNAL_STATUSES['pending'],
-            'approved_at' => auth()->user()->can('Aprobar beneficiarios') ? now() : null,
-        ]);
+                $beneficiary->answers()->syncWithoutDetaching($fields);
+            });
 
         $beneficiary->forms()->syncWithoutDetaching($forms);
 
@@ -169,8 +211,8 @@ class BeneficiariesController extends Controller
     {
         $beneficiary->update([
             'internal_status' => Benefitiary::INTERNAL_STATUSES['approved'],
-            'approved_at' => now(),
-            'approved_by' => auth()->user()->id,
+            'approved_at'     => now(),
+            'approved_by'     => auth()->user()->id,
         ]);
         return redirect()->route('beneficiaries.index');
     }

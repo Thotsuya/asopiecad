@@ -173,28 +173,6 @@ export default function Index({
                                                                             <i className="fa fa-edit"></i>
                                                                         </Link>
                                                                     )}
-
-                                                                    {can(
-                                                                        'Editar Beneficiarios',
-                                                                        auth
-                                                                            .user
-                                                                            .abilities
-                                                                    ) && (
-                                                                        <button
-                                                                            type="button"
-                                                                            className="btn btn-info btn-sm"
-                                                                            onClick={() =>
-                                                                                setBeneficiary(
-                                                                                    beneficiary
-                                                                                )
-                                                                            }
-                                                                            title="Registrar en un proyecto"
-                                                                            data-toggle="modal"
-                                                                            data-target="#modal-beneficiary-project"
-                                                                        >
-                                                                            <i className="fa fa-book"></i>
-                                                                        </button>
-                                                                    )}
                                                                 </>
                                                             )}
                                                             {!beneficiary.is_trashed &&

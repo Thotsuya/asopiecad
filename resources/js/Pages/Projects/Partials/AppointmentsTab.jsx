@@ -22,6 +22,7 @@ export default function AppointmentsTab({
                                         <th>#</th>
                                         <th>Motivo</th>
                                         <th>Fecha de visita</th>
+                                        <th>Proxima visita</th>
                                         <th>Beneficiario</th>
                                         <th>Registrado por</th>
                                         <th>Acciones</th>
@@ -49,6 +50,11 @@ export default function AppointmentsTab({
                                                 <td>{appointment.title}</td>
                                                 <td>
                                                     {appointment.formatted_date}
+                                                </td>
+                                                <td>
+                                                    {
+                                                        appointment.next_appointment
+                                                    }
                                                 </td>
                                                 <td>
                                                     {

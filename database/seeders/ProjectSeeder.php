@@ -14,23 +14,43 @@ class ProjectSeeder extends Seeder
      */
     public function run()
     {
-        $project = Project::create([
-            'project_name'       => 'Estimulación Temprana de niños, niñas con discapacidad y alteraciones en el desarrollo ',
-            'project_duration'   => 4,
-            'project_start_date' => now()->subYears(3)
-        ]);
 
-        $project->users()->attach(1);
-
-        $programs = [
-            ['program_name' => 'Atención temprana 01.04',],
-            ['program_name' => 'Inclusión educativa 02.01'],
+        $data = [
+            [
+                    'project_name' => 'Proyecto 4211',
+                    'project_duration' => 4,
+                    'project_start_date' => '2021-01-01',
+                    'programs' => [
+                        ['program_name' => 'Grupo de Interés', 'form_id' => 1],
+                        ['program_name' => 'Grupo de Auto Ayuda', 'form_id' => 1],
+                        ['program_name' => 'Lilliane Fonds', 'form_id' => 2],
+                        ['program_name' => 'Grupo de Apoyo Escolar', 'form_id' => 3],
+                        ['program_name' => 'Estimulación Temprana', 'form_id' => 1],
+                        ['program_name' => 'Grupo Inclusion Laboral', 'form_id' => 1],
+                        ['program_name' => 'Primera Ayuda Psicologíca', 'form_id' => 1],
+                        ['program_name' => 'Inclusión laboral todos con vos', 'form_id' => 4],
+                        ['program_name' => 'Inclusión laboral Gobernación', 'form_id' => 4],
+                    ]
+            ]
         ];
 
-        collect($programs)->each(function ($program) use ($project) {
-            $program = $project->programs()->create($program);
+        collect($data)->each(function ($project) {
+            $proj = Project::create([
+                'project_name' => $project['project_name'],
+                'project_duration' => $project['project_duration'],
+                'project_start_date' => $project['project_start_date'],
+            ]);
 
-            $program->forms()->attach(1);
+            collect($project['programs'])->each(function ($program) use ($proj) {
+                $prog = $proj->programs()->create([
+                    'program_name' => $program['program_name'],
+                ]);
+
+                $prog->forms()->attach($program['form_id']);
+            });
+
+
         });
+
     }
 }
