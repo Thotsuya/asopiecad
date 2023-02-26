@@ -43,8 +43,9 @@ Route::middleware('auth')->group(function () {
     Route::put('projects/{project}/beneficiaries/{beneficiary}', [App\Http\Controllers\Admin\ProjectFormController::class, 'update'])->name('projects.forms.update');
     Route::delete('projects/{project}/beneficiaries/{beneficiary}', [App\Http\Controllers\Admin\ProjectFormController::class, 'destroy'])->name('projects.forms.destroy');
     Route::patch('projects/{project}/beneficiaries/{beneficiary}/approve', [App\Http\Controllers\Admin\ProjectFormController::class, 'approve'])->name('projects.forms.approve');
-
     Route::post('/projects/{project}/programs', [App\Http\Controllers\Admin\ProgramController::class, 'store'])->name('projects.programs.store');
+    Route::get('/project/{project}/export', [App\Http\Controllers\Admin\ProjectReportsController::class, 'export'])->name('projects.export');
+
     Route::put('/programs/{program}', [App\Http\Controllers\Admin\ProgramController::class, 'update'])->name('projects.programs.update');
     Route::delete('/programs/{program}', [App\Http\Controllers\Admin\ProgramController::class, 'destroy'])->name('projects.programs.destroy');
     Route::patch('/projects/{project}/programs/order', [App\Http\Controllers\Admin\ProgramController::class, 'order'])->name('projects.programs.order');

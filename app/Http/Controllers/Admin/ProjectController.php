@@ -121,7 +121,10 @@ class ProjectController extends Controller
             'beneficiaries_not_in_project' => Benefitiary::query()
                 ->select('id', 'uuid', 'name')
                 ->get(),
-            'project' => new ProjectResource($project->load('beneficiaries', 'users','programs')->loadCount('beneficiaries', 'users', 'programs')),
+            'project' => new ProjectResource(
+                $project
+                    ->load('beneficiaries', 'users','programs')
+                    ->loadCount('beneficiaries', 'users', 'programs')),
             'goals' => $project->goals()
                 ->latest('id')
                 ->with(['project', 'program'])

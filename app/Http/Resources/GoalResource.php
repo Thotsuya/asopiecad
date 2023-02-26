@@ -19,6 +19,7 @@ class GoalResource extends JsonResource
             'goal_description' => $this->goal_description,
             'goal_target' => $this->goal_target,
             'project_id' => $this->project_id,
+            'program_id' => $this->program_id,
             'progress' => $this->whenLoaded('goalProgress', function () {
                 return $this->goalProgress->map(function ($progress) {
                     return [
@@ -43,6 +44,7 @@ class GoalResource extends JsonResource
             'contextual_progress' => $this->whenLoaded('goalProgress', function () {
                 return $this->goalProgress->sum('goal_progress') >= $this->goal_target ? 'success' : 'info';
             }),
+            'conditions' => $this->conditions,
             'created_at' => $this->created_at->translatedFormat('d F, Y h:i A'),
             'updated_at' => $this->updated_at->translatedFormat('d F, Y h:i A'),
         ];

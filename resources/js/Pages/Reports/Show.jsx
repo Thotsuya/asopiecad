@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
-import { Head } from '@inertiajs/inertia-react'
+import { Head, Link } from '@inertiajs/inertia-react'
 import {
     CategoryScale,
     Chart as ChartJS,
@@ -11,6 +11,7 @@ import {
     Tooltip,
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
+import { Inertia } from '@inertiajs/inertia'
 
 export default function Show({
     auth,
@@ -58,13 +59,30 @@ export default function Show({
         ],
     }
 
+    const exportToExcel = () => {
+        window.open(
+            route('projects.export', { project: project.uuid }),
+            '_blank'
+        )
+    }
+
     return (
         <AuthenticatedLayout auth={auth}>
             <Head title="Configurar reportes" />
-            {console.log(results)}
             <div className="row">
                 <div className="col-xs-12">
-                    <h4 className="box-title">Reportes</h4>
+                    <h4 className="box-title">
+                        Reportes
+                        <button
+                            onClick={exportToExcel}
+                            className="btn btn-primary btn-sm"
+                            style={{
+                                marginLeft: '10px',
+                            }}
+                        >
+                            <i className="fa fa-file-excel-o" /> Exportar
+                        </button>
+                    </h4>
                     <div className="alert alert-info">
                         <p>
                             <i className="fa fa-info-circle" /> En esta sección

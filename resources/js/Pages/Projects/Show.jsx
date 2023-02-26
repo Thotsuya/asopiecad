@@ -10,7 +10,8 @@ import ProjectTabs from '@/Pages/Projects/Partials/ProjectTabs'
 import BeneficiaryCreateModal from '@/Components/Projects/BeneficiaryCreateModal'
 import AppointmentCreateModal from '@/Components/Appointments/AppointmentCreateModal'
 import ProgramShowModal from '@/Pages/Projects/Partials/ProgramShowModal'
-import GlobalGoalModal from '@/Components/Goals/GlobalGoalModal'
+
+import GoalEditModal from '@/Components/Goals/GoalEditModal'
 
 // Hooks
 import { useEffect, useState } from 'react'
@@ -66,17 +67,6 @@ export default function Show({
                                 data-target="#modal-register-goal"
                             >
                                 <i className="fa fa-flag" />
-                            </button>
-                        )}
-
-                        {project.can['register-goals'] && (
-                            <button
-                                title="Registrar Meta Global"
-                                className="btn btn-xs btn-info waves-effect waves-light"
-                                data-toggle="modal"
-                                data-target="#modal-register-goal-global"
-                            >
-                                <i className="fa fa-flag-checkered" />
                             </button>
                         )}
                     </div>
@@ -143,8 +133,6 @@ export default function Show({
             <AppointmentShowModal appointment={selectedAppointment} />
 
             <GoalsCreateModal project={project} programs={programs} />
-            <GoalsProgressModal goal={selectedGoal} project={project} />
-            <GoalsViewProgressModal goal={selectedGoal} />
 
             <ProgramBeneficiaryModal
                 beneficiaries={beneficiaries_not_in_project}
@@ -153,7 +141,7 @@ export default function Show({
 
             <ProgramShowModal program={selectedProgram} />
 
-            <GlobalGoalModal project={project} forms={forms} />
+            <GoalEditModal programs={programs} goal={selectedGoal} />
         </>
     )
 }

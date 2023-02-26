@@ -2,7 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Benefitiary;
 use App\Models\Goal;
+use App\Models\Project;
+use App\Observers\BeneficiaryObserver;
+use App\Observers\ProjectObserver;
 use App\Policies\ProjectPolicy;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Gate;
@@ -49,6 +53,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('register-goals',[ProjectPolicy::class,'registerGoals']);
         Gate::define('register-goal-progress',[ProjectPolicy::class,'registerGoalProgress']);
 
+        Project::observe(ProjectObserver::class);
 
         Inertia::share('permissions', function(){
             return auth()->check() ? auth()->user()->getAllPermissions()->pluck('name') : [];

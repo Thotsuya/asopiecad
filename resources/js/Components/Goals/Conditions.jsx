@@ -1,5 +1,5 @@
 import Select from 'react-select'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { OPERANDS } from '@/Constants/Operators'
 
 export default function Conditions({
@@ -100,6 +100,7 @@ export default function Conditions({
                                         return data
                                     })
                                 }}
+                                defaultValue={condition.label ?? ''}
                             />
                         </div>
                         <div className="col-xs-12 col-md-2">
@@ -134,6 +135,14 @@ export default function Conditions({
                                             noOptionsMessage={() =>
                                                 'No hay opciones'
                                             }
+                                            value={
+                                                condition.form_id &&
+                                                options.find(
+                                                    (option) =>
+                                                        option.value ===
+                                                        condition.form_id
+                                                )
+                                            }
                                             onChange={(option) =>
                                                 handleChange(option, index)
                                             }
@@ -146,11 +155,48 @@ export default function Conditions({
                                             Campo de formulario
                                         </label>
                                         <Select
-                                            options={forms}
+                                            options={
+                                                condition.form_id
+                                                    ? program.forms
+                                                          .find(
+                                                              (form) =>
+                                                                  form.id ===
+                                                                  condition.form_id
+                                                          )
+                                                          .fields.map(
+                                                              (field) => {
+                                                                  return {
+                                                                      value: field.id,
+                                                                      label: field.name,
+                                                                  }
+                                                              }
+                                                          )
+                                                    : []
+                                            }
                                             placeholder="Campos"
                                             isSearchable
                                             noOptionsMessage={() =>
                                                 'No hay opciones'
+                                            }
+                                            defaultValue={
+                                                condition.field_id &&
+                                                program.forms
+                                                    .find(
+                                                        (form) =>
+                                                            form.id ===
+                                                            condition.form_id
+                                                    )
+                                                    .fields.map((field) => {
+                                                        return {
+                                                            value: field.id,
+                                                            label: field.name,
+                                                        }
+                                                    })
+                                                    .find(
+                                                        (option) =>
+                                                            option.value ===
+                                                            condition.field_id
+                                                    )
                                             }
                                             onChange={(option) =>
                                                 handleFieldChange(
@@ -186,6 +232,15 @@ export default function Conditions({
                                                     index
                                                 )
                                             }}
+                                            defaultValue={
+                                                condition.operand &&
+                                                OPERANDS.find((operand) => {
+                                                    return (
+                                                        operand.value ===
+                                                        condition.operand
+                                                    )
+                                                })
+                                            }
                                         />
                                     </div>
                                 </div>
@@ -227,6 +282,17 @@ export default function Conditions({
                                                         (counter) => counter + 1
                                                     )
                                                 }}
+                                                defaultValue={
+                                                    condition.field_value &&
+                                                    SelectFieldOptions(
+                                                        condition.form_id,
+                                                        condition.field_id
+                                                    ).filter((option) => {
+                                                        return condition.field_value.includes(
+                                                            option.value
+                                                        )
+                                                    })
+                                                }
                                             />
                                         ) : (
                                             <input
@@ -248,6 +314,10 @@ export default function Conditions({
                                                         (counter) => counter + 1
                                                     )
                                                 }}
+                                                defaultValue={
+                                                    condition.field_value &&
+                                                    condition.field_value
+                                                }
                                             />
                                         )}
                                     </div>

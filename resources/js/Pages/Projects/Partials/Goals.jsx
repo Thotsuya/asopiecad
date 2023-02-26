@@ -20,12 +20,10 @@ export default function Goals({ goals = [], auth, onGoalSelected, can }) {
                     {goals.total > 0 && (
                         <>
                             <div className="table-responsive">
-                                <table className="table table-striped table">
+                                <table className="table table-striped table-hover">
                                     <thead>
                                         <tr>
                                             <th>Descripcion</th>
-                                            <th>Fecha de creacion</th>
-                                            <th>Última actualizacion</th>
                                             <th>Meta</th>
                                             <th>Completado</th>
                                             <th>Progreso</th>
@@ -38,8 +36,6 @@ export default function Goals({ goals = [], auth, onGoalSelected, can }) {
                                         {goals.data.map((goal) => (
                                             <tr key={goal.id}>
                                                 <td>{goal.goal_description}</td>
-                                                <td>{goal.created_at}</td>
-                                                <td>{goal.updated_at}</td>
                                                 <td>
                                                     <span className="label label-success">
                                                         {goal.goal_target}
@@ -86,6 +82,26 @@ export default function Goals({ goals = [], auth, onGoalSelected, can }) {
                                                         >
                                                             <i className="fa fa-eye" />
                                                         </Link>
+                                                        <button
+                                                            title="Duplicar Meta"
+                                                            className="btn btn-xs btn-success"
+                                                            onClick={() => {}}
+                                                        >
+                                                            <i className="fa fa-copy" />
+                                                        </button>
+                                                        <button
+                                                            title="Editar Meta"
+                                                            className="btn btn-xs btn-warning"
+                                                            data-toggle="modal"
+                                                            data-target="#modal-edit-goal"
+                                                            onClick={() =>
+                                                                onGoalSelected(
+                                                                    goal
+                                                                )
+                                                            }
+                                                        >
+                                                            <i className="fa fa-edit" />
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
