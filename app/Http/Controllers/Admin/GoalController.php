@@ -32,6 +32,8 @@ class GoalController extends Controller
 
     public function show(Goal $goal){
 
+        $goal->load('program.forms','program.beneficiaries','program.beneficiaries.forms','program.beneficiaries.answers.pivot.field');
+
         $result = [
             'id'               => $goal->id,
             'goal_description' => $goal->goal_description,
@@ -54,23 +56,14 @@ class GoalController extends Controller
                             ->filter(function ($beneficiary) use ($condition, $goal) {
                                 $meetsCondition = false;
 
-                                collect($condition['conditions'])->each(
-                                    function ($condition) use ($beneficiary, &$meetsCondition) {
-                                        $beneficiary->answers->each(
-                                            function ($answer) use ($condition, &$meetsCondition) {
-                                                if ($condition['field_id'] == $answer->pivot->field_id) {
-                                                    $meetsCondition = $this->is(
-                                                        Str::startsWith($answer->pivot->value, '["') && Str::endsWith($answer->pivot->value, '"]')
-                                                            ? json_decode($answer->pivot->value)
-                                                            : $answer->pivot->value,
-                                                        $condition['operand'],
-                                                        $condition['field_value']
-                                                    );
-                                                }
-                                            }
-                                        );
+                                foreach ($condition['conditions'] as $condition) {
+                                    $field = $beneficiary->answers->firstWhere('pivot.field_id', $condition['field_id']);
+                                    $meetsCondition = $this->is($field->pivot->value, $condition['operand'], $condition['field_value']);
+
+                                    if (!$meetsCondition) {
+                                        return false;
                                     }
-                                );
+                                }
 
                                 return $meetsCondition;
                             })->count(),

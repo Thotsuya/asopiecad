@@ -32,7 +32,7 @@ export default function AppointmentsTab({
                                 <tbody>
                                     {appointments.total === 0 && (
                                         <tr>
-                                            <td colSpan="6">
+                                            <td colSpan="7">
                                                 <div className="alert alert-info">
                                                     No hay visitas registradas
                                                 </div>

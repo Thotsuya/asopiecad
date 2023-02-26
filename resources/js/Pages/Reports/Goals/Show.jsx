@@ -26,15 +26,9 @@ export default function Show({ auth, result }) {
                         <div className="row">
                             <div className="col-md-12">
                                 <div className="table-responsive">
-                                    <table className="table table-bordered table-striped">
+                                    <table className="table-sm table-bordered table-striped">
                                         <thead>
                                             <tr>
-                                                <th
-                                                    rowSpan={2}
-                                                    className="text-center bg-primary"
-                                                >
-                                                    #
-                                                </th>
                                                 <th
                                                     rowSpan={2}
                                                     className="text-center bg-primary"
@@ -77,9 +71,6 @@ export default function Show({ auth, result }) {
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td className="text-center">
-                                                    {result.id}
-                                                </td>
                                                 <td className="text-center">
                                                     {result.goal_description}
                                                 </td>

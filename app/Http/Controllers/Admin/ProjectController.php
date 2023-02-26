@@ -94,7 +94,7 @@ class ProjectController extends Controller
                 ->latest('id')
                 ->with('programs', 'appointments','forms')
                 ->withTrashed()
-                ->paginate(6)
+                ->paginate(20)
                 ->through(function ($beneficiary) {
                     return BeneficiaryResource::make($beneficiary);
                 }),
@@ -102,7 +102,7 @@ class ProjectController extends Controller
                 ->with('beneficiaries')
                 ->withCount('beneficiaries')
                 ->latest('id')
-                ->paginate(6)
+                ->paginate(20)
                 ->through(function ($program) {
                     return PaginatedProgramsResource::make($program);
                 }),
@@ -114,7 +114,7 @@ class ProjectController extends Controller
             'paginated_appointments' => $project->appointments()
                 ->with(['benefitiary', 'user'])
                 ->latest('id')
-                ->paginate(6)
+                ->paginate(20)
                 ->through(function ($appointment) {
                     return AppointmentResource::make($appointment);
                 }),
@@ -125,10 +125,13 @@ class ProjectController extends Controller
             'goals' => $project->goals()
                 ->latest('id')
                 ->with(['project', 'program'])
-                ->paginate(6)
+                ->paginate(20)
                 ->through(function ($goal) {
                     return GoalResource::make($goal);
                 }),
+            'forms' => Form::query()
+                ->with('tabs.fields')
+                ->get(),
         ]);
     }
 

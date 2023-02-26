@@ -32,7 +32,7 @@ class BeneficiariesController extends Controller
                 ->withCount('projects')
                 ->with('projects')
                 ->latest('id')
-                ->paginate(6)
+                ->paginate(20)
                 ->through(function ($beneficiary) {
                     return BeneficiaryResource::make($beneficiary);
                 })

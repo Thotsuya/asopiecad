@@ -80,8 +80,8 @@ export default function Index({
                                     <table className="table table-striped table-hover">
                                         <thead>
                                             <tr>
-                                                <th>Nombre</th>
                                                 <th>Código</th>
+                                                <th>Nombre</th>
                                                 <th>Proyectos</th>
                                                 <th>Estado</th>
                                                 <th>Acciones</th>
@@ -92,13 +92,14 @@ export default function Index({
                                                 (beneficiary, index) => (
                                                     <tr key={beneficiary.id}>
                                                         <td>
-                                                            {beneficiary.name}
-                                                        </td>
-                                                        <td>
                                                             {
                                                                 beneficiary.internal_id
                                                             }
                                                         </td>
+                                                        <td>
+                                                            {beneficiary.name}
+                                                        </td>
+
                                                         <td>
                                                             {/*    Show only 3, then a badge with the rest*/}
                                                             {beneficiary.projects

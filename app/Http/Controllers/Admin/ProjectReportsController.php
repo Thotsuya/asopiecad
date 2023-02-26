@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Traits\DynamicComparisons;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class ProjectReportsController extends Controller
@@ -21,11 +22,6 @@ class ProjectReportsController extends Controller
             ->with('program.beneficiaries.answers.pivot.field')
             ->get();
 
-        // Group the Beneficiaries by their month of registration in the following format
-        // [
-        //   'label' => 'Enero',
-        //   'value' => 10,
-        // ]
         $beneficiaries = $project->beneficiaries()
             ->with('forms')
             ->with('answers.pivot.field')
@@ -67,25 +63,23 @@ class ProjectReportsController extends Controller
                             'label' => $condition['label'],
                             'value' => $goal->program->beneficiaries
                                 ->filter(function ($beneficiary) use ($condition, $goal) {
-                                    $meetsCondition = false;
+                                    $meetsCondition = true;
 
-                                    collect($condition['conditions'])->each(
-                                        function ($condition) use ($beneficiary, &$meetsCondition) {
-                                            $beneficiary->answers->each(
-                                                function ($answer) use ($condition, &$meetsCondition) {
-                                                    if ($condition['field_id'] == $answer->pivot->field_id) {
-                                                        $meetsCondition = $this->is(
-                                                            Str::startsWith($answer->pivot->value, '["') && Str::endsWith($answer->pivot->value, '"]')
-                                                                ? json_decode($answer->pivot->value)
-                                                                : $answer->pivot->value,
-                                                            $condition['operand'],
-                                                            $condition['field_value']
-                                                        );
-                                                    }
-                                                }
-                                            );
+                                    foreach ($condition['conditions'] as $condition) {
+                                        $field = $beneficiary->answers->firstWhere(
+                                            'pivot.field_id',
+                                            $condition['field_id']
+                                        );
+                                        $meetsCondition = $this->is(
+                                            $field->pivot->value,
+                                            $condition['operand'],
+                                            $condition['field_value']
+                                        );
+
+                                        if (!$meetsCondition) {
+                                            return false;
                                         }
-                                    );
+                                    }
 
                                     return $meetsCondition;
                                 })->count(),
@@ -93,13 +87,40 @@ class ProjectReportsController extends Controller
                         ];
                     }
                 )->toArray(),
+                'visits'           => // Count the total of appointments for each beneficiary
+                    $goal->program->beneficiaries->map(function ($beneficiary) {
+                        return $beneficiary->appointments->count();
+                    })->sum(),
             ];
-        })->toArray();
+        });
+
+        $global = [
+            'goal_description' => 'Al finalizar el proyecto se realizaran 7200 tamizajes',
+            'goal_target' => 7200,
+            'total_beneficiaries' => $project->beneficiaries->count(),
+            'completed_percentage' => round(
+                $project->beneficiaries->count() / 7200 * 100,
+                2
+            ),
+            'total_visits'        => $project->beneficiaries->map(function ($beneficiary) {
+                return $beneficiary->appointments->count();
+            })->sum(),
+            'conditions' => $results->map(function ($result) {
+                return $result['conditions'];
+            })->flatten(1)->groupBy('label')->map(function ($condition) {
+                return [
+                    'label' => $condition->first()['label'],
+                    'value' => $condition->sum('value'),
+                ];
+            })->values()->toArray(),
+        ];
+
 
         return inertia('Reports/Show', [
-            'project' => $project,
-            'results' => $results,
+            'project'       => $project,
+            'results'       => $results->toArray(),
             'beneficiaries' => $beneficiaries,
+            'global'        => $global,
         ]);
     }
 

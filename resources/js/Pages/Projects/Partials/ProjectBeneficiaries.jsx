@@ -103,9 +103,8 @@ export default function ProjectBeneficiaries({
                         <table className="table table-striped table-hover">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>Nombre</th>
                                     <th>Código Interno</th>
+                                    <th>Nombre</th>
                                     <th>Programas</th>
                                     <th>Última visita</th>
                                     <th>Estado</th>
@@ -116,13 +115,8 @@ export default function ProjectBeneficiaries({
                                 {beneficiaries.data.map(
                                     (beneficiary, index) => (
                                         <tr key={beneficiary.uuid}>
-                                            <th>
-                                                {index *
-                                                    beneficiaries.current_page +
-                                                    1}
-                                            </th>
-                                            <td>{beneficiary.name}</td>
                                             <td>{beneficiary.internal_id}</td>
+                                            <td>{beneficiary.name}</td>
                                             <td>
                                                 {beneficiary.programs.length >
                                                 0 ? (
