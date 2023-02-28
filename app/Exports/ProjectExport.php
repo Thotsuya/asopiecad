@@ -5,6 +5,7 @@ namespace App\Exports;
 use App\Models\Project;
 use App\Traits\DynamicComparisons;
 use App\Traits\ReportResults;
+use Illuminate\Http\Request;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Illuminate\Contracts\View\View;
@@ -14,20 +15,36 @@ class ProjectExport implements FromView
 {
     use Exportable, ReportResults, DynamicComparisons;
 
-    public function __construct(Project $project)
+    public function __construct(Project $project,Request $request)
     {
         $this->project = $project;
+        $this->request = $request;
     }
 
     public function view(): View
     {
 
         $goals = $this->project->goals()
-            ->with('program.forms')
-            ->with('program.beneficiaries')
-            ->with('program.beneficiaries.forms')
-            ->with('program.beneficiaries.answers.pivot.field')
-            ->with('program.beneficiaries.appointments')
+            ->with([
+                'program' => [
+                    'forms',
+                    'beneficiaries' => function ($query) {
+                        $query->with([
+                            'answers.pivot.field',
+                            'appointments'
+                        ])->when(
+                            $this->request->has('start_date') && $this->request->has('end_date'),
+                            function ($query)  {
+                                $query->whereBetween(
+                                    'benefitiary_program.created_at',
+                                    [$this->request->start_date, $this->request->end_date]
+                                );
+                            }
+                        );
+                    },
+                    'project'
+                ]
+            ])
             ->get();
 
         $results = $this->getProjectResults($goals);

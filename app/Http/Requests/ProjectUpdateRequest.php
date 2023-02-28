@@ -27,6 +27,7 @@ class ProjectUpdateRequest extends FormRequest
             'project_name' => ['required', 'string', 'max:255'],
             'project_description' => ['sometimes', 'string', 'max:255'],
             'project_duration' => ['required', 'integer', 'min:1'],
+            'global_goal' => ['required', 'integer', 'min:1'],
             'users' => ['sometimes', 'array'],
             'users.*.id' => ['exists:users,id'],
             'project_start_date' => ['required', 'date'],

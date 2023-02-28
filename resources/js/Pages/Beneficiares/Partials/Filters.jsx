@@ -4,6 +4,7 @@ import FieldsSelect from '@/Pages/Beneficiares/Partials/FieldsSelect'
 import { useEffect } from 'react'
 import { OPERATORS } from '@/Constants/Operators'
 import SelectField from '@/Components/SelectField'
+import Select from 'react-select'
 
 export default function Filters({ fields, projects }) {
     const { addFilter, removeFilter, filters, updateFilter, transformFilters } =
@@ -52,41 +53,45 @@ export default function Filters({ fields, projects }) {
                             <div className="col-xs-12 col-lg-3">
                                 <div className="form-group">
                                     <label htmlFor="name">Buscar por:</label>
-                                    <select
-                                        className="form-control"
+                                    <Select
                                         name="model"
+                                        placeholder="Seleccione un parámetro de búsqueda"
+                                        options={[
+                                            {
+                                                value: 'name',
+                                                label: 'Nombre del beneficiario',
+                                            },
+                                            {
+                                                value: 'internal_id',
+                                                label: 'Código del beneficiario',
+                                            },
+                                            {
+                                                value: 'project',
+                                                label: 'Proyecto',
+                                            },
+                                            {
+                                                value: 'form',
+                                                label: 'Información',
+                                            },
+                                        ]}
                                         onChange={(e) => {
                                             updateFilter(
                                                 index,
-                                                e.target.name,
-                                                e.target.value
+                                                'model',
+                                                e.value
                                             )
                                             updateFilter(
                                                 index,
-                                                'field',
-                                                handleModelType(e.target.value)
+                                                'model_type',
+                                                handleModelType(e.value, index)
                                             )
                                             updateFilter(
                                                 index,
                                                 'operator',
-                                                handleOperator(e.target.value)
+                                                handleOperator(e.value)
                                             )
                                         }}
-                                        value={filter.model}
-                                    >
-                                        <option value="name">
-                                            Nombre del beneficiario
-                                        </option>
-                                        <option value="internal_id">
-                                            Código del beneficiario
-                                        </option>
-                                        <option value="project">
-                                            Proyecto
-                                        </option>
-                                        <option value="form">
-                                            Información
-                                        </option>
-                                    </select>
+                                    />
                                 </div>
                             </div>
                             <div className="col-xs-12 col-lg-3">

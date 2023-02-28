@@ -168,6 +168,7 @@ class ProjectController extends Controller
             'project_description' => $request->project_description,
             'project_duration' => $request->project_duration,
             'project_start_date' => $request->project_start_date,
+            'global_goal' => $request->global_goal,
         ]);
 
         if ($request->validated()['users']) {

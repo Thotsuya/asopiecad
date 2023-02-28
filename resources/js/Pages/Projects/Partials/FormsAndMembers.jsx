@@ -10,6 +10,7 @@ export default function FormsAndMembers({
     onFormRemove,
     onProjectDurationChange,
     onProjectStartDateChange,
+    onGlobalGoalChange,
     roles,
 }) {
     const [member, setMember] = useState({
@@ -146,6 +147,24 @@ export default function FormsAndMembers({
                             id="start_date"
                             defaultValue={project.project_start_date}
                             onChange={onProjectStartDateChange}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div className="col-xs-12">
+                <div className="box-content">
+                    <div className="form-group">
+                        <label htmlFor="global_goal">
+                            Objetivo Global del Proyecto
+                        </label>
+                        <input
+                            type="number"
+                            className="form-control"
+                            name="global_goal"
+                            id="global_goal"
+                            defaultValue={project.global_goal}
+                            onChange={onGlobalGoalChange}
                         />
                     </div>
                 </div>
