@@ -67,6 +67,11 @@ trait ReportResults
     }
 
     public function getGlobalResults($project, $results){
+
+        $res = $results->map(function ($result) {
+            return $result['conditions'];
+        })->flatten(1)->groupBy('label');
+
         return [
             'goal_description' => 'Al finalizar el proyecto se realizaran ' . $project->global_goal . ' tamizajes',
             'goal_target' => $project->global_goal,
@@ -78,17 +83,13 @@ trait ReportResults
             'total_visits'        => $project->beneficiaries->map(function ($beneficiary) {
                 return $beneficiary->appointments->count();
             })->sum(),
-            'conditions' => $results->map(function ($result) {
-                return $result['conditions'];
-            })->flatten(1)->groupBy('label')->map(function ($condition) {
+            'conditions' => $res->map(function ($condition) {
                 return [
                     'label' => $condition->first()['label'],
                     'value' => $condition->sum('value'),
                 ];
             })->values()->toArray(),
-            'current_progress' => $results->map(function ($result) {
-                return $result['conditions'];
-            })->flatten(1)->groupBy('label')->reduce(function ($carry, $condition) {
+            'current_progress' => $res->reduce(function ($carry, $condition) {
                 return $carry + $condition->sum('value');
             }, 0),
         ];
