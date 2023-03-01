@@ -242,10 +242,7 @@ export default function Show({
                                     <table className="table-xs table-bordered table-striped margin-bottom-10">
                                         <thead>
                                             <tr>
-                                                <th
-                                                    rowSpan={2}
-                                                    className="text-center text-sm padding-10 bg-primary"
-                                                >
+                                                <th className="text-center text-sm padding-10 bg-primary">
                                                     Descripción de los
                                                     indicadores
                                                 </th>
@@ -301,12 +298,7 @@ export default function Show({
                                             {results &&
                                                 results.map((result, index) => (
                                                     <tr key={index}>
-                                                        <td
-                                                            style={{
-                                                                width: '250px',
-                                                            }}
-                                                            className="text-center text-sm padding-10"
-                                                        >
+                                                        <td className="text-center text-sm padding-10">
                                                             {
                                                                 result.goal_description
                                                             }

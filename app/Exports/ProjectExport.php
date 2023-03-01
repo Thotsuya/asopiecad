@@ -5,17 +5,16 @@ namespace App\Exports;
 use App\Models\Project;
 use App\Traits\DynamicComparisons;
 use App\Traits\ReportResults;
-use Illuminate\Http\Request;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\Exportable;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromView;
 
 class ProjectExport implements FromView
 {
     use Exportable, ReportResults, DynamicComparisons;
 
-    public function __construct(Project $project,Request $request)
+    public function __construct(Project $project, Request $request)
     {
         $this->project = $project;
         $this->request = $request;
@@ -23,7 +22,6 @@ class ProjectExport implements FromView
 
     public function view(): View
     {
-
         $goals = $this->project->goals()
             ->with([
                 'program' => [
@@ -34,7 +32,7 @@ class ProjectExport implements FromView
                             'appointments'
                         ])->when(
                             $this->request->has('start_date') && $this->request->has('end_date'),
-                            function ($query)  {
+                            function ($query) {
                                 $query->whereBetween(
                                     'benefitiary_program.created_at',
                                     [$this->request->start_date, $this->request->end_date]
@@ -48,13 +46,15 @@ class ProjectExport implements FromView
             ->get();
 
         $results = $this->getProjectResults($goals);
+        $global = $this->getGlobalResults($this->project, $results);
 
-        $global = $this->getGlobalResults($this->project,$results);
+        $headers = $this->getHeaders($results);
 
         return view('reports', [
             'project' => $this->project,
             'results' => $results->toArray(),
-            'global' => $global
+            'global'  => $global,
+            'headers' => $headers,
         ]);
     }
 }

@@ -30,6 +30,12 @@ class GoalController extends Controller
         return redirect()->route('projects.show',$project);
     }
 
+    public function update(Goal $goal,GoalRequest $request)
+    {
+        $goal->update($request->validated());
+        return redirect()->route('projects.show',$goal->project);
+    }
+
     public function show(Goal $goal){
 
         $goal->load('program.forms','program.beneficiaries','program.beneficiaries.forms','program.beneficiaries.answers.pivot.field');

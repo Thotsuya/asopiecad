@@ -70,11 +70,7 @@ class ProjectReportsController extends Controller
         $results = $this->getProjectResults($goals);
         $global = $this->getGlobalResults($project, $results);
 
-        $headers = $results->map(function ($result) {
-            return collect($result['conditions'])->mapWithKeys(function ($condition,$key) {
-                return [$key => $condition['label']];
-            });
-        })->flatten()->unique()->values();
+        $headers = $this->getHeaders($results);
 
         return inertia('Reports/Show', [
             'project' => $project,

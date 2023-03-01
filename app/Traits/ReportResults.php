@@ -96,4 +96,12 @@ trait ReportResults
             }, 0),
         ];
     }
+
+    public function getHeaders($results){
+        return $results->map(function ($result) {
+            return collect($result['conditions'])->mapWithKeys(function ($condition,$key) {
+                return [$key => $condition['label']];
+            });
+        })->flatten()->unique()->values();
+    }
 }

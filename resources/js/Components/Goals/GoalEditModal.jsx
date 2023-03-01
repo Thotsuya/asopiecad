@@ -2,6 +2,7 @@ import { useForm } from '@inertiajs/inertia-react'
 import { useEffect, useState } from 'react'
 import Select from 'react-select'
 import Conditions from '@/Components/Goals/Conditions'
+import useToasts from '@/Hooks/Toasts'
 
 export default function GoalEditModal({ goal, programs }) {
     const { data, setData, errors, put, processing } = useForm({
@@ -14,6 +15,8 @@ export default function GoalEditModal({ goal, programs }) {
     const [options, setOptions] = useState([])
     const [forms, setForms] = useState([])
     const [program, setProgram] = useState([])
+
+    const { success, error } = useToasts()
 
     useEffect(() => {
         setOptions(
@@ -48,6 +51,16 @@ export default function GoalEditModal({ goal, programs }) {
             })
         })
     }, [goal])
+
+    const handleSubmit = () => {
+        put(route('goals.update', goal.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                success('Meta actualizada correctamente')
+                $('#modal-edit-goal').modal('hide')
+            },
+        })
+    }
 
     return (
         <div
@@ -222,6 +235,14 @@ export default function GoalEditModal({ goal, programs }) {
                             data-dismiss="modal"
                         >
                             Cerrar
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={handleSubmit}
+                            disabled={processing}
+                        >
+                            {processing ? 'Guardando...' : 'Guardar'}
                         </button>
                     </div>
                 </div>

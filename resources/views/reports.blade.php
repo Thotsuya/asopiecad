@@ -17,9 +17,9 @@
         <th style="background-color: #1F497D; color: white">
             Meta anual
         </th>
-        @foreach($results[0]['conditions'] as $condition)
+        @foreach($headers as $header)
             <th style="background-color: #1F497D; color: white">
-                {{ $condition['label'] }}
+                {{ $header }}
             </th>'
         @endforeach
         <th style="background-color: #1F497D; color: white">
@@ -53,9 +53,28 @@
             <td style="background-color: #FFFF99">
                 <strong> {{ $result['goal_target'] / $project->project_duration }}</strong>
             </td>
-            @foreach($result['conditions'] as $condition)
+            @foreach($headers as $header)
+                @php
+                    $headerExists = false;
+                @endphp
                 <td style="background-color: #FFFF99; text-align: center">
-                    <strong>{{ $condition['value'] }}</strong>
+                    @foreach($result['conditions'] as $condition)
+                        @if($condition['label'] == $header)
+                            @php
+                                $headerExists = true;
+                            @endphp
+                        @endif
+                    @endforeach
+
+                    @if($headerExists)
+                        @foreach($result['conditions'] as $condition)
+                            @if($condition['label'] == $header)
+                                <strong>{{ $condition['value'] }}</strong>
+                            @endif
+                        @endforeach
+                    @else
+                        <strong>N/A</strong>
+                    @endif
                 </td>
             @endforeach
             <td>

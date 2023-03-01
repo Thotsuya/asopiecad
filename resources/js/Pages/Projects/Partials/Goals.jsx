@@ -25,8 +25,6 @@ export default function Goals({ goals = [], auth, onGoalSelected, can }) {
                                         <tr>
                                             <th>Descripcion</th>
                                             <th>Meta</th>
-                                            <th>Completado</th>
-                                            <th>Progreso</th>
                                             <th className="text-center">
                                                 Acciones
                                             </th>
@@ -41,36 +39,6 @@ export default function Goals({ goals = [], auth, onGoalSelected, can }) {
                                                         {goal.goal_target}
                                                     </span>
                                                 </td>
-                                                <td>
-                                                    <span className="label label-primary">
-                                                        {
-                                                            goal.current_goal_progress
-                                                        }
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <div className="progress">
-                                                        <div
-                                                            className={`progress-bar active progress-bar-${goal.contextual_progress} progress-bar-striped`}
-                                                            role="progressbar"
-                                                            aria-valuenow={
-                                                                goal.percentage_completed
-                                                            }
-                                                            aria-valuemin="0"
-                                                            aria-valuemax="100"
-                                                            style={{
-                                                                width: `${goal.percentage_completed}%`,
-                                                            }}
-                                                        >
-                                                            <span>
-                                                                {
-                                                                    goal.percentage_completed
-                                                                }
-                                                                %
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </td>
                                                 <td className="text-center">
                                                     <div className="btn-group">
                                                         <Link
@@ -82,26 +50,23 @@ export default function Goals({ goals = [], auth, onGoalSelected, can }) {
                                                         >
                                                             <i className="fa fa-eye" />
                                                         </Link>
-                                                        <button
-                                                            title="Duplicar Meta"
-                                                            className="btn btn-xs btn-success"
-                                                            onClick={() => {}}
-                                                        >
-                                                            <i className="fa fa-copy" />
-                                                        </button>
-                                                        <button
-                                                            title="Editar Meta"
-                                                            className="btn btn-xs btn-warning"
-                                                            data-toggle="modal"
-                                                            data-target="#modal-edit-goal"
-                                                            onClick={() =>
-                                                                onGoalSelected(
-                                                                    goal
-                                                                )
-                                                            }
-                                                        >
-                                                            <i className="fa fa-edit" />
-                                                        </button>
+                                                        {can[
+                                                            'register-goals'
+                                                        ] && (
+                                                            <button
+                                                                title="Editar Meta"
+                                                                className="btn btn-xs btn-warning"
+                                                                data-toggle="modal"
+                                                                data-target="#modal-edit-goal"
+                                                                onClick={() =>
+                                                                    onGoalSelected(
+                                                                        goal
+                                                                    )
+                                                                }
+                                                            >
+                                                                <i className="fa fa-edit" />
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 </td>
                                             </tr>

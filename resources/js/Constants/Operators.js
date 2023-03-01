@@ -102,3 +102,5 @@ export const OPERANDS = [
         form_type: ['text', 'select', 'select multiple', 'checkbox', 'radio'],
     },
 ]
+
+const create = () => {}
