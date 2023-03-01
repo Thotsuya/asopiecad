@@ -2,33 +2,36 @@
     <table>
         <thead>
         <tr>
-            <th>
+            <th style="background-color: #1F497D; color: white">
                 Descripción de los
                 indicadores
             </th>
-            <th>
+            <th style="background-color: #1F497D; color: white">
                 Meta
             </th>
-            <th>
+            <th style="background-color: #1F497D; color: white">
                 Progreso
             </th>
-            <th>
+            <th style="background-color: #1F497D; color: white">
                 Porcentaje completado
             </th>
+            <th style="background-color: #1F497D; color: white">
+                Meta anual
+            </th>
             @foreach($result['conditions'] as $condition)
-                <th>
+                <th style="background-color: #1F497D; color: white">
                     {{ $condition['label'] }}
                 </th>'
             @endforeach
-            <th>
+            <th style="background-color: #1F497D; color: white">
                 Visitas realizadas a los
                 beneficiarios en este
                 indicador
             </th>
-            <th>
+            <th style="background-color: #1F497D; color: white">
                 Número total de personas
             </th>
-            <th>
+            <th style="background-color: #1F497D; color: white">
                 Pendientes
             </th>
         </tr>
@@ -42,14 +45,17 @@
             <td>
                 {{ $result['goal_target'] }}
             </td>
-            <td>
+            <td style="background-color: #FFFF99">
                 {{ $result['program']['beneficiaries_count'] }}
             </td>
-            <td>
+            <td style="background-color: #FFFF99">
                 {{ $result['program']['completed_percentage'] }}%
             </td>
+            <td style="background-color: #FFFF99">
+                {{ $result['goal_target'] / $project->project_duration }}
+            </td>
             @foreach($result['conditions'] as $condition)
-                <td>
+                <td style="background-color: #FFFF99">
                     {{ $condition['value'] }}
                 </td>
             @endforeach
@@ -71,34 +77,34 @@
 <table>
     <thead>
     <tr>
-        <th>
+        <th style="background-color: #1F497D; color: white">
             Descripción de los
             indicadores
         </th>
-        <th>
+        <th style="background-color: #1F497D; color: white">
             Meta
         </th>
-        <th>
+        <th style="background-color: #1F497D; color: white">
             Progreso
         </th>
-        <th>
+        <th style="background-color: #1F497D; color: white">
             Porcentaje completado
         </th>
 
         @foreach($global['conditions'] as $condition)
-            <th>
+            <th style="background-color: #1F497D; color: white">
                 {{ $condition['label'] }}
             </th>'
         @endforeach
-        <th>
+        <th style="background-color: #1F497D; color: white">
             Visitas realizadas a los
             beneficiarios en este
             indicador
         </th>
-        <th>
+        <th style="background-color: #1F497D; color: white">
             Número total de personas
         </th>
-        <th>
+        <th style="background-color: #1F497D; color: white">
             Pendientes
         </th>
     </tr>

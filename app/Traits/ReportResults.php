@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 
+use App\Models\Benefitiary;
 use Carbon\Carbon;
 
 trait ReportResults
@@ -32,7 +33,7 @@ trait ReportResults
                         return [
                             'label' => $condition['label'],
                             'value' => $goal->program->beneficiaries
-                                ->filter(function ($beneficiary) use ($condition, $goal) {
+                                ->filter(function (Benefitiary $beneficiary) use ($condition, $goal) {
                                     $meetsCondition = true;
 
                                     foreach ($condition['conditions'] as $condition) {
@@ -40,6 +41,7 @@ trait ReportResults
                                             'pivot.field_id',
                                             $condition['field_id']
                                         );
+
 
                                         $meetsCondition = $this->is(
                                             $field->pivot->value,
