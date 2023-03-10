@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId('program_id')->constrained()->cascadeOnDelete();
             $table->float('goal_target')->default(0);
             $table->json('conditions')->nullable();
+            $table->integer('group_every')->default(0);
             $table->timestamps();
         });
     }

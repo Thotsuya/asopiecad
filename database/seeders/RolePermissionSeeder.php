@@ -48,6 +48,12 @@ class RolePermissionSeeder extends Seeder
         Permission::create(['name' => 'Registrar Metas']);
         Permission::create(['name' => 'Registrar avance de Metas']);
 
+        Permission::create(['name' => 'Ver Reportes']);
+
+        Permission::create(['name' => 'Ver Tamizajes']);
+        Permission::create(['name' => 'Registrar Tamizaje']);
+        Permission::create(['name' => 'Editar Tamizaje']);
+
 
         Role::create(['name' => 'Super Admin'])->syncPermissions(Permission::all()->modelKeys());
         Role::create(['name' => 'Admin'])->syncPermissions(Permission::all()->modelKeys());

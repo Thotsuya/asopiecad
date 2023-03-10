@@ -84,6 +84,23 @@ export default function Sidebar({ auth }) {
                                 </Link>
                             </li>
                         )}
+                        {can('Ver Tamizajes', auth.user.abilities) && (
+                            <li
+                                className={
+                                    route().current('screenings.*')
+                                        ? 'current'
+                                        : ''
+                                }
+                            >
+                                <Link
+                                    href={route('screenings.index')}
+                                    className="waves-effect"
+                                >
+                                    <i className="menu-icon fa fa-book"></i>
+                                    <span>Tamizajes</span>
+                                </Link>
+                            </li>
+                        )}
                         <h5 className="title">
                             Administración <strong>General</strong>
                         </h5>

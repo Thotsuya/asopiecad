@@ -27,8 +27,16 @@ export default function Edit({
                 [key]: beneficiary.beneficiary_data[key] ?? data[key],
             }))
         })
-        // Set isDirty to false to avoid showing the alert when the page loads
     }, [])
+
+    const Components = {
+        textarea: LargeInput,
+        text: SmallInput,
+        select: SelectInput,
+        checkbox: CheckboxInput,
+        radio: RadioInput,
+        'select multiple': SelectInput,
+    }
 
     return (
         <AuthenticatedLayout auth={auth}>

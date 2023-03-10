@@ -55,25 +55,13 @@
             </td>
             @foreach($headers as $header)
                 @php
-                    $headerExists = false;
+                    $value = collect($result['conditions'])->where('label', $header)->first();
                 @endphp
                 <td style="background-color: #FFFF99; text-align: center">
-                    @foreach($result['conditions'] as $condition)
-                        @if($condition['label'] == $header)
-                            @php
-                                $headerExists = true;
-                            @endphp
-                        @endif
-                    @endforeach
-
-                    @if($headerExists)
-                        @foreach($result['conditions'] as $condition)
-                            @if($condition['label'] == $header)
-                                <strong>{{ $condition['value'] }}</strong>
-                            @endif
-                        @endforeach
+                    @if($value)
+                        {{ $value['value'] }}
                     @else
-                        <strong>N/A</strong>
+                        <span style="color: #FF0000">N/A</span>
                     @endif
                 </td>
             @endforeach

@@ -34,8 +34,6 @@ export default function Show({
         Legend
     )
 
-    console.log(global)
-
     const options = {
         responsive: true,
         plugins: {

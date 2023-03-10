@@ -37,6 +37,9 @@ trait ReportResults
                                     $meetsCondition = true;
 
                                     foreach ($condition['conditions'] as $condition) {
+
+                                        info($beneficiary);
+
                                         $field = $beneficiary->answers->firstWhere(
                                             'pivot.field_id',
                                             $condition['field_id']

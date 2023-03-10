@@ -15,6 +15,7 @@ class Goal extends Model
         'program_id',
         'goal_target',
         'conditions',
+        'group_every',
     ];
 
     protected $casts = [

@@ -18,11 +18,10 @@ use Inertia\Inertia;
 
 Route::redirect('/','/login');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+
+    Route::get('/dashboard',\App\Http\Controllers\Admin\DashboardController::class)->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -33,6 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
     Route::resource('appointments', App\Http\Controllers\Admin\AppointmentController::class);
     Route::resource('beneficiaries', App\Http\Controllers\Admin\BeneficiariesController::class);
+    Route::resource('screenings', App\Http\Controllers\Admin\ScreeningController::class)->except('show','destroy');
+
     Route::patch('beneficiaries/{beneficiary}/approve', [App\Http\Controllers\Admin\BeneficiariesController::class, 'approve'])->name('beneficiaries.approve');
     Route::patch('beneficiaries/{beneficiary}/reject', [App\Http\Controllers\Admin\BeneficiariesController::class, 'reject'])->name('beneficiaries.reject');
     Route::patch('beneficiaries/{beneficiary}/restore', [App\Http\Controllers\Admin\BeneficiariesController::class, 'restore'])->name('beneficiaries.restore');
@@ -67,6 +68,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/programs/{program}/forms', [App\Http\Controllers\Admin\ProgramFormController::class, 'create'])->name('programs.forms.create');
     Route::post('/program/{program}/beneficiaries/remove', [App\Http\Controllers\Admin\ProgramFormController::class, 'remove'])->name('programs.beneficiaries.remove');
+
+
 
 });
 

@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use App\Models\Benefitiary;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -17,32 +16,47 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-
         $this->call([
             FormSeeder::class,
             RolePermissionSeeder::class,
         ]);
 
-        $user = User::create([
-            'name' => 'Super Admin',
-            'email' => 'admin@admin.com',
-            'password' => bcrypt('secret'),
-        ])->assignRole('Super Admin');
+        $users = [
+            [
+                'name'     => 'Super Admin',
+                'email'    => 'admin@admin.com',
+                'password' => bcrypt('secret'),
+            ],
+            [
+                'name'     => 'Facilitador 1',
+                'email'    => 'facilitador1@asopiecad.com',
+                'password' => bcrypt('secret'),
+            ],
+            [
+                'name'     => 'Facilitador 2',
+                'email'    => 'facilitador2@asopiecad.com',
+                'password' => bcrypt('secret'),
+            ],
+            [
+                'name'     => 'Facilitador 3',
+                'email'    => 'facilitador3@asopiecad.com',
+                'password' => bcrypt('secret'),
+            ],
+        ];
 
-        \App\Models\User::factory(10)->create()->each(function ($user) {
-            $user->assignRole('Gerente');
+        collect($users)->each(function ($user) {
+            $newUser = User::create($user);
+            $newUser->assignRole('Super Admin');
+            $newUser->projects()->attach(Project::all()->modelKeys());
         });
 
+
         $this->call([
-            ProjectSeeder::class,
+            //ProjectSeeder::class,
             //BenefitiarySeeder::class,
         ]);
 
-        $user->projects()->attach(Project::all()->modelKeys());
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+
     }
 }
