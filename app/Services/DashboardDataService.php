@@ -21,6 +21,7 @@ class DashboardDataService
             'rgba(75, 192, 192, 1)',
             'rgba(153, 102, 255, 1)',
         ];
+
         $totalScreenings = Screening::count();
         $screenings_per_year_by_month =
             //Group the screenings by month and year, with Full month name in Spanish and the count of screenings and year
@@ -51,12 +52,10 @@ class DashboardDataService
                 'id' => rand(1, 1000),
                 'label' => $key,
                 'data' => $item->pluck('value'),
-                //Generate a random color for the dataset
                 'backgroundColor' => $color,
                 'borderColor' =>  $color,
             ];
         })->values();
-
 
         $total_beneficiaries = Benefitiary::count();
         $total_projects = auth()->user()->projects->count();

@@ -19,8 +19,8 @@ export default function Show({
     project,
     results,
     headers,
-    beneficiaries,
-    global,
+    labels,
+    datasets,
     start_date = null,
     end_date = null,
 }) {
@@ -48,19 +48,8 @@ export default function Show({
     }
 
     const data = {
-        labels: beneficiaries
-            ? beneficiaries.map((beneficiary) => beneficiary.label)
-            : [],
-        datasets: [
-            {
-                label: 'Beneficiarios a lo largo del tiempo',
-                data: beneficiaries
-                    ? beneficiaries.map((beneficiary) => beneficiary.value)
-                    : [],
-                borderColor: 'rgb(255, 99, 132)',
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-            },
-        ],
+        labels,
+        datasets,
     }
 
     const exportToExcel = () => {
@@ -131,6 +120,7 @@ export default function Show({
             <Head title="Configurar reportes" />
             <div className="row">
                 <div className="col-xs-12">
+                    {console.log(datasets)}
                     <h4 className="box-title">
                         Reportes
                         <button
@@ -618,7 +608,7 @@ export default function Show({
                 {/*    </div>*/}
                 {/*)}*/}
 
-                {beneficiaries && (
+                {datasets && (
                     <div className="col-xs-12 col-md-12">
                         <div className="box-content">
                             <div className="row">

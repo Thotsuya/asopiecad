@@ -108,7 +108,7 @@ class ProjectController extends Controller
                 }),
             'programs' => ProgramsResource::collection($project->programs()
                 ->with(['forms.tabs','forms.fields','beneficiaries'])
-                ->latest('id')
+                ->oldest()
                 ->get()),
             'appointments' => AppointmentResource::collection($project->appointments->load('user', 'benefitiary')),
             'paginated_appointments' => $project->appointments()
@@ -126,7 +126,7 @@ class ProjectController extends Controller
                     ->load('beneficiaries', 'users','programs')
                     ->loadCount('beneficiaries', 'users', 'programs')),
             'goals' => $project->goals()
-                ->latest('id')
+                ->oldest()
                 ->with(['project', 'program'])
                 ->paginate(20)
                 ->through(function ($goal) {

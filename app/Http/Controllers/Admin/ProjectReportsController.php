@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Traits\DynamicComparisons;
 use App\Traits\ReportResults;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 class ProjectReportsController extends Controller
@@ -17,6 +18,15 @@ class ProjectReportsController extends Controller
 
     public function index(Request $request, Project $project)
     {
+
+        $colors = [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+        ];
+
         $project->load(['beneficiaries']);
 
         $goals = $project->goals()
@@ -42,7 +52,8 @@ class ProjectReportsController extends Controller
             ])
             ->get();
 
-        $beneficiaries = $project->beneficiaries()
+        $beneficiaries = $project
+            ->beneficiaries()
             ->with([
                 'forms',
                 'programs'
@@ -50,20 +61,31 @@ class ProjectReportsController extends Controller
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 $query->whereBetween('benefitiary_project.created_at', [$request->start_date, $request->end_date]);
             })
-            ->get()
-            ->groupBy(function ($beneficiary) {
-                return $beneficiary->pivot->created_at->format('m');
-            })
-            ->map(function ($beneficiaries, $month) {
-                return [
-                    'label' => Str::title($beneficiaries->first()->pivot->created_at->translatedFormat('F')),
-                    'value' => $beneficiaries->count(),
-                ];
-            })
-            ->sortBy(function ($beneficiary) {
-                return $beneficiary['label'];
-            })
-            ->values();
+            ->get();
+
+
+        $labels = $beneficiaries->groupBy(function ($beneficiary) {
+            return $beneficiary->created_at->format('m');
+        })->keys()->map(function ($key) {
+            return ucfirst(Carbon::createFromDate(null, $key)->translatedFormat('F'));
+        });
+
+        $datasets = $beneficiaries->groupBy(function ($beneficiary) {
+            return $beneficiary->created_at->format('Y');
+        })->map(function($beneficiaries, $key) use($colors) {
+
+            $color = $colors[rand(0, count($colors) - 1)];
+            return [
+                'label' => $key,
+                'data' => $beneficiaries->groupBy(function ($beneficiary) {
+                    return $beneficiary->created_at->format('m');
+                })->map(function ($beneficiaries) {
+                    return $beneficiaries->count();
+                })->values()->toArray(),
+                'backgroundColor' => $color,
+                'borderColor' =>  $color,
+            ];
+        })->values()->toArray();
 
         $results = $this->getProjectResults($goals);
         $headers = $this->getHeaders($results);
@@ -71,7 +93,8 @@ class ProjectReportsController extends Controller
         return inertia('Reports/Show', [
             'project' => $project,
             'results' => $results->toArray(),
-            'beneficiaries' => $beneficiaries,
+            'labels' => $labels,
+            'datasets' => $datasets,
             'headers' => $headers,
             'start_date' => $request->date('start_date') ? $request->date('start_date')->translatedFormat('l d F Y') : null,
             'end_date' => $request->date('end_date') ? $request->date('end_date')->translatedFormat('l d F Y') : null,
