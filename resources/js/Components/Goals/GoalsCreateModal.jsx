@@ -28,6 +28,7 @@ export default function GoalsCreateModal({ project, programs }) {
         handleNewCondition,
         handleRemoveCondition,
         handleNewConditionItem,
+        handleDuplicate,
     } = useGoals(project)
 
     useEffect(() => {
@@ -165,6 +166,32 @@ export default function GoalsCreateModal({ project, programs }) {
                             </div>
 
                             <div className="col-xs-12">
+                                <div className="form-group">
+                                    <label htmlFor="group_every">
+                                        Agrupar cada{' '}
+                                        <i
+                                            className="fa fa-question-circle text-primary"
+                                            title="Escribe aqui si deseas agrupar la meta, ejemplo: Si el objetivo final de la meta es 100, y escribes 10 en agrupar, por cada 10 registros se sumará 1 a la meta"
+                                        />
+                                    </label>
+                                    <input
+                                        type="number"
+                                        className="form-control"
+                                        id="group_every"
+                                        min={0}
+                                        placeholder="Escribe la meta a alcanzar en números"
+                                        value={data.group_every}
+                                        onChange={(e) => {
+                                            setData({
+                                                ...data,
+                                                group_every: e.target.value,
+                                            })
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="col-xs-12">
                                 <button
                                     type="button"
                                     className="btn btn-primary btn-block"
@@ -203,6 +230,9 @@ export default function GoalsCreateModal({ project, programs }) {
                                 }}
                                 handleNewConditionItem={() => {
                                     handleNewConditionItem(index)
+                                }}
+                                handleDuplicate={() => {
+                                    handleDuplicate(index)
                                 }}
                             />
                         ))}

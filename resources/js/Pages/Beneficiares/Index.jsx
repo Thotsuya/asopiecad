@@ -15,7 +15,6 @@ export default function Index({
     projects,
     forms,
     auth,
-    fields,
 }) {
     const [beneficiary, setBeneficiary] = useState(null)
 
@@ -64,7 +63,7 @@ export default function Index({
                     </div>
                 </div>
 
-                <Filters projects={projects} fields={fields} />
+                <Filters projects={projects} fields={{}} />
 
                 <div className="row">
                     <div className="col-xs-12">

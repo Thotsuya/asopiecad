@@ -5,6 +5,7 @@ export default function useGoals(project) {
     const { data, setData, post, processing, reset, errors } = useForm({
         goal_description: '',
         goal_target: 0,
+        group_every: 0,
         program_id: null,
         conditions: [],
     })
@@ -66,6 +67,12 @@ export default function useGoals(project) {
         setData('conditions', conditions)
     }
 
+    const handleDuplicate = (index) => {
+        let conditions = data.conditions
+        conditions.push(conditions[index])
+        setData('conditions', conditions)
+    }
+
     return {
         data,
         setData,
@@ -75,5 +82,6 @@ export default function useGoals(project) {
         handleNewCondition,
         handleRemoveCondition,
         handleNewConditionItem,
+        handleDuplicate,
     }
 }

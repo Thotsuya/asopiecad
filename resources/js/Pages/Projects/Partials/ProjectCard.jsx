@@ -21,9 +21,6 @@ export default function ProjectCard({ project, roles, auth }) {
                 </div>
                 <div className="bottom-project-section">
                     <div className="meta">
-                        <div className="points">
-                            <i className="fa fa-bar-chart" /> 407
-                        </div>
                         <div className="views">
                             <i className="fa fa-book" title="Programas" />{' '}
                             {project.programs_count}

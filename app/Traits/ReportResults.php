@@ -4,7 +4,6 @@ namespace App\Traits;
 
 
 use App\Models\Benefitiary;
-use Carbon\Carbon;
 
 trait ReportResults
 {
@@ -12,21 +11,28 @@ trait ReportResults
 
     public function getProjectResults($goals)
     {
-        return $goals->map(function ($goal){
+        return $goals->map(function ($goal) {
             return [
                 'id'               => $goal->id,
                 'goal_description' => $goal->goal_description,
                 'goal_target'      => $goal->goal_target,
+                'is_grouped'           => $goal->group_every > 1,
+                'group_every'      => $goal->group_every,
                 'goal_target_year' => $goal->goal_target / $goal->program->project->project_duration,
                 'program'          => [
                     'id'                   => $goal->program->id,
                     'program_name'         => $goal->program->program_name,
-                    'beneficiaries_count'  => $goal->program->beneficiaries->count(),
+                    'beneficiaries_count'  => $this->getGoalProgress($goal),
+                    'total_ungrouped'     => $goal->program->beneficiaries->count(),
                     'completed_percentage' => round(
                         $goal->program->beneficiaries->count() / $goal->goal_target * 100,
                         2
                     )
                     > 100 ? 100 : round($goal->program->beneficiaries->count() / $goal->goal_target * 100, 2),
+                    'pending' => $goal->goal_target - $goal->program->beneficiaries->count(),
+                    'visits' => $goal->program->beneficiaries->map(function ($beneficiary) {
+                        return $beneficiary->appointments->count();
+                    })->sum(),
                 ],
                 'conditions'       => collect($goal->conditions)->map(
                     function ($condition) use ($goal) {
@@ -37,13 +43,15 @@ trait ReportResults
                                     $meetsCondition = true;
 
                                     foreach ($condition['conditions'] as $condition) {
-
-                                        info($beneficiary);
-
                                         $field = $beneficiary->answers->firstWhere(
                                             'pivot.field_id',
                                             $condition['field_id']
                                         );
+
+
+                                        if (!$field) {
+                                            return false;
+                                        }
 
 
                                         $meetsCondition = $this->is(
@@ -63,48 +71,55 @@ trait ReportResults
                         ];
                     }
                 )->toArray(),
-                'visits'           => // Count the total of appointments for each beneficiary
-                    $goal->program->beneficiaries->map(function ($beneficiary) {
-                        return $beneficiary->appointments->count();
-                    })->sum(),
             ];
         });
     }
 
-    public function getGlobalResults($project, $results){
-
+    public function getGlobalResults($project, $results)
+    {
         $res = $results->map(function ($result) {
             return $result['conditions'];
         })->flatten(1)->groupBy('label');
 
         return [
-            'goal_description' => 'Al finalizar el proyecto se realizaran ' . $project->global_goal . ' tamizajes',
-            'goal_target' => $project->global_goal,
-            'total_beneficiaries' => $project->beneficiaries->count(),
+            'goal_description'     => 'Al finalizar el proyecto se realizaran ' . $project->global_goal . ' tamizajes',
+            'goal_target'          => $project->global_goal,
+            'total_beneficiaries'  => $project->beneficiaries->count(),
             'completed_percentage' => round(
                 $project->beneficiaries->count() / $project->global_goal * 100,
                 2
             ),
-            'total_visits'        => $project->beneficiaries->map(function ($beneficiary) {
+            'total_visits'         => $project->beneficiaries->map(function ($beneficiary) {
                 return $beneficiary->appointments->count();
             })->sum(),
-            'conditions' => $res->map(function ($condition) {
+            'conditions'           => $res->map(function ($condition) {
                 return [
                     'label' => $condition->first()['label'],
                     'value' => $condition->sum('value'),
                 ];
             })->values()->toArray(),
-            'current_progress' => $res->reduce(function ($carry, $condition) {
+            'current_progress'     => $res->reduce(function ($carry, $condition) {
                 return $carry + $condition->sum('value');
             }, 0),
         ];
     }
 
-    public function getHeaders($results){
+    public function getHeaders($results)
+    {
         return $results->map(function ($result) {
-            return collect($result['conditions'])->mapWithKeys(function ($condition,$key) {
+            return collect($result['conditions'])->mapWithKeys(function ($condition, $key) {
                 return [$key => $condition['label']];
             });
         })->flatten()->unique()->values();
+    }
+
+    public function getGoalProgress($goal)
+    {
+        // If the group every is greater than 1, then the goal is a group goal
+        // For example, if the goal is 1000, and the group every is 100, for every 100 beneficiaries
+        // the goal will be completed by 1
+        return $goal->group_every > 1
+            ? round($goal->program->beneficiaries->count() / $goal->goal_target * $goal->group_every)
+            : $goal->program->beneficiaries->count();
     }
 }

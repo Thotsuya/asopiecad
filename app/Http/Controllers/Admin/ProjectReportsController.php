@@ -17,7 +17,7 @@ class ProjectReportsController extends Controller
 
     public function index(Request $request, Project $project)
     {
-        $project->load(['beneficiaries.appointments']);
+        $project->load(['beneficiaries']);
 
         $goals = $project->goals()
             ->with([
@@ -45,8 +45,6 @@ class ProjectReportsController extends Controller
         $beneficiaries = $project->beneficiaries()
             ->with([
                 'forms',
-                'answers.pivot.field',
-                'appointments',
                 'programs'
             ])
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
@@ -68,14 +66,11 @@ class ProjectReportsController extends Controller
             ->values();
 
         $results = $this->getProjectResults($goals);
-        $global = $this->getGlobalResults($project, $results);
-
         $headers = $this->getHeaders($results);
 
         return inertia('Reports/Show', [
             'project' => $project,
             'results' => $results->toArray(),
-            'global' => $global,
             'beneficiaries' => $beneficiaries,
             'headers' => $headers,
             'start_date' => $request->date('start_date') ? $request->date('start_date')->translatedFormat('l d F Y') : null,

@@ -1,250 +1,88 @@
 import useFilters from '@/Hooks/Filters'
-import ProjectsSelect from '@/Pages/Beneficiares/Partials/ProjectsSelect'
-import FieldsSelect from '@/Pages/Beneficiares/Partials/FieldsSelect'
-import { useEffect } from 'react'
-import { OPERATORS } from '@/Constants/Operators'
-import SelectField from '@/Components/SelectField'
 import Select from 'react-select'
 
-export default function Filters({ fields, projects }) {
-    const { addFilter, removeFilter, filters, updateFilter, transformFilters } =
-        useFilters(projects, fields)
-
-    const handleField = (e, index) => {
-        updateFilter(index, e.target.name, e.target.value)
-    }
-
-    const handleModelType = (model, index) => {
-        if (model === 'project') return projects[0].id
-        if (model === 'form') return fields[0]
-        return ''
-    }
-
-    const handleOperator = (model) => {
-        if (model === 'form') {
-            return OPERATORS.filter((operator) => {
-                return operator.types.includes(fields[0].type)
-            })[0].value
-        }
-        return '=='
-    }
-
-    useEffect(() => {
-        console.log(filters)
-    }, [filters])
+export default function Filters({ projects }) {
+    const { filters, data, setData, processing, handleSearch } = useFilters()
 
     return (
         <div className="row">
             <div className="col-xs-12">
                 <div className="box-content">
-                    <h4 className="box-title">
-                        Filtros
-                        <button
-                            type="button"
-                            className="btn btn-primary btn-sm pull-right"
-                            onClick={addFilter}
-                        >
-                            <i className="fa fa-plus" />
-                        </button>
-                    </h4>
+                    <h4 className="box-title">Filtros</h4>
 
-                    {filters.map((filter, index) => (
-                        <div key={index} className="row">
-                            <div className="col-xs-12 col-lg-3">
-                                <div className="form-group">
-                                    <label htmlFor="name">Buscar por:</label>
+                    <div className="row">
+                        <div className="col-md-4">
+                            <div className="form-group">
+                                <label htmlFor="filter">Buscar por:</label>
+                                <Select
+                                    id="filter"
+                                    name="filter"
+                                    options={filters}
+                                    placeholder="Seleccione un filtro"
+                                    onChange={(option) => {
+                                        setData({
+                                            ...data,
+                                            filter: option.value,
+                                            value: '',
+                                        })
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <div className="form-group">
+                                <label htmlFor="project">Valor:</label>
+                                {data.filter === 'project_id' && (
                                     <Select
-                                        name="model"
-                                        placeholder="Seleccione un parámetro de búsqueda"
-                                        options={[
-                                            {
-                                                value: 'name',
-                                                label: 'Nombre del beneficiario',
-                                            },
-                                            {
-                                                value: 'internal_id',
-                                                label: 'Código del beneficiario',
-                                            },
-                                            {
-                                                value: 'project',
-                                                label: 'Proyecto',
-                                            },
-                                            {
-                                                value: 'form',
-                                                label: 'Información',
-                                            },
-                                        ]}
-                                        onChange={(e) => {
-                                            updateFilter(
-                                                index,
-                                                'model',
-                                                e.value
-                                            )
-                                            updateFilter(
-                                                index,
-                                                'model_type',
-                                                handleModelType(e.value, index)
-                                            )
-                                            updateFilter(
-                                                index,
-                                                'operator',
-                                                handleOperator(e.value)
-                                            )
+                                        id="project"
+                                        name="project"
+                                        options={projects.map((project) => ({
+                                            value: project.uuid,
+                                            label: project.project_name,
+                                        }))}
+                                        placeholder="Seleccione un proyecto"
+                                        onChange={(option) => {
+                                            setData({
+                                                ...data,
+                                                value: option.value,
+                                            })
                                         }}
                                     />
-                                </div>
-                            </div>
-                            <div className="col-xs-12 col-lg-3">
-                                <div className="form-group">
-                                    <label htmlFor="name">Seleccionar</label>
-                                    {(filter.model === 'name' ||
-                                        filter.model === 'internal_id') && (
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            name="field"
-                                            onChange={handleField}
-                                            value={filter.field}
-                                        />
-                                    )}
-                                    {filter.model === 'project' && (
-                                        <ProjectsSelect
-                                            projects={projects}
-                                            onProjectChange={handleField}
-                                        />
-                                    )}
-                                    {filter.model === 'form' && (
-                                        <FieldsSelect
-                                            fields={fields}
-                                            onFieldChange={(e) => {
-                                                // The value of the field itself
-                                                updateFilter(
-                                                    index,
-                                                    e.target.name,
-                                                    JSON.parse(e.target.value)
-                                                )
+                                )}
 
-                                                // The value of the field's name
-                                                // If it's a select field, the value of the selected option, otherwise the value of the field itself
-                                                updateFilter(
-                                                    index,
-                                                    'value',
-                                                    JSON.parse(e.target.value)
-                                                        .type === 'select'
-                                                        ? JSON.parse(
-                                                              e.target.value
-                                                          ).options[0].value
-                                                        : ''
-                                                )
-                                                // The value of the field's operator
-                                                updateFilter(
-                                                    index,
-                                                    'operator',
-                                                    //Filter the operators by the field's type, and return the first operator
-                                                    OPERATORS.filter(
-                                                        (operator) => {
-                                                            return operator.types.includes(
-                                                                JSON.parse(
-                                                                    e.target
-                                                                        .value
-                                                                ).type
-                                                            )
-                                                        }
-                                                    )[0].value
-                                                )
-                                            }}
-                                        />
-                                    )}
-                                </div>
+                                {data.filter !== 'project_id' && (
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        id="value"
+                                        name="value"
+                                        placeholder="Escribe el valor a buscar"
+                                        onChange={(e) => {
+                                            setData({
+                                                ...data,
+                                                value: e.target.value,
+                                            })
+                                        }}
+                                    />
+                                )}
                             </div>
-                            {filter.model === 'form' && (
-                                <div className="col-xs-12 col-lg-3">
-                                    <div className="form-group">
-                                        <label htmlFor="name">Operador</label>
-                                        <select
-                                            className="form-control"
-                                            name="operator"
-                                            onChange={(e) => {
-                                                updateFilter(
-                                                    index,
-                                                    'operator',
-                                                    e.target.value
-                                                )
-                                            }}
-                                            value={filter.operator}
-                                        >
-                                            {OPERATORS.map(
-                                                (operator, index) => (
-                                                    <>
-                                                        {operator.types.includes(
-                                                            filter.field.type
-                                                        ) && (
-                                                            <option
-                                                                key={
-                                                                    operator.id
-                                                                }
-                                                                value={
-                                                                    operator.value
-                                                                }
-                                                            >
-                                                                {operator.name}
-                                                            </option>
-                                                        )}
-                                                    </>
-                                                )
-                                            )}
-                                        </select>
-                                    </div>
-                                </div>
-                            )}
-                            {filter.model === 'form' && (
-                                <div className="col-xs-12 col-lg-3">
-                                    <div className="form-group">
-                                        <label htmlFor="name">Valor</label>
-                                        {filter.field.type === 'select' ? (
-                                            <SelectField
-                                                fields={filter.field.options}
-                                                onFieldChange={(e) => {
-                                                    updateFilter(
-                                                        index,
-                                                        'value',
-                                                        e.target.value
-                                                    )
-                                                }}
-                                            />
-                                        ) : (
-                                            <input
-                                                type={filter.field.type}
-                                                className="form-control"
-                                                name="value"
-                                                onChange={(e) => {
-                                                    updateFilter(
-                                                        index,
-                                                        'value',
-                                                        e.target.value
-                                                    )
-                                                }}
-                                            />
-                                        )}
-                                    </div>
-                                </div>
-                            )}
                         </div>
-                    ))}
 
-                    {filters.length > 0 && (
-                        <div className="row">
-                            <div className="col-lg-12">
+                        <div className="col-md-2">
+                            <div className="form-group">
+                                <label htmlFor="">&nbsp;</label>
                                 <button
                                     type="button"
-                                    className="btn btn-primary pull-right"
-                                    onClick={transformFilters}
+                                    className="btn btn-primary btn-block"
+                                    disabled={processing}
+                                    onClick={handleSearch}
                                 >
-                                    Buscar <i className="fa fa-search"></i>
+                                    Buscar
                                 </button>
                             </div>
                         </div>
-                    )}
+                    </div>
                 </div>
             </div>
         </div>

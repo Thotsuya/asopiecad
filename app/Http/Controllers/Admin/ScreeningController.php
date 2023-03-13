@@ -9,6 +9,14 @@ use App\Models\Screening;
 
 class ScreeningController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('can:Ver Tamizajes')->only('index');
+        $this->middleware('can:Registrar Tamizaje')->only('store');
+        $this->middleware('can:Editar Tamizaje')->only('update');
+    }
+
     /**
      * Display a listing of the resource.
      *

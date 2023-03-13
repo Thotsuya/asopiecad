@@ -8,6 +8,7 @@ export default function Conditions({
     fieldIndex,
     setData,
     condition,
+    handleDuplicate,
     handleRemoveCondition,
     handleNewConditionItem,
 }) {
@@ -88,7 +89,7 @@ export default function Conditions({
             <div className="box ">
                 <div className="box-header with-border">
                     <div className="row">
-                        <div className="col-xs-12 col-md-10">
+                        <div className="col-xs-12 col-md-9">
                             <input
                                 type="text"
                                 className="form-control"
@@ -103,7 +104,7 @@ export default function Conditions({
                                 defaultValue={condition.label ?? ''}
                             />
                         </div>
-                        <div className="col-xs-12 col-md-2">
+                        <div className="col-xs-12 col-md-3">
                             <button
                                 onClick={handleNewConditionItem}
                                 className="btn btn-xs btn-primary waves-effect waves-light pull-right"

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -82,6 +83,18 @@ class Benefitiary extends Model
 
     public function answers(){
         return $this->belongsToMany(Field::class, 'answers')->using(Answer::class)->withPivot(['value'])->withTimestamps();
+    }
+
+    public function scopeFilter($query, Request $request)
+    {
+        return match ($request->filter) {
+            'name' => $query->where('name', 'like', "%{$request->value}%"),
+            'code' => $query->where('internal_id', 'like', "%{$request->value}%"),
+            'project_id' => $query->whereHas('projects', function ($query) use ($request) {
+                $query->where('uuid', 'like', "%{$request->value}%");
+            }),
+            default => $query,
+        };
     }
 
 }

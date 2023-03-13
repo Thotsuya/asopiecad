@@ -10,6 +10,7 @@ use App\Http\Resources\BeneficiaryResource;
 use App\Models\Benefitiary;
 use App\Models\Form;
 use App\Models\Project;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class BeneficiariesController extends Controller
@@ -24,11 +25,12 @@ class BeneficiariesController extends Controller
         $this->middleware('can:Aprobar Beneficiarios')->only('approve');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         return Inertia::render('Beneficiares/Index', [
             'beneficiaries_paginated' => Benefitiary::query()
                 ->withTrashed()
+                ->filter($request)
                 ->withCount('projects')
                 ->with('projects')
                 ->latest('id')
@@ -51,6 +53,7 @@ class BeneficiariesController extends Controller
 
             'forms' => Form::query()
                 ->latest('id')
+                ->with('fields')
                 ->select('id', 'form_name')
                 ->get(),
 

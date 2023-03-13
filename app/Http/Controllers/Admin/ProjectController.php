@@ -46,7 +46,7 @@ class ProjectController extends Controller
 
         return inertia('Projects/Index', [
             'projects' => $projects
-                ->withCount('beneficiaries', 'users')
+                ->withCount('beneficiaries', 'users','programs')
                 ->latest('id')
                 ->paginate(6)
                 ->through(function (Project $project) {
