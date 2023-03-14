@@ -92,6 +92,9 @@ trait DynamicComparisons{
     private function contains($value_a, $value_b){
 
         // if both are arrays, check if any of the values in $value_a is in $value_b
+        info($value_a);
+        info($value_b);
+
         if(is_array($value_a) && is_array($value_b)){
             return count(array_intersect($value_a, $value_b)) > 0;
         }

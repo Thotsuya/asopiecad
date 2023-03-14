@@ -9,8 +9,11 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\AfterSheet;
+use Maatwebsite\Excel\Events\BeforeExport;
 
-class ProjectExport implements FromView
+class ProjectExport implements FromView, WithEvents
 {
     use Exportable, ReportResults, DynamicComparisons;
 
@@ -56,6 +59,19 @@ class ProjectExport implements FromView
             'global'  => $global,
             'headers' => $headers,
         ]);
+    }
+
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function(AfterSheet $event) {
+                // Set the font to Verdana and the font size to 10
+                $event->sheet
+                    ->getStyle('A1:Z100')
+                    ->getFont()
+                    ->setName('Verdana');
+            },
+        ];
     }
 }
 

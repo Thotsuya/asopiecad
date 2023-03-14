@@ -4,6 +4,7 @@ namespace App\Traits;
 
 
 use App\Models\Benefitiary;
+use Illuminate\Support\Str;
 
 trait ReportResults
 {
@@ -49,13 +50,11 @@ trait ReportResults
                                         );
 
 
-                                        if (!$field) {
-                                            return false;
-                                        }
-
-
                                         $meetsCondition = $this->is(
-                                            $field->pivot->value,
+                                            Str::startsWith($field->pivot->value, '["') && Str::endsWith(
+                                                $field->pivot->value,
+                                                '"]'
+                                            ) ? json_decode($field->pivot->value) : $field->pivot->value,
                                             $condition['operand'],
                                             $condition['field_value']
                                         );

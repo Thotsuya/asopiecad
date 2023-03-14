@@ -66,7 +66,7 @@
                 </td>
             @endforeach
             <td>
-                <strong>{{ $result['visits'] }}</strong>
+                <strong>{{ $result['program']['visits'] }}</strong>
             </td>
             <td>
                 {{ $result['program']['beneficiaries_count'] }}
