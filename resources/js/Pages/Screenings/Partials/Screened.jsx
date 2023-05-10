@@ -37,7 +37,7 @@ export default function Screened({
                                 <div className="form-group">
                                     <label htmlFor="age">Edad</label>
                                     <input
-                                        type="number"
+                                        type="text"
                                         className="form-control"
                                         id="age"
                                         placeholder="Edad"

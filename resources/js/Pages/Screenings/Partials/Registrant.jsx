@@ -32,8 +32,13 @@ export default function Registrant({ auth, data, setData }) {
                                     className="form-control"
                                     id="name"
                                     placeholder="Nombre"
-                                    disabled
-                                    value={auth.user.name}
+                                    value={data.registrant_name}
+                                    onChange={(e) =>
+                                        setData(
+                                            'registrant_name',
+                                            e.target.value
+                                        )
+                                    }
                                 />
                             </div>
                         </div>

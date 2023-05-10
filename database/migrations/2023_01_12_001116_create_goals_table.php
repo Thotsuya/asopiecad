@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('goals', function (Blueprint $table) {
             $table->id();
-            $table->string('goal_description');
+            $table->text('goal_description');
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
             $table->foreignId('program_id')->constrained()->cascadeOnDelete();
             $table->float('goal_target')->default(0);

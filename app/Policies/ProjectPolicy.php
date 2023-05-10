@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Database\Eloquent\Collection;
 
 class   ProjectPolicy
 {
@@ -38,7 +37,6 @@ class   ProjectPolicy
         // Check if the project has forms to register beneficiaries and that the user has the permission to register beneficiaries
         return $user->projects->contains($project->id) &&
             $user->hasPermissionTo('Registrar Beneficiarios');
-
     }
 
     public function approveBeneficiaries(User $user, Project $project)
@@ -47,7 +45,6 @@ class   ProjectPolicy
         return $user->projects->contains($project->id) &&
             $user
                 ->hasPermissionTo('Aprobar Beneficiarios');
-
     }
 
     public function editBeneficiaries(User $user, Project $project)
@@ -55,7 +52,6 @@ class   ProjectPolicy
         // Check if the project has forms to register beneficiaries and that the user has the permission to register beneficiaries
         return $user->projects->contains($project->id) &&
             $user->hasPermissionTo('Editar Beneficiarios');
-
     }
 
     public function deleteBeneficiaries(User $user, Project $project)
@@ -63,7 +59,6 @@ class   ProjectPolicy
         // Check if the project has forms to register beneficiaries and that the user has the permission to register beneficiaries
         return $user->projects->contains($project->id) &&
             $user->hasPermissionTo('Eliminar Beneficiarios');
-
     }
 
     // Appointments
@@ -74,7 +69,6 @@ class   ProjectPolicy
         return $user->projects->contains($project->id) &&
             $user
                 ->hasPermissionTo('Registrar Visitas');
-
     }
 
     public function editAppointments(User $user, Project $project)
@@ -83,7 +77,6 @@ class   ProjectPolicy
         return $user->projects->contains($project->id) &&
             $user
                 ->hasPermissionTo('Editar Visitas');
-
     }
 
     public function registerGoals(User $user, Project $project)
@@ -92,7 +85,6 @@ class   ProjectPolicy
         return $user->projects->contains($project->id) &&
             $user
                 ->hasPermissionTo('Registrar Metas');
-
     }
 
     public function registerGoalProgress(User $user, Project $project)
@@ -101,7 +93,6 @@ class   ProjectPolicy
         return $user->projects->contains($project->id) &&
             $user
                 ->hasPermissionTo('Registrar avance de Metas');
-
     }
 
 

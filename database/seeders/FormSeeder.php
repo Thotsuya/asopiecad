@@ -732,7 +732,340 @@ class FormSeeder extends Seeder
                         ]
                     ]
                 ]
-            ]
+            ],
+            [
+                'form_name' => 'Formulario de Capacitación a docentes',
+                'tabs'      => [
+                    [
+                        'tab_name' => 'Información General',
+                        'fields'   => [
+                            [
+                                "name"     => "Nombres y Apellidos",
+                                "type"     => "text",
+                                "required" => true,
+                                "size"     => "col-xs-12 col-sm-6 col-md-6 col-lg-6",
+                                "options"  => [],
+                            ],
+                            [
+                                "name"     => "Sexo",
+                                "type"     => "select",
+                                "required" => true,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                                "options"  => [
+                                    [#4251
+                                        "id"       => 1,
+                                        "name"     => "M",
+                                        "value"    => "m-1",
+                                        "order"    => 1,
+                                        "editMode" => false,
+                                    ],
+                                    [#4250
+                                        "id"       => 2,
+                                        "name"     => "F",
+                                        "value"    => "f-2",
+                                        "order"    => 2,
+                                        "editMode" => false,
+                                    ],
+                                ],
+                            ],
+                            [#4253
+                                "name"     => "Edad",
+                                "type"     => "number",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                                "options"  => [],
+                            ],
+                            [
+                                "name"     => "Discapacidad ( Si / No )",
+                                "type"     => "select",
+                                "required" => true,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-12",
+                                "options"  => [
+                                    [#4251
+                                        "id"       => 1,
+                                        "name"     => "Si",
+                                        "value"    => "si-1",
+                                        "order"    => 1,
+                                        "editMode" => false,
+                                    ],
+                                    [#4250
+                                        "id"       => 2,
+                                        "name"     => "No",
+                                        "value"    => "No-2",
+                                        "order"    => 2,
+                                        "editMode" => false,
+                                    ],
+                                ],
+                            ],
+                            [#4249
+                                "name"     => "Fecha de Nacimiento",
+                                "type"     => "date",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                                "options"  => [],
+                            ],
+                            [#4248
+                                "name"     => "Cédula de Identidad",
+                                "type"     => "text",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                                "options"  => [],
+                            ],
+                            [#4276
+                                "name"     => "Tema de la capacitación",
+                                "type"     => "text",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-6 col-lg-6",
+                                "options"  => [],
+                            ],
+                            [#4277
+                                "name"     => "Perfil Docente. Asesor Pedagógico. Educadora. Administrativo",
+                                "type"     => "text",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-6",
+                                "options"  => [],
+                            ],
+                            [#4278
+                                "name"     => "Municipio",
+                                "type"     => "text",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                                "options"  => [],
+                                "slug"     => "municipio",
+                            ],
+                            $departments,
+                            [
+                                "name"     => "Teléfono",
+                                "type"     => "text",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                                "options"  => [],
+                                "slug"     => "telefono",
+                            ],
+                        ]
+                    ]
+                ]
+            ],
+            [
+                'form_name' => 'Formulario de Reuniones Bimensuales',
+                'tabs'      => [
+                    [
+                        'tab_name' => 'Información General',
+                        'fields'   => [
+                            [
+                                "name"     => "Nombres y Apellidos",
+                                "type"     => "text",
+                                "required" => true,
+                                "size"     => "col-xs-12 col-sm-6 col-md-6 col-lg-6",
+                                "options"  => [],
+                            ],
+                            [
+                                "name"     => "Sexo",
+                                "type"     => "select",
+                                "required" => true,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                                "options"  => [
+                                    [#4251
+                                        "id"       => 1,
+                                        "name"     => "M",
+                                        "value"    => "m-1",
+                                        "order"    => 1,
+                                        "editMode" => false,
+                                    ],
+                                    [#4250
+                                        "id"       => 2,
+                                        "name"     => "F",
+                                        "value"    => "f-2",
+                                        "order"    => 2,
+                                        "editMode" => false,
+                                    ],
+                                ],
+                            ],
+                            [#4253
+                                "name"     => "Edad",
+                                "type"     => "number",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                                "options"  => [],
+                            ],
+                            [
+                                "name"     => "Discapacidad ( Si / No )",
+                                "type"     => "select",
+                                "required" => true,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-12",
+                                "options"  => [
+                                    [#4251
+                                        "id"       => 1,
+                                        "name"     => "Si",
+                                        "value"    => "si-1",
+                                        "order"    => 1,
+                                        "editMode" => false,
+                                    ],
+                                    [#4250
+                                        "id"       => 2,
+                                        "name"     => "No",
+                                        "value"    => "No-2",
+                                        "order"    => 2,
+                                        "editMode" => false,
+                                    ],
+                                ],
+                            ],
+                            [#4249
+                                "name"     => "Fecha de Nacimiento",
+                                "type"     => "date",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                                "options"  => [],
+                            ],
+                            [#4248
+                                "name"     => "Cédula de Identidad",
+                                "type"     => "text",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                                "options"  => [],
+                            ],
+                            [#4276
+                                "name"     => "Tema de la capacitación",
+                                "type"     => "text",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-6 col-lg-6",
+                                "options"  => [],
+                            ],
+                            [#4277
+                                "name"     => "Perfil Docente. Asesor Pedagógico. Educadora. Administrativo",
+                                "type"     => "text",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-6",
+                                "options"  => [],
+                            ],
+                            [#4278
+                                "name"     => "Municipio",
+                                "type"     => "text",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                                "options"  => [],
+                                "slug"     => "municipio",
+                            ],
+                            $departments,
+                            [
+                                "name"     => "Teléfono",
+                                "type"     => "text",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                                "options"  => [],
+                                "slug"     => "telefono",
+                            ],
+                        ]
+                    ]
+                ]
+            ],
+            [
+                'form_name' => 'Formulario de Instructores',
+                'tabs'      => [
+                    [
+                        'tab_name' => 'Información General',
+                        'fields'   => [
+                            [
+                                "name"     => "Nombres y Apellidos",
+                                "type"     => "text",
+                                "required" => true,
+                                "size"     => "col-xs-12 col-sm-6 col-md-6 col-lg-6",
+                                "options"  => [],
+                            ],
+                            [
+                                "name"     => "Sexo",
+                                "type"     => "select",
+                                "required" => true,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                                "options"  => [
+                                    [#4251
+                                        "id"       => 1,
+                                        "name"     => "M",
+                                        "value"    => "m-1",
+                                        "order"    => 1,
+                                        "editMode" => false,
+                                    ],
+                                    [#4250
+                                        "id"       => 2,
+                                        "name"     => "F",
+                                        "value"    => "f-2",
+                                        "order"    => 2,
+                                        "editMode" => false,
+                                    ],
+                                ],
+                            ],
+                            [#4253
+                                "name"     => "Edad",
+                                "type"     => "number",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                                "options"  => [],
+                            ],
+                            [
+                                "name"     => "Discapacidad ( Si / No )",
+                                "type"     => "select",
+                                "required" => true,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-12",
+                                "options"  => [
+                                    [#4251
+                                        "id"       => 1,
+                                        "name"     => "Si",
+                                        "value"    => "si-1",
+                                        "order"    => 1,
+                                        "editMode" => false,
+                                    ],
+                                    [#4250
+                                        "id"       => 2,
+                                        "name"     => "No",
+                                        "value"    => "No-2",
+                                        "order"    => 2,
+                                        "editMode" => false,
+                                    ],
+                                ],
+                            ],
+                            $disabilities,
+                            [#4249
+                                "name"     => "Fecha de Nacimiento",
+                                "type"     => "date",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                                "options"  => [],
+                            ],
+                            [#4248
+                                "name"     => "Cédula de Identidad",
+                                "type"     => "text",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                                "options"  => [],
+                            ],
+                            [#4276
+                                "name"     => "Organización o Institución",
+                                "type"     => "text",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-6 col-lg-6",
+                                "options"  => [],
+                            ],
+                            [#4278
+                                "name"     => "Municipio",
+                                "type"     => "text",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                                "options"  => [],
+                                "slug"     => "municipio",
+                            ],
+                            $departments,
+                            [
+                                "name"     => "Teléfono",
+                                "type"     => "text",
+                                "required" => false,
+                                "size"     => "col-xs-12 col-sm-6 col-md-4 col-lg-3",
+                                "options"  => [],
+                                "slug"     => "telefono",
+                            ],
+                        ]
+                    ]
+                ]
+            ],
         ];
 
         collect($forms)->each(function ($form) {

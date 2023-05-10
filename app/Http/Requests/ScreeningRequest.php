@@ -25,8 +25,9 @@ class ScreeningRequest extends FormRequest
     {
         return [
             'name'                      => ['required', 'string', 'max:255'],
+            'registrant_name'           => ['required', 'string', 'max:255'],
             'gender'                    => ['required', 'string', 'max:255'],
-            'age'                       => ['required', 'integer', 'max:255'],
+            'age'                       => ['required', 'string', 'max:255'],
             'date_of_screening'         => ['required', 'date', 'max:255'],
             'municipality'              => ['required', 'string', 'max:255'],
             'department'                => ['required', 'string', 'max:255'],

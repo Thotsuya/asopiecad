@@ -26,6 +26,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::get('/screenings/report', App\Http\Controllers\Admin\ScreeningsReportsController::class)->name('screenings.report');
+
     Route::resource('forms', App\Http\Controllers\Admin\FormController::class);
     Route::resource('projects', App\Http\Controllers\Admin\ProjectController::class)->except('create');
     Route::resource('users', App\Http\Controllers\Admin\UsersController::class);
@@ -33,6 +35,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('appointments', App\Http\Controllers\Admin\AppointmentController::class);
     Route::resource('beneficiaries', App\Http\Controllers\Admin\BeneficiariesController::class);
     Route::resource('screenings', App\Http\Controllers\Admin\ScreeningController::class)->except('show','destroy');
+
+
 
     Route::patch('beneficiaries/{beneficiary}/approve', [App\Http\Controllers\Admin\BeneficiariesController::class, 'approve'])->name('beneficiaries.approve');
     Route::patch('beneficiaries/{beneficiary}/reject', [App\Http\Controllers\Admin\BeneficiariesController::class, 'reject'])->name('beneficiaries.reject');

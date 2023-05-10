@@ -13,6 +13,7 @@ class Screening extends Model
     protected $fillable = [
         'name',
         'user_id',
+        'registrant_name',
         'gender',
         'age',
         'date_of_screening',

@@ -9,6 +9,7 @@ export default function Create({ auth }) {
         department: 'managua',
         municipality: null,
         date_of_screening: new Date().toISOString().split('T')[0],
+        registrant_name: '',
         name: '',
         age: '',
         gender: '',

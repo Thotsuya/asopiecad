@@ -27,7 +27,7 @@ class ProjectReportsController extends Controller
             'rgba(153, 102, 255, 1)',
         ];
 
-        $project->load(['beneficiaries']);
+        $project->load(['beneficiaries.appointments'])->loadCount(['beneficiaries']);
 
         $goals = $project->goals()
             ->with([
@@ -37,7 +37,9 @@ class ProjectReportsController extends Controller
                         $query->with([
                             'answers.pivot.field',
                             'appointments'
-                        ])->when(
+                        ])
+                            ->whereNotNull('approved_at')
+                            ->when(
                             $request->has('start_date') && $request->has('end_date'),
                             function ($query) use ($request) {
                                 $query->whereBetween(
@@ -54,9 +56,11 @@ class ProjectReportsController extends Controller
 
         $beneficiaries = $project
             ->beneficiaries()
+            ->approved()
             ->with([
                 'forms',
-                'programs'
+                'programs',
+                'appointments'
             ])
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 $query->whereBetween('benefitiary_project.created_at', [$request->start_date, $request->end_date]);
@@ -89,9 +93,11 @@ class ProjectReportsController extends Controller
 
         $results = $this->getProjectResults($goals);
         $headers = $this->getHeaders($results);
+        $globalResults = $this->getGlobalResults($project, $results);
 
         return inertia('Reports/Show', [
             'project' => $project,
+            'global' => $globalResults,
             'results' => $results->toArray(),
             'labels' => $labels,
             'datasets' => $datasets,

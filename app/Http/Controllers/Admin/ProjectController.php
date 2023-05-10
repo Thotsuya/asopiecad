@@ -16,6 +16,8 @@ use App\Models\Benefitiary;
 use App\Models\Form;
 use App\Models\Project;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 
 class ProjectController extends Controller
@@ -86,18 +88,23 @@ class ProjectController extends Controller
      * @param int $id
      * @return \Inertia\Response|\Inertia\ResponseFactory
      */
-    public function show(Project $project)
+    public function show(Project $project, Request $request)
     {
         return inertia('Projects/Show', [
             // Paginate the beneficiaries
             'beneficiaries' => $project->beneficiaries()
+                ->when($request->has('search'), function ($query) use ($request) {
+                    $query->where('name', 'like', "%{$request->search}%");
+                })
                 ->latest('id')
                 ->with('programs', 'appointments','forms')
+                // Remove global scope
                 ->withTrashed()
                 ->paginate(20)
                 ->through(function ($beneficiary) {
                     return BeneficiaryResource::make($beneficiary);
-                }),
+                })
+                ->withQueryString(),
             'paginated_programs' => $project->programs()
                 ->with('beneficiaries')
                 ->withCount('beneficiaries')

@@ -20,6 +20,7 @@ class ScreeningResource extends JsonResource
             'id' => $this->id,
             'uuid' => $this->uuid,
             'name' => $this->name,
+            'registrant_name' => $this->registrant_name,
             'age' => $this->age,
             'gender' => Screening::GENDERS[$this->gender],
             'date_of_screening' => Carbon::parse($this->date_of_screening)->translatedFormat('d F Y'),

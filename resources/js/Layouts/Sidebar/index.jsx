@@ -87,7 +87,9 @@ export default function Sidebar({ auth }) {
                         {can('Ver Tamizajes', auth.user.abilities) && (
                             <li
                                 className={
-                                    route().current('screenings.*')
+                                    route().current('screenings.index') ||
+                                    route().current('screenings.create') ||
+                                    route().current('screenings.edit')
                                         ? 'current'
                                         : ''
                                 }
@@ -98,6 +100,23 @@ export default function Sidebar({ auth }) {
                                 >
                                     <i className="menu-icon fa fa-book"></i>
                                     <span>Tamizajes</span>
+                                </Link>
+                            </li>
+                        )}
+                        {can('Ver Tamizajes', auth.user.abilities) && (
+                            <li
+                                className={
+                                    route().current('screenings.report')
+                                        ? 'current'
+                                        : ''
+                                }
+                            >
+                                <Link
+                                    href={route('screenings.report')}
+                                    className="waves-effect"
+                                >
+                                    <i className="menu-icon fa fa-bar-chart"></i>
+                                    <span>Reporte Tamizajes</span>
                                 </Link>
                             </li>
                         )}

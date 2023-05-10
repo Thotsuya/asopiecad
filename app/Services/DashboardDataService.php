@@ -13,7 +13,6 @@ class DashboardDataService
 
     public function getDashboardIndicators()
     {
-
         $colors = [
             'rgba(255, 99, 132, 1)',
             'rgba(54, 162, 235, 1)',
@@ -22,9 +21,47 @@ class DashboardDataService
             'rgba(153, 102, 255, 1)',
         ];
 
+        $months = [
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December',
+        ];
+
         $totalScreenings = Screening::count();
+
+        //Group the screenings by month and year, with Full month name in Spanish and the count of screenings and year,
+        // For the months with no screenings, the count is 0
+        // The key is the year and the value is an array of months with the count of screenings
+
+        $screening_test = Screening::select(
+            DB::raw('count(*) as count, MONTHNAME(created_at) as month, YEAR(created_at) as year')
+        )
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'desc')
+            ->orderBy('month', 'desc')
+            ->get()
+            ->groupBy('year')
+            ->mapWithKeys(function ($item, $key) use ($months) {
+                return [
+                    $key => collect($months)->map(function ($month) use ($item) {
+                        return $item->firstWhere('month', $month)->count ?? 0;
+                    })->keyBy(function ($item, $key) use ($months) {
+                        return $months[$key];
+                    })
+                ];
+            });
+
+
         $screenings_per_year_by_month =
-            //Group the screenings by month and year, with Full month name in Spanish and the count of screenings and year
             Screening::selectRaw('count(*) as count, year(created_at) year, monthname(created_at) month')
                 ->groupBy('year', 'month')
                 ->orderBy('year', 'desc')
@@ -46,34 +83,38 @@ class DashboardDataService
         })->flatten()->unique()->values();
 
         $datasets = $screenings_per_year_by_month->map(function ($item, $key) use ($colors) {
-
             $color = $colors[rand(0, count($colors) - 1)];
             return [
-                'id' => rand(1, 1000),
-                'label' => $key,
-                'data' => $item->pluck('value'),
+                'id'              => rand(1, 1000),
+                'label'           => $key,
+                'data'            => $item->pluck('value'),
                 'backgroundColor' => $color,
-                'borderColor' =>  $color,
+                'borderColor'     => $color,
             ];
         })->values();
 
-        $total_beneficiaries = Benefitiary::count();
-        $total_projects = auth()->user()->projects->count();
+        $total_beneficiaries = Benefitiary::query()
+            ->approved()
+            ->count();
+        $total_projects = auth()
+            ->user()
+            ->projects
+            ->count();
 
         $incoming_appointments = Benefitiary::query()
-            ->whereHas('appointments', function ($query) {
-                $query->where(DB::raw('DATE_ADD(start_date, INTERVAL 3 MONTH)'), '>', Carbon::now());
-            })
+            ->incomingAppointments()
             ->with('appointments.benefitiary')
             ->get()
             ->map(function ($beneficiary) {
                 return $beneficiary->appointments->map(function ($appointment) {
                     return [
-                        'id' => $appointment->id,
-                        'start_date' => $appointment->start_date->translatedFormat('l j F Y'),
-                        'end_date' => $appointment->end_date,
-                        'next_appointment' => Carbon::parse($appointment->start_date)->addMonths(3)->translatedFormat('l d F Y'),
-                        'beneficiary' => $appointment->benefitiary->name,
+                        'id'               => $appointment->id,
+                        'start_date'       => $appointment->start_date->translatedFormat('l j F Y'),
+                        'end_date'         => $appointment->end_date,
+                        'next_appointment' => Carbon::parse($appointment->start_date)->addMonths(3)->translatedFormat(
+                            'l d F Y'
+                        ),
+                        'beneficiary'      => $appointment->benefitiary->name,
                     ];
                 });
             })->flatten(1);

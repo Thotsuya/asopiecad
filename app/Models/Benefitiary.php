@@ -5,8 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class Benefitiary extends Model
@@ -46,6 +49,7 @@ class Benefitiary extends Model
     protected static function booted()
     {
         parent::boot();
+
         static::creating(function ($model) {
             $lastInternalId = self::withTrashed()->orderBy('internal_id', 'desc')->first()->internal_id ?? 0;
 
@@ -95,6 +99,18 @@ class Benefitiary extends Model
             }),
             default => $query,
         };
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->whereNotNull('approved_at');
+    }
+
+    public function scopeIncomingAppointments($query)
+    {
+        $query->whereHas('appointments', function ($query) {
+            $query->where(DB::raw('DATE_ADD(start_date, INTERVAL 3 MONTH)'), '>', now());
+        });
     }
 
 }

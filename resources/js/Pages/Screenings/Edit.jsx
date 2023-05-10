@@ -11,6 +11,7 @@ export default function Edit({ screening, auth }) {
         municipality: screening.municipality,
         date_of_screening: screening.date_of_screening,
         name: screening.name,
+        registrant_name: screening.registrant_name,
         age: screening.age,
         gender: screening.gender,
 

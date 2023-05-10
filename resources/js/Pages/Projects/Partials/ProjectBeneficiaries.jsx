@@ -2,6 +2,7 @@ import Pagination from '@/Components/Pagination'
 import { Link } from '@inertiajs/inertia-react'
 import useToasts from '@/Hooks/Toasts'
 import { Inertia } from '@inertiajs/inertia'
+import { useEffect, useState } from 'react'
 
 export default function ProjectBeneficiaries({
     beneficiaries = [],
@@ -10,6 +11,8 @@ export default function ProjectBeneficiaries({
     auth,
 }) {
     const { promptWithInput, info, prompt, error } = useToasts()
+
+    const [beneficiarySearch, setBeneficiarySearch] = useState('')
 
     const handleDelete = (beneficiary) => {
         promptWithInput(
@@ -42,6 +45,21 @@ export default function ProjectBeneficiaries({
             }
         })
     }
+
+    useEffect(() => {
+        _.debounce(() => {
+            Inertia.get(
+                route('projects.show', project.uuid),
+                {
+                    search: beneficiarySearch,
+                },
+                {
+                    preserveScroll: true,
+                    preserveState: true,
+                }
+            )
+        }, 500)()
+    }, [beneficiarySearch])
 
     const handleApprove = (beneficiary) => {
         prompt(
@@ -98,6 +116,17 @@ export default function ProjectBeneficiaries({
             aria-labelledby="profile-tab"
         >
             <div className="row">
+                <div className="col-xs-12">
+                    <input
+                        type="text"
+                        className="form-control margin-bottom-10"
+                        placeholder="Buscar beneficiario"
+                        value={beneficiarySearch}
+                        onChange={(e) => {
+                            setBeneficiarySearch(e.target.value)
+                        }}
+                    />
+                </div>
                 <div className="col-xs-12 table-responsive">
                     {beneficiaries.data.length > 0 ? (
                         <table className="table table-striped table-hover">
