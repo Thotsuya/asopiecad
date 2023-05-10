@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useRef, useState } from 'react'
 import useToasts from '@/Hooks/Toasts'
 import { useForm } from '@inertiajs/inertia-react'
 import { Inertia } from '@inertiajs/inertia'
@@ -213,7 +213,7 @@ export default function useUserForms() {
     }
 
     const storeFieldToTab = () => {
-        Inertia.post(route('tabs.fields.store', field.tab_id), field, {
+        Inertia.post(route('tabs.fields.store', data.tabs[0].id), field, {
             onBefore: () => {
                 setLoading(true)
             },
