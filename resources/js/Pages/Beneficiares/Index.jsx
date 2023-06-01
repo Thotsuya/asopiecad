@@ -16,6 +16,8 @@ export default function Index({
     forms,
     auth,
 }) {
+
+
     const [beneficiary, setBeneficiary] = useState(null)
 
     const { can } = useUsers()
@@ -35,7 +37,7 @@ export default function Index({
                         preserveScroll: true,
                         preserveState: true,
                         onSuccess: () => {
-                            success('El beneficiario ha sido aprobado.')
+                            success('El participante ha sido aprobado.')
                         },
                     }
                 )
@@ -55,22 +57,22 @@ export default function Index({
                             data-target="#modal-register-beneficiary"
                             className="btn btn-info btn-submit-prj btn-sm waves-effect waves-light"
                         >
-                            Registrar Beneficiario
+                            Registrar Participante
                         </button>
                     )}
                     <div className="result-count">
-                        {beneficiaries_paginated.total} Beneficiarios
+                        {beneficiaries_paginated.total} Participantes
                     </div>
                 </div>
 
-                <Filters projects={projects} fields={{}} />
+                <Filters projects={projects} fields={{}} forms={forms} />
 
                 <div className="row">
                     <div className="col-xs-12">
                         <div className="box-content">
                             {beneficiaries_paginated.total === 0 && (
                                 <div className="alert alert-info">
-                                    No hay beneficiarios registrados
+                                    No hay participantes registrados
                                 </div>
                             )}
 

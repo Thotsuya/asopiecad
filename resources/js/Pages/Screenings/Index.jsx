@@ -2,9 +2,20 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head, Link } from '@inertiajs/inertia-react'
 import useUsers from '@/Hooks/Users'
 import Pagination from '@/Components/Pagination'
+import {useState, useEffect} from "react";
+import {Inertia} from "@inertiajs/inertia";
 
 export default function Index({ auth, screenings }) {
     const { can } = useUsers()
+
+    const [search, setSearch] = useState('')
+
+
+    useEffect(() => {
+        _.debounce(() => {
+            Inertia.reload({data: {search}})
+        }, 500)()
+    }, [search])
 
     return (
         <AuthenticatedLayout auth={auth}>
@@ -23,7 +34,18 @@ export default function Index({ auth, screenings }) {
             </div>
 
             <div className="row">
+
                 <div className="col-md-12">
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Buscar Tamizaje"
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                    />
+                </div>
+
+                <div className="col-md-12 margin-top-10">
                     <div className="box-content">
                         {screenings.total === 0 && (
                             <div className="alert alert-info">

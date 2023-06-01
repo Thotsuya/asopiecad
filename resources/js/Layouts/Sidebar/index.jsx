@@ -80,7 +80,7 @@ export default function Sidebar({ auth }) {
                                     className="waves-effect"
                                 >
                                     <i className="menu-icon fa fa-users"></i>
-                                    <span>Beneficiarios</span>
+                                    <span>Participantes</span>
                                 </Link>
                             </li>
                         )}

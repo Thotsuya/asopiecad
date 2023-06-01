@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ScreeningRequest;
 use App\Http\Resources\ScreeningResource;
 use App\Models\Screening;
+use Illuminate\Http\Request;
 
 class ScreeningController extends Controller
 {
@@ -22,12 +23,18 @@ class ScreeningController extends Controller
      *
      * @return \Inertia\Response|\Inertia\ResponseFactory
      */
-    public function index()
+    public function index(Request $request)
     {
         return \inertia('Screenings/Index', [
-            'screenings' => Screening::latest()->with('user')->paginate(20)->through(function ($screening) {
-                return ScreeningResource::make($screening);
-            })
+            'screenings' => Screening::query()
+                ->search($request)
+                ->latest()
+                ->with('user')
+                ->paginate(20)
+                ->through(function ($screening) {
+                    return ScreeningResource::make($screening);
+                })
+                ->withQueryString()
         ]);
     }
 

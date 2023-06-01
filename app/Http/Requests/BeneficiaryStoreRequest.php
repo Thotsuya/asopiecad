@@ -40,6 +40,7 @@ class BeneficiaryStoreRequest extends FormRequest
                 'name' => ['required', 'string', 'max:255'],
                 'programs' => ['sometimes', 'array'],
                 'programs.*' => ['exists:programs,id'],
+                'approve' => ['sometimes', 'boolean'],
             ])->toArray();
     }
 

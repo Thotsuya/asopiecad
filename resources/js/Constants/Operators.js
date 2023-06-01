@@ -39,6 +39,7 @@ export const OPERATORS = [
         id: '7',
         name: 'Contiene',
         types: ['text', 'select'],
+        value: 'contains',
     },
 ]
 

@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
-import { Head } from '@inertiajs/inertia-react'
+import {Head} from '@inertiajs/inertia-react'
 import useBenefitiaries from '@/Hooks/Benefitiaries'
 import FormTabs from '@/Pages/Beneficiares/Partials/FormTabs'
 import FormTabContent from '@/Pages/Beneficiares/Partials/FormTabContent'
@@ -8,17 +8,17 @@ import CheckboxInput from '@/Pages/Forms/Fields/CheckboxInput'
 import SelectInput from '@/Pages/Forms/Fields/SelectInput'
 import RadioInput from '@/Pages/Forms/Fields/RadioInput'
 import SmallInput from '@/Pages/Forms/Fields/SmallInput'
-import { useEffect } from 'react'
+import {useEffect} from 'react'
 
 export default function Create({
-    auth,
-    forms,
-    project,
-    programs,
-    is_new = false,
-    beneficiary = null,
-}) {
-    const { data, setData, errors, handleSubmit, processing } =
+                                   auth,
+                                   forms,
+                                   project,
+                                   programs,
+                                   is_new = false,
+                                   beneficiary = null,
+                               }) {
+    const {data, setData, errors, handleSubmit, processing,calculateSimilarity} =
         useBenefitiaries(forms, is_new, project, beneficiary, programs)
 
     useEffect(() => {
@@ -29,22 +29,37 @@ export default function Create({
                     [key]: beneficiary.beneficiary_data[key],
                 }))
             })
+
+            let newData = {...data}
+
+            Object.keys(newData).forEach((key) => {
+                // Find the fields that are empty, compare with the beneficiary data and fill them with the closest value
+                if (newData[key] === null || newData[key] === '') {
+                    Object.keys(beneficiary.beneficiary_data).forEach((key2) => {
+                        if(calculateSimilarity(key,key2).result){
+                            newData[key] = beneficiary.beneficiary_data[key2]
+                        }
+                    })
+                }
+            })
+
+            setData(newData)
         }
     }, [])
 
     return (
         <AuthenticatedLayout auth={auth}>
-            <Head title="Registrar Beneficiario" />
+            <Head title="Registrar Participante"/>
 
             <h1 className="page-title">
-                {is_new ? 'Registrar Beneficiario' : 'Editar Beneficiario'} en
+                {is_new ? 'Registrar Participante' : 'Editar Participante'} en
                 Proyecto: <b>{project.project_name}</b>
             </h1>
 
             <div className="row">
                 <div className="col-xs-12">
                     <h3 className="page-title">
-                        {is_new ? 'Nuevo Beneficiario' : 'Beneficiario'}:{' '}
+                        {is_new ? 'Nuevo Participante' : 'Participante'}:{' '}
                         <b>{data.name}</b>
                     </h3>
                 </div>
@@ -56,7 +71,7 @@ export default function Create({
                         className={`alert alert-${is_new ? 'info' : 'warning'}`}
                     >
                         <p>
-                            Se registrarán los datos del beneficiario{' '}
+                            Se registrarán los datos del participante{' '}
                             {!is_new ? (
                                 <strong className="text-primary">
                                     Ya existente
@@ -66,7 +81,7 @@ export default function Create({
                             )}{' '}
                             <b>{data.name}</b> en el proyecto{' '}
                             <b>{project.project_name}</b>. Verifique que los
-                            datos sean correctos antes de guardar. <br /> Los
+                            datos sean correctos antes de guardar. <br/> Los
                             campos marcados con{' '}
                             <span className="text-danger">*</span> son
                             obligatorios.
@@ -80,7 +95,7 @@ export default function Create({
                     <div className="col-xs-12">
                         <div className="box-content">
                             <h4 className="box-title">{form.form_name}</h4>
-                            <FormTabs form={form} />
+                            <FormTabs form={form}/>
                             <div
                                 className="tab-content"
                                 id="beneficiary-form-tabs"
@@ -123,12 +138,12 @@ export default function Create({
                                                                     value={
                                                                         data[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                     error={
                                                                         errors[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                 />
                                                             )
@@ -152,18 +167,18 @@ export default function Create({
                                                                             `${field.slug}-${form.form_slug}-${form.id}`,
                                                                             !data[
                                                                                 `${field.slug}-${form.form_slug}-${form.id}`
-                                                                            ]
+                                                                                ]
                                                                         )
                                                                     }}
                                                                     checked={
                                                                         data[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                     error={
                                                                         errors[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                 />
                                                             )
@@ -193,12 +208,12 @@ export default function Create({
                                                                     value={
                                                                         data[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                     error={
                                                                         errors[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                 />
                                                             )
@@ -229,12 +244,12 @@ export default function Create({
                                                                     value={
                                                                         data[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                     error={
                                                                         errors[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                 />
                                                             )
@@ -258,18 +273,18 @@ export default function Create({
                                                                             `${field.slug}-${form.form_slug}-${form.id}`,
                                                                             !data[
                                                                                 `${field.slug}-${form.form_slug}-${form.id}`
-                                                                            ]
+                                                                                ]
                                                                         )
                                                                     }}
                                                                     checked={
                                                                         data[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                     error={
                                                                         errors[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                 />
                                                             )
@@ -292,12 +307,12 @@ export default function Create({
                                                                 value={
                                                                     data[
                                                                         `${field.slug}-${form.form_slug}-${form.id}`
-                                                                    ]
+                                                                        ]
                                                                 }
                                                                 error={
                                                                     errors[
                                                                         `${field.slug}-${form.form_slug}-${form.id}`
-                                                                    ]
+                                                                        ]
                                                                 }
                                                             />
                                                         )
@@ -320,7 +335,7 @@ export default function Create({
                     >
                         {processing ? (
                             <span>
-                                <i className="fa fa-spinner fa-spin" />{' '}
+                                <i className="fa fa-spinner fa-spin"/>{' '}
                                 Guardando Beneficiario
                             </span>
                         ) : (

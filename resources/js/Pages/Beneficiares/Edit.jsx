@@ -9,16 +9,19 @@ import CheckboxInput from '@/Pages/Forms/Fields/CheckboxInput'
 import SelectInput from '@/Pages/Forms/Fields/SelectInput'
 import RadioInput from '@/Pages/Forms/Fields/RadioInput'
 import SmallInput from '@/Pages/Forms/Fields/SmallInput'
+import useUsers from "@/Hooks/Users";
 
 export default function Edit({
     auth,
     forms,
     project,
-    beneficiary = null,
+    beneficiary,
     programs,
 }) {
     const { data, setData, errors, handleSubmitUpdate, isDirty, processing } =
         useBenefitiaries(forms, false, project, beneficiary, programs)
+
+    const {can} = useUsers()
 
     useEffect(() => {
         Object.keys(beneficiary.beneficiary_data).forEach((key) => {
@@ -27,16 +30,9 @@ export default function Edit({
                 [key]: beneficiary.beneficiary_data[key] ?? data[key],
             }))
         })
-    }, [])
 
-    const Components = {
-        textarea: LargeInput,
-        text: SmallInput,
-        select: SelectInput,
-        checkbox: CheckboxInput,
-        radio: RadioInput,
-        'select multiple': SelectInput,
-    }
+    }, [beneficiary])
+
 
     return (
         <AuthenticatedLayout auth={auth}>
@@ -323,7 +319,7 @@ export default function Edit({
                 <div className="col-xs-12">
                     <button
                         className="btn btn-primary btn-block"
-                        onClick={handleSubmitUpdate}
+                        onClick={() => handleSubmitUpdate(can('Aprobar Beneficiarios', auth.user.abilities))}
                         disabled={processing}
                     >
                         {processing ? (
@@ -332,7 +328,7 @@ export default function Edit({
                                 Guardando cambios
                             </span>
                         ) : (
-                            'Guardar cambios en el formulario'
+                            auth.user.abilities.includes('Aprobar Beneficiarios') ? 'Guardar y Aprobar cambios en el formulario' : 'Guardar cambios en el formulario'
                         )}
                     </button>
                 </div>

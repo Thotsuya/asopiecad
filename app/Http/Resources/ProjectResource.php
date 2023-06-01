@@ -61,6 +61,9 @@ class ProjectResource extends JsonResource
             'programs' => $this->whenLoaded('programs',$this->programs),
             'beneficiaries' => $this->whenLoaded('beneficiaries',$this->beneficiaries),
             'global_progress' => $this->globalProgress(),
+            'featured_image' => // return first media as featured image
+                $this->getFirstMediaUrl('project_featured_image') ??
+                asset('images/placeholder.png'),
         ];
     }
 

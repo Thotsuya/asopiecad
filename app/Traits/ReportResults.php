@@ -4,6 +4,8 @@ namespace App\Traits;
 
 
 use App\Models\Benefitiary;
+use App\Models\Screening;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 trait ReportResults
@@ -81,7 +83,7 @@ trait ReportResults
         })->flatten(1)->groupBy('label');
 
         return [
-            'goal_description'     => 'Al finalizar el proyecto se realizaran ' . $project->global_goal . ' tamizajes',
+            'goal_description'     => 'Meta Global del Proyecto: ' . $project->global_goal,
             'goal_target'          => $project->global_goal,
             'total_beneficiaries'  => $project->beneficiaries->count(),
             'completed_percentage' => round(
@@ -120,5 +122,30 @@ trait ReportResults
         return $goal->group_every > 1
             ? round($goal->program->beneficiaries->count() / $goal->goal_target * $goal->group_every)
             : $goal->program->beneficiaries->count();
+    }
+
+    public function getScreeningsReport(){
+        $screenings = Screening::all();
+
+        return [
+            'title' => 'Al finalizar el proyecto se realizaran 7200 tamizajes',
+            'total_screenings' => $screenings->count(),
+            'completed_percentage' => round(
+                $screenings->count() / 7200 * 100,
+                2
+            ),
+            'males_below_18_without_disabilities' => $screenings->filter(function($screening){
+                return floatval(trim(str_replace('meses', '', $screening->age))) / 12 < 18 && $screening->gender == 'masculino';
+            })->count(),
+            'females_below_18_without_disabilities' => $screenings->filter(function($screening){
+                return floatval(trim(str_replace('meses', '', $screening->age))) / 12 < 18 && $screening->gender == 'femenino';
+            })->count(),
+            'males_over_18_without_disabilities' => $screenings->filter(function($screening){
+                return floatval(trim(str_replace('meses', '', $screening->age))) / 12 > 18 && $screening->gender == 'masculino';
+            })->count(),
+            'females_over_18_without_disabilities' => $screenings->filter(function($screening){
+                return floatval(trim(str_replace('meses', '', $screening->age))) / 12 > 18 && $screening->gender == 'femenino';
+            })->count(),
+        ];
     }
 }

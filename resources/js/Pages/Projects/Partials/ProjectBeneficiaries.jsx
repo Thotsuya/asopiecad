@@ -120,7 +120,7 @@ export default function ProjectBeneficiaries({
                     <input
                         type="text"
                         className="form-control margin-bottom-10"
-                        placeholder="Buscar beneficiario"
+                        placeholder="Buscar Participante"
                         value={beneficiarySearch}
                         onChange={(e) => {
                             setBeneficiarySearch(e.target.value)

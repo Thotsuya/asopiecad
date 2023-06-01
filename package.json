@@ -29,9 +29,11 @@
         "@fullcalendar/react": "^6.0.4",
         "chart.js": "^4.2.1",
         "jquery": "^3.6.3",
+        "rc-slider": "^10.1.1",
         "react-beautiful-dnd": "^13.1.1",
         "react-chartjs-2": "^5.2.0",
         "react-select": "^5.7.0",
+        "react-slider": "^2.0.4",
         "sweetalert2": "^11.6.16"
     }
 }

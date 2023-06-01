@@ -31,6 +31,7 @@ class ProjectUpdateRequest extends FormRequest
             'users' => ['sometimes', 'array'],
             'users.*.id' => ['exists:users,id'],
             'project_start_date' => ['required', 'date'],
+            'project_featured_image' => ['nullable', 'image', 'max:4096'],
         ];
     }
 
@@ -66,6 +67,8 @@ class ProjectUpdateRequest extends FormRequest
             'project_duration.min' => 'La duración debe ser mayor o igual a 1',
             'project_start_date.required' => 'La fecha de inicio es requerida',
             'project_start_date.date' => 'La fecha de inicio debe ser una fecha válida',
+            'project_featured_image.image' => 'La imagen debe ser un archivo de imagen',
+            'project_featured_image.max' => 'La imagen no debe pesar más de 4MB',
         ];
     }
 

@@ -73,6 +73,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/programs/{program}/forms', [App\Http\Controllers\Admin\ProgramFormController::class, 'create'])->name('programs.forms.create');
     Route::post('/program/{program}/beneficiaries/remove', [App\Http\Controllers\Admin\ProgramFormController::class, 'remove'])->name('programs.beneficiaries.remove');
 
+    Route::get('/storage-link',function(){
+        $targetFolder = '/home/testingnic/asopiecad/storage/app/public';
+        $linkFolder = '/home/testingnic/public_html/storage';
+        symlink($targetFolder,$linkFolder);
+        echo 'Symlink process successfully completed';
+    });
+
+    Route::post('/meetings', [App\Http\Controllers\Admin\MeetingController::class, 'store'])->name('meetings.store');
+    Route::get('/meetings/{meeting}/edit', [App\Http\Controllers\Admin\MeetingController::class, 'edit'])->name('meetings.edit');
+    Route::put('/meetings/{meeting}', [App\Http\Controllers\Admin\MeetingController::class, 'update'])->name('meetings.update');
+
+    Route::put('/participants/{participant}', [App\Http\Controllers\Admin\ParticipantController::class, 'update'])->name('participants.update');
+    Route::post('/participants', [App\Http\Controllers\Admin\ParticipantController::class, 'store'])->name('participants.store');
 
 
 });

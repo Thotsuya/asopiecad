@@ -8,6 +8,7 @@ use App\Http\Requests\ProjectUpdateRequest;
 use App\Http\Resources\AppointmentResource;
 use App\Http\Resources\BeneficiaryResource;
 use App\Http\Resources\GoalResource;
+use App\Http\Resources\MeetingResource;
 use App\Http\Resources\PaginatedProgramsResource;
 use App\Http\Resources\ProgramsResource;
 use App\Http\Resources\ProjectEditResource;
@@ -48,6 +49,7 @@ class ProjectController extends Controller
 
         return inertia('Projects/Index', [
             'projects' => $projects
+                ->with('media')
                 ->withCount('beneficiaries', 'users','programs')
                 ->latest('id')
                 ->paginate(6)
@@ -142,6 +144,15 @@ class ProjectController extends Controller
             'forms' => Form::query()
                 ->with('tabs.fields')
                 ->get(),
+
+            'meetings' => $project->meetings()
+                ->with('participants')
+                ->withCount('participants')
+                ->latest()
+                ->paginate(20)
+                ->through(function ($meeting) {
+                    return MeetingResource::make($meeting);
+                }),
         ]);
     }
 
@@ -170,6 +181,7 @@ class ProjectController extends Controller
      */
     public function update(ProjectUpdateRequest $request, Project $project)
     {
+
         $project->update([
             'project_name' => $request->project_name,
             'project_description' => $request->project_description,
@@ -180,6 +192,11 @@ class ProjectController extends Controller
 
         if ($request->validated()['users']) {
             $project->users()->sync($request->validated()['users']);
+        }
+
+        if($request->validated()['project_featured_image']){
+            $project->addMediaFromRequest('project_featured_image')
+                ->toMediaCollection('project_featured_image');
         }
 
         return redirect()->route('projects.index');

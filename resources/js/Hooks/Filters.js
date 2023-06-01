@@ -20,11 +20,28 @@ export default function useFilters() {
             label: 'Proyecto',
             value: 'project_id',
         },
+        {
+            id: 4,
+            label: 'Formulario',
+            value: 'form_id',
+        },
+        {
+            id: 5,
+            label: 'Fecha de Creación',
+            value: 'created_at'
+        }
+
     ]
 
     const { data, setData, get, processing, reset, errors } = useForm({
         filter: '',
         value: '',
+        form_id: 1,
+        field_id: '',
+        field_type: '',
+        operator: '',
+        from: new Date().toISOString().slice(0, 10),
+        to: new Date().toISOString().slice(0, 10),
     })
 
     const handleSearch = () => {

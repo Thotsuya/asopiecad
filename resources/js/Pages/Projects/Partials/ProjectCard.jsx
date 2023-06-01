@@ -12,7 +12,7 @@ export default function ProjectCard({ project, roles, auth }) {
             >
                 <div className="top-project-section">
                     <div className="project-icon">
-                        <img src="https://placehold.me/184/170" alt="" />
+                        <img src={project.featured_image} alt="" />
                     </div>
                     <h3>{project.project_name}</h3>
                     <div className="meta">

@@ -97,6 +97,12 @@ class Benefitiary extends Model
             'project_id' => $query->whereHas('projects', function ($query) use ($request) {
                 $query->where('uuid', 'like', "%{$request->value}%");
             }),
+            'form_id' => $query->whereHas('answers', function ($query) use ($request) {
+                $query
+                    ->where('field_id', $request->field_id)
+                    ->where('value', "{$this->queryOperands($request->operator)}", "{$this->queryValues($request->operator, $request->value)}");
+            }),
+            'created_at' => $query->whereBetween('created_at', [Carbon::parse($request->from)->startOfDay(), Carbon::parse($request->to)->endOfDay()]),
             default => $query,
         };
     }
@@ -113,4 +119,26 @@ class Benefitiary extends Model
         });
     }
 
+    private function queryOperands($operator){
+        return match ($operator) {
+            '==' => '=',
+            '!=' => '!=',
+            '>' => '>',
+            '<' => '<',
+            '>=' => '>=',
+            '<=' => '<=',
+            'contains', 'starts_with', 'ends_with' => 'like',
+            'not_contains' => 'not like',
+            default => '=',
+        };
+    }
+
+    private function queryValues($operator, $value){
+        return match ($operator) {
+            'contains', 'not_contains' => "%{$value}%",
+            'starts_with' => "{$value}%",
+            'ends_with' => "%{$value}",
+            default => $value,
+        };
+    }
 }

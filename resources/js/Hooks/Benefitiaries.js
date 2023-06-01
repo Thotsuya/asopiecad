@@ -17,6 +17,7 @@ export default function useBenefitiaries(
             formData['name'] = isNew ? beneficiary : beneficiary.name
             formData['forms'] = forms
             formData['programs'] = programs
+            formData['approve'] = false
 
             forms.forEach((form) => {
                 form.tabs.forEach((tab) => {
@@ -54,11 +55,12 @@ export default function useBenefitiaries(
         }
     }
 
-    const handleSubmitUpdate = () => {
+    const handleSubmitUpdate = (approve = false) => {
         put(
             route('projects.forms.update', {
                 project: project.uuid,
                 beneficiary: beneficiary.uuid,
+                approve
             }),
             {
                 preserveScroll: true,
@@ -69,7 +71,10 @@ export default function useBenefitiaries(
         )
     }
 
-    const handleSubmitForDataOnly = () => {
+    const handleSubmitForDataOnly = (approve = false) => {
+
+        data.approve = approve;
+
         if (isNew) {
             post(route('beneficiaries.store'), {
                 preserveScroll: true,
@@ -104,6 +109,31 @@ export default function useBenefitiaries(
         return ''
     }
 
+    function calculateSimilarity(str1 = "", str2 = "") {
+        let longer = str1.trim();
+        let shorter = str2.trim();
+
+        let a1 = longer.toLowerCase().split(" ");
+        let b1 = shorter.toLowerCase().split(" ");
+        let result = a1.every((aa, i) => aa[0] === b1[i][0]);
+
+        if (longer.length < shorter.length)  [longer,shorter] = [shorter,longer];
+
+        let arr = [];
+        let count = 0;
+        for(let i = 0;i<longer.length;i++){
+            if(shorter && shorter.includes(longer[i])) {
+                shorter = shorter.replace(longer[i],"")
+                count++
+            }
+        }
+
+        return {
+            score : (count*100)/longer.length,
+            result
+        }
+    }
+
     return {
         data,
         setData,
@@ -112,6 +142,7 @@ export default function useBenefitiaries(
         errors,
         reset,
         handleSubmit,
+        calculateSimilarity,
         isDirty,
         handleSubmitUpdate,
         handleSubmitForDataOnly,

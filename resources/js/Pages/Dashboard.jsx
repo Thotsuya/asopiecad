@@ -75,7 +75,7 @@ export default function Dashboard({
                             <h2 className="counter text-primary">
                                 {total_beneficiaries}
                             </h2>
-                            <p>Beneficiarios</p>
+                            <p>Participantes</p>
                         </div>
                     </div>
                 </div>

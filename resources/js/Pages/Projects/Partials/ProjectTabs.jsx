@@ -54,7 +54,7 @@ export default function ProjectTabs({ project }) {
                     data-toggle="tab"
                     aria-controls="profile"
                 >
-                    Beneficiarios{' '}
+                    Participantes{' '}
                     <i className="fa fa-users" aria-hidden="true" />
                 </a>
             </li>
@@ -79,6 +79,19 @@ export default function ProjectTabs({ project }) {
                 >
                     Metas{' '}
                     <i className="fa fa-flag-checkered" aria-hidden="true" />
+                </a>
+            </li>
+
+            <li role="presentation">
+                <a
+                    href="#meeting"
+                    role="tab"
+                    id="meetings-tab"
+                    data-toggle="tab"
+                    aria-controls="profile"
+                >
+                    Reuniones{' '}
+                    <i className="fa fa-users" aria-hidden="true" />
                 </a>
             </li>
         </ul>

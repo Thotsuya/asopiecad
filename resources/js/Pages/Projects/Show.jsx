@@ -24,6 +24,7 @@ import GoalsProgressModal from '@/Components/Goals/GoalsProgressModal'
 import GoalsViewProgressModal from '@/Components/Goals/GoalsViewProgressModal'
 import GeneralInformation from '@/Pages/Projects/Partials/GeneralInformation'
 import ProgramBeneficiaryModal from '@/Pages/Projects/Partials/ProgramBeneficiaryModal'
+import MeetingsTab from "@/Pages/Projects/Partials/MeetingsTab";
 
 export default function Show({
     auth,
@@ -34,6 +35,7 @@ export default function Show({
     appointments,
     goals,
     forms,
+    meetings,
     paginated_appointments,
     beneficiaries_not_in_project,
 }) {
@@ -51,7 +53,7 @@ export default function Show({
                     <div className="btn-group">
                         {project.can['register-beneficiary'] && (
                             <button
-                                title="Registrar Beneficiario"
+                                title="Registrar Participante"
                                 className="btn btn-xs btn-primary waves-effect waves-light"
                                 data-toggle="modal"
                                 data-target="#modal-register-beneficiary"
@@ -106,6 +108,10 @@ export default function Show({
                                     onAppointmentSelected={
                                         setSelectedAppointment
                                     }
+                                />
+                                <MeetingsTab
+                                    project={project}
+                                    meetings={meetings}
                                 />
                             </div>
                         </div>

@@ -36,6 +36,7 @@ export default function Edit({ auth, project, forms, users, roles }) {
             global_goal: project.global_goal ?? 1,
             project_duration: project.project_duration ?? 1,
             project_start_date: project.project_start_date ?? '',
+            project_featured_image: project.project_featured_image ?? '',
         })
 
     const { success, error } = useToasts()
@@ -133,15 +134,31 @@ export default function Edit({ auth, project, forms, users, roles }) {
         setData('project_start_date', e.target.value)
     }
 
+    const onProjectFeaturedImageChange = (e) => {
+        setData((data) => ({
+            ...data,
+            project_featured_image: e.target.files[0],
+        }))
+    }
+
     const handleFormSubmit = (e) => {
-        put(route('projects.update', project.uuid), {
+
+        Inertia.post(route('projects.update', project.uuid), {
+            ...data,
+            _method: 'PUT',
+        }, {
             preserveScroll: true,
             onSuccess: () => {
                 success('Proyecto actualizado correctamente')
             },
-            onError: () => {
+            onError: (err) => {
                 error('Ha ocurrido un error al actualizar el proyecto')
-            },
+
+                Object.keys(err).forEach((key) => {
+                    console.log(key)
+                    error(err[key])
+                })
+            }
         })
     }
 
@@ -183,6 +200,7 @@ export default function Edit({ auth, project, forms, users, roles }) {
                         onGlobalGoalChange={onGlobalGoalChange}
                         onProjectDurationChange={onDurationChange}
                         onProjectStartDateChange={onProjectStartDateChange}
+                        onProjectFeaturedImageChange={onProjectFeaturedImageChange}
                     />
                 </div>
 

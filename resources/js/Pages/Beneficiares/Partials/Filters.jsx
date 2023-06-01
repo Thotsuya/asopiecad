@@ -1,8 +1,9 @@
 import useFilters from '@/Hooks/Filters'
 import Select from 'react-select'
+import {OPERATORS, OPERANDS} from "@/Constants/Operators";
 
-export default function Filters({ projects }) {
-    const { filters, data, setData, processing, handleSearch } = useFilters()
+export default function Filters({projects, forms}) {
+    const {filters, data, setData, processing, handleSearch} = useFilters()
 
     return (
         <div className="row">
@@ -11,7 +12,7 @@ export default function Filters({ projects }) {
                     <h4 className="box-title">Filtros</h4>
 
                     <div className="row">
-                        <div className="col-md-4">
+                        <div className="col-md-2">
                             <div className="form-group">
                                 <label htmlFor="filter">Buscar por:</label>
                                 <Select
@@ -30,44 +31,196 @@ export default function Filters({ projects }) {
                             </div>
                         </div>
 
-                        <div className="col-md-6">
-                            <div className="form-group">
-                                <label htmlFor="project">Valor:</label>
-                                {data.filter === 'project_id' && (
-                                    <Select
-                                        id="project"
-                                        name="project"
-                                        options={projects.map((project) => ({
-                                            value: project.uuid,
-                                            label: project.project_name,
-                                        }))}
-                                        placeholder="Seleccione un proyecto"
-                                        onChange={(option) => {
-                                            setData({
-                                                ...data,
-                                                value: option.value,
-                                            })
-                                        }}
-                                    />
-                                )}
+                        {data.filter === 'created_at' && (
+                            <>
+                                <div className="col-md-4">
+                                    <div className="form-group">
+                                        <label htmlFor="from">Desde:</label>
+                                        <input
+                                            type="date"
+                                            className="form-control"
+                                            id="from"
+                                            name="from"
+                                            onChange={(e) => {
+                                                setData({
+                                                    ...data,
+                                                    from: e.target.value,
+                                                })
+                                            }}
+                                        />
+                                    </div>
+                                </div>
 
-                                {data.filter !== 'project_id' && (
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        id="value"
-                                        name="value"
-                                        placeholder="Escribe el valor a buscar"
-                                        onChange={(e) => {
-                                            setData({
-                                                ...data,
-                                                value: e.target.value,
-                                            })
-                                        }}
-                                    />
-                                )}
+                                <div className="col-md-4">
+                                    <div className="form-group">
+                                        <label htmlFor="to">Hasta:</label>
+                                        <input
+                                            type="date"
+                                            className="form-control"
+                                            id="to"
+                                            name="to"
+                                            onChange={(e) => {
+                                                setData({
+                                                    ...data,
+                                                    to: e.target.value,
+                                                })
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                        {!data.filter.includes('form_id') && !data.filter.includes('created_at') && (
+                            <div className="col-md-6">
+                                <div className="form-group">
+                                    <label htmlFor="project">Valor:</label>
+                                    {data.filter === 'project_id' && (
+                                        <Select
+                                            id="project"
+                                            name="project"
+                                            options={projects.map((project) => ({
+                                                value: project.uuid,
+                                                label: project.project_name,
+                                            }))}
+                                            placeholder="Seleccione un proyecto"
+                                            onChange={(option) => {
+                                                setData({
+                                                    ...data,
+                                                    value: option.value,
+                                                })
+                                            }}
+                                        />
+                                    )}
+
+                                    {data.filter !== 'project_id' && (
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="value"
+                                            name="value"
+                                            placeholder="Escribe el valor a buscar"
+                                            onChange={(e) => {
+                                                setData({
+                                                    ...data,
+                                                    value: e.target.value,
+                                                })
+                                            }}
+                                        />
+                                    )}
+                                </div>
                             </div>
-                        </div>
+                        )}
+
+                        {data.filter === 'form_id' && (
+                            <>
+                                <div className="col-md-2">
+                                    <div className="form-group">
+                                        <label htmlFor="form">Formulario:</label>
+                                        <Select
+                                            id="form"
+                                            name="form"
+                                            options={forms.map((form) => ({
+                                                value: form.id,
+                                                label: form.form_name,
+                                            }))}
+                                            placeholder="Seleccione un formulario"
+                                            onChange={(option) => {
+                                                setData({
+                                                    ...data,
+                                                    form_id: option.value,
+                                                })
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="col-md-2">
+                                    <div className="form-group">
+                                        <label htmlFor="form">Campo:</label>
+                                        {console.log(forms)}
+                                        <Select
+                                            id="field"
+                                            name="field"
+                                            options={forms.find(form => form.id === data.form_id)?.fields.map((field) => ({
+                                                value: field.id,
+                                                label: field.name,
+                                            }))}
+                                            placeholder="Seleccione un campo"
+                                            onChange={(option) => {
+                                                setData({
+                                                    ...data,
+                                                    field_id: option.value,
+                                                })
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="col-md-2">
+                                    <div className="form-group">
+                                        <label htmlFor="form">Operador:</label>
+                                        <Select
+                                            id="operator"
+                                            name="operator"
+                                            options={OPERANDS
+                                                .filter(operand => operand.form_type.includes(
+                                                    forms.find(form => form.id === data.form_id)?.fields.find(field => field.id === data.field_id)?.type
+                                                )).map((operator) => ({
+                                                    value: operator.value,
+                                                    label: operator.label,
+                                                }))}
+                                            placeholder="Seleccione un operador"
+                                            onChange={(option) => {
+                                                setData({
+                                                    ...data,
+                                                    operator: option.value,
+                                                })
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="col-md-2">
+                                    <div className="form-group">
+                                        <label htmlFor="form">Valor:</label>
+                                        {(forms.find(form => form.id === data.form_id)?.fields.find(field => field.id === data.field_id)?.type === 'select' ||
+                                            forms.find(form => form.id === data.form_id)?.fields.find(field => field.id === data.field_id)?.type === 'select multiple'
+                                        ) ? (
+                                            <Select
+                                                id="value"
+                                                name="value"
+                                                options={forms.find(form => form.id === data.form_id)?.fields.find(field => field.id === data.field_id)?.options.map((option) => ({
+                                                    value: option.value,
+                                                    label: option.name,
+                                                }))}
+                                                placeholder="Seleccione un valor"
+                                                onChange={(option) => {
+                                                    setData({
+                                                        ...data,
+                                                        value: option.value,
+                                                    })
+                                                }}
+                                            />
+                                        ) : (
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                id="value"
+                                                name="value"
+                                                placeholder="Escribe el valor a buscar"
+                                                onChange={(e) => {
+                                                    setData({
+                                                        ...data,
+                                                        value: e.target.value,
+                                                    })
+                                                }}
+                                            />
+                                        )}
+                                    </div>
+                                </div>
+                            </>
+                        )}
 
                         <div className="col-md-2">
                             <div className="form-group">

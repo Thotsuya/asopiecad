@@ -172,10 +172,8 @@ class BeneficiariesController extends Controller
 
         $beneficiary->update([
             'name'            => $request->validated()['name'],
-            'internal_status' => auth()->user()->can(
-                'Aprobar beneficiarios'
-            ) ? Benefitiary::INTERNAL_STATUSES['approved'] : Benefitiary::INTERNAL_STATUSES['pending'],
-            'approved_at'     => auth()->user()->can('Aprobar beneficiarios') ? now() : null,
+            'internal_status' => (auth()->user()->can('Aprobar Beneficiarios') && $request->validated()['approve']) ? Benefitiary::INTERNAL_STATUSES['approved'] : Benefitiary::INTERNAL_STATUSES['pending'],
+            'approved_at'     => (auth()->user()->can('Aprobar Beneficiarios') && $request->validated()['approve']) ? now() : null,
         ]);
 
         $forms = Form::query()

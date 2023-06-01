@@ -1,3 +1,5 @@
+
+
 export default function Screened({
     data,
     setData,
@@ -127,13 +129,13 @@ export default function Screened({
                                             id="communication_1"
                                             min="0"
                                             max="10"
-                                            value={
+                                            defaultValue={
                                                 data[
                                                     'communication_level_' +
                                                         (index + 1)
                                                 ]
                                             }
-                                            onChange={(e) => {
+                                            onMouseUp={(e) => {
                                                 setData(
                                                     'communication_level_' +
                                                         (index + 1),
@@ -192,13 +194,13 @@ export default function Screened({
                                             id={`wide_movment_${index + 1}`}
                                             min="0"
                                             max="10"
-                                            value={
+                                            defaultValue={
                                                 data[
                                                     'wide_movements_level_' +
                                                         (index + 1)
                                                 ]
                                             }
-                                            onChange={(e) => {
+                                            onMouseUp={(e) => {
                                                 setData(
                                                     'wide_movements_level_' +
                                                         (index + 1),
@@ -257,13 +259,13 @@ export default function Screened({
                                             id={`fine_movements_${index + 1}`}
                                             min="0"
                                             max="10"
-                                            value={
+                                            defaultValue={
                                                 data[
                                                     'fine_movements_level_' +
                                                         (index + 1)
                                                 ]
                                             }
-                                            onChange={(e) => {
+                                            onMouseUp={(e) => {
                                                 setData(
                                                     'fine_movements_level_' +
                                                         (index + 1),
@@ -325,13 +327,13 @@ export default function Screened({
                                             }`}
                                             min="0"
                                             max="10"
-                                            value={
+                                            defaultValue={
                                                 data[
                                                     'problem_solving_level_' +
                                                         (index + 1)
                                                 ]
                                             }
-                                            onChange={(e) => {
+                                            onMouseUp={(e) => {
                                                 setData(
                                                     'problem_solving_level_' +
                                                         (index + 1),
@@ -393,13 +395,13 @@ export default function Screened({
                                             }`}
                                             min="0"
                                             max="10"
-                                            value={
+                                            defaultValue={
                                                 data[
                                                     'social_individual_level_' +
                                                         (index + 1)
                                                 ]
                                             }
-                                            onChange={(e) => {
+                                            onMouseUp={(e) => {
                                                 setData(
                                                     'social_individual_level_' +
                                                         (index + 1),

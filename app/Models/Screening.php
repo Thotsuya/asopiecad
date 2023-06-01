@@ -73,4 +73,10 @@ class Screening extends Model
     public function user(){
         return $this->belongsTo(User::class);
     }
+
+    public function scopeSearch($query,$request){
+        return $query->when($request->search, function($query) use($request){
+            $query->where('name', 'like', '%' . $request->search . '%');
+        });
+    }
 }

@@ -39,7 +39,12 @@ export default function EditDataOnly({
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        handleSubmitForDataOnly(forms)
+        handleSubmitForDataOnly()
+    }
+
+    const handleSubmitAndApprove = (e) => {
+        e.preventDefault()
+        handleSubmitForDataOnly(true)
     }
 
     return (
@@ -319,7 +324,7 @@ export default function EditDataOnly({
                 </div>
             ))}
             <div className="row">
-                <div className="col-xs-12">
+                <div className="col-xs-6">
                     <button
                         className="btn btn-primary btn-block"
                         onClick={handleSubmit}
@@ -332,6 +337,22 @@ export default function EditDataOnly({
                             </span>
                         ) : (
                             <span>Guardar Beneficiario</span>
+                        )}
+                    </button>
+                </div>
+                <div className="col-xs-6">
+                    <button
+                        className="btn btn-primary btn-block"
+                        onClick={handleSubmitAndApprove}
+                        disabled={processing}
+                    >
+                        {processing ? (
+                            <span>
+                                <i className="fa fa-spinner fa-spin" />{' '}
+                                Guardando Beneficiario
+                            </span>
+                        ) : (
+                            <span>Guardar y Aprobar Beneficiario</span>
                         )}
                     </button>
                 </div>

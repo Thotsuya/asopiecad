@@ -11,6 +11,7 @@ export default function FormsAndMembers({
     onProjectDurationChange,
     onProjectStartDateChange,
     onGlobalGoalChange,
+    onProjectFeaturedImageChange,
     roles,
 }) {
     const [member, setMember] = useState({
@@ -166,6 +167,24 @@ export default function FormsAndMembers({
                             defaultValue={project.global_goal}
                             onChange={onGlobalGoalChange}
                         />
+                    </div>
+                </div>
+            </div>
+
+            <div className="col-xs-12">
+                <div className="box-content">
+                    <div className="form-group">
+                        <label htmlFor="featured_image">
+                            Imagen Destacada
+                        </label>
+                        <input
+                            type="file"
+                            className="form-control"
+                            name="featured_image"
+                            id="featured_image"
+                            onChange={onProjectFeaturedImageChange}
+                        />
+
                     </div>
                 </div>
             </div>

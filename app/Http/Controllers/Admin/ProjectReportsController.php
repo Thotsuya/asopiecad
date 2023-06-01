@@ -104,6 +104,7 @@ class ProjectReportsController extends Controller
             'headers' => $headers,
             'start_date' => $request->date('start_date') ? $request->date('start_date')->translatedFormat('l d F Y') : null,
             'end_date' => $request->date('end_date') ? $request->date('end_date')->translatedFormat('l d F Y') : null,
+            'screenings' => $this->getScreeningsReport(),
         ]);
     }
 
