@@ -28,6 +28,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/screenings/report', App\Http\Controllers\Admin\ScreeningsReportsController::class)->name('screenings.report');
 
+    Route::get('beneficiaries/export', [App\Http\Controllers\Admin\BeneficiariesController::class, 'export'])->name('beneficiaries.export');
+
     Route::resource('forms', App\Http\Controllers\Admin\FormController::class);
     Route::resource('projects', App\Http\Controllers\Admin\ProjectController::class)->except('create');
     Route::resource('users', App\Http\Controllers\Admin\UsersController::class);
@@ -35,7 +37,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('appointments', App\Http\Controllers\Admin\AppointmentController::class);
     Route::resource('beneficiaries', App\Http\Controllers\Admin\BeneficiariesController::class);
     Route::resource('screenings', App\Http\Controllers\Admin\ScreeningController::class)->except('show','destroy');
-
 
 
     Route::patch('beneficiaries/{beneficiary}/approve', [App\Http\Controllers\Admin\BeneficiariesController::class, 'approve'])->name('beneficiaries.approve');

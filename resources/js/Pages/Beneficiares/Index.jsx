@@ -45,6 +45,7 @@ export default function Index({
         })
     }
 
+
     return (
         <>
             <AuthenticatedLayout auth={auth}>
@@ -68,6 +69,7 @@ export default function Index({
                 <Filters projects={projects} fields={{}} forms={forms} />
 
                 <div className="row">
+
                     <div className="col-xs-12">
                         <div className="box-content">
                             {beneficiaries_paginated.total === 0 && (

@@ -58,6 +58,10 @@ export default function useFilters() {
         })
     }
 
+    const exportToExcel = () => {
+        window.open(route('beneficiaries.export', data), '_blank')
+    }
+
     return {
         filters,
         data,
@@ -66,5 +70,6 @@ export default function useFilters() {
         reset,
         errors,
         handleSearch,
+        exportToExcel,
     }
 }

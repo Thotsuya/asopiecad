@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\BenefitiaryExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BeneficiaryDataOnlyRequest;
 use App\Http\Requests\BeneficiaryRequest;
@@ -236,4 +237,7 @@ class BeneficiariesController extends Controller
         return redirect()->route('beneficiaries.index');
     }
 
+    public function export(Request $request){
+        return \Excel::download(new BenefitiaryExport($request),'participantes.xlsx');
+    }
 }

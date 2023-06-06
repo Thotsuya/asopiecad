@@ -3,7 +3,7 @@ import Select from 'react-select'
 import {OPERATORS, OPERANDS} from "@/Constants/Operators";
 
 export default function Filters({projects, forms}) {
-    const {filters, data, setData, processing, handleSearch} = useFilters()
+    const {filters, data, setData, processing, handleSearch, exportToExcel} = useFilters()
 
     return (
         <div className="row">
@@ -236,6 +236,13 @@ export default function Filters({projects, forms}) {
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div className="col-xs-12">
+                <div className="box-content">
+                    <button className="btn btn-primary btn-block" onClick={exportToExcel}>
+                        Exportar
+                    </button>
                 </div>
             </div>
         </div>
