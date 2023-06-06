@@ -42,10 +42,7 @@ class ProjectController extends Controller
 
         $projects = auth()->user()->hasRole(User::SUPER_ADMIN)
             ? Project::query()
-            : Project::query()
-                ->whereHas('users', function ($query) {
-                    $query->where('user_id', auth()->id());
-                });
+            : auth()->user()->projects();
 
         return inertia('Projects/Index', [
             'projects' => $projects
