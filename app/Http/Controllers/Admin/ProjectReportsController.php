@@ -29,7 +29,8 @@ class ProjectReportsController extends Controller
 
         $project->load(['beneficiaries.appointments'])->loadCount(['beneficiaries']);
 
-        $goals = $project->goals()
+        $goals = $project
+            ->goals()
             ->with([
                 'program' => [
                     'forms',
@@ -52,6 +53,13 @@ class ProjectReportsController extends Controller
                     'project'
                 ]
             ])
+            ->orderBy(function ($query) {
+                $query->select('order')
+                    ->from('programs')
+                    ->whereColumn('programs.id', 'goals.program_id')
+                    ->orderBy('order', 'desc')
+                    ->limit(1);
+            })
             ->get();
 
         $beneficiaries = $project

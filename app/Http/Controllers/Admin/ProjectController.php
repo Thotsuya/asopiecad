@@ -114,7 +114,7 @@ class ProjectController extends Controller
                 }),
             'programs' => ProgramsResource::collection($project->programs()
                 ->with(['forms.tabs','forms.fields','beneficiaries'])
-                ->oldest()
+                ->orderBy('order')
                 ->get()),
             'appointments' => AppointmentResource::collection($project->appointments->load('user', 'benefitiary')),
             'paginated_appointments' => $project->appointments()
