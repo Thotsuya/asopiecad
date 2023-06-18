@@ -16,6 +16,7 @@ export default function EditDataOnly({
     is_new = false,
     data_only = true,
     beneficiary = null,
+    previous_route
 }) {
     const {
         data,
@@ -24,7 +25,7 @@ export default function EditDataOnly({
         handleSubmitForDataOnly,
         processing,
         isDirty,
-    } = useBenefitiaries(forms, is_new, _, beneficiary)
+    } = useBenefitiaries(forms, is_new, _, beneficiary,previous_route)
 
     useEffect(() => {
         if (!is_new) {
@@ -35,6 +36,11 @@ export default function EditDataOnly({
                 }))
             })
         }
+
+        setData((data) => ({
+            ...data,
+            previous_route: previous_route
+        }))
     }, [])
 
     const handleSubmit = (e) => {
@@ -49,13 +55,12 @@ export default function EditDataOnly({
 
     return (
         <AuthenticatedLayout auth={auth}>
-            <Head title="Editar Beneficiario" />
-            {console.log(beneficiary)}
+            <Head title="Editar Participante" />
 
             <div className="row">
                 <div className="col-xs-12">
                     <h3 className="page-title">
-                        {is_new ? 'Nuevo Beneficiario' : 'Beneficiario'}:{' '}
+                        {is_new ? 'Nuevo Participante' : 'Participante'}:{' '}
                         <b>{data.name}</b>
                     </h3>
                 </div>
@@ -333,26 +338,26 @@ export default function EditDataOnly({
                         {processing ? (
                             <span>
                                 <i className="fa fa-spinner fa-spin" />{' '}
-                                Guardando Beneficiario
+                                Guardando Participante
                             </span>
                         ) : (
-                            <span>Guardar Beneficiario</span>
+                            <span>Guardar Participante</span>
                         )}
                     </button>
                 </div>
                 <div className="col-xs-6">
                     <button
-                        className="btn btn-primary btn-block"
+                        className="btn btn-success btn-block"
                         onClick={handleSubmitAndApprove}
                         disabled={processing}
                     >
                         {processing ? (
                             <span>
                                 <i className="fa fa-spinner fa-spin" />{' '}
-                                Guardando Beneficiario
+                                Guardando Participante
                             </span>
                         ) : (
-                            <span>Guardar y Aprobar Beneficiario</span>
+                            <span>Guardar y Aprobar Participante</span>
                         )}
                     </button>
                 </div>

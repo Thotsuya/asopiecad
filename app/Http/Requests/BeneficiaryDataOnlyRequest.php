@@ -35,6 +35,7 @@ class BeneficiaryDataOnlyRequest extends FormRequest
                 'name' => ['required', 'string', 'max:255'],
                 'forms' => ['sometimes', 'array'],
                 'approve' => ['sometimes', 'boolean'],
+                'previous_route' => ['nullable', 'string']
             ])->toArray();
     }
 

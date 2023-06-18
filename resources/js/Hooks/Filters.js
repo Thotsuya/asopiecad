@@ -1,18 +1,18 @@
-import { useForm } from '@inertiajs/inertia-react'
+import {useForm} from '@inertiajs/inertia-react'
 import useToasts from '@/Hooks/Toasts'
 
 export default function useFilters() {
-    const { success, error } = useToasts()
+    const {success, error} = useToasts()
 
     const filters = [
         {
             id: 1,
-            label: 'Nombre del Beneficiario',
+            label: 'Nombre del Participante',
             value: 'name',
         },
         {
             id: 2,
-            label: 'Código del Beneficiario',
+            label: 'Código del Participante',
             value: 'code',
         },
         {
@@ -29,11 +29,34 @@ export default function useFilters() {
             id: 5,
             label: 'Fecha de Creación',
             value: 'created_at'
+        },
+        {
+            id: 6,
+            label: 'Programa',
+            value: 'program_id'
         }
 
     ]
 
-    const { data, setData, get, processing, reset, errors } = useForm({
+    const statusFilters = [
+        {
+            id: 1,
+            label: 'Todos',
+            value: '',
+        },
+        {
+            id: 2,
+            label: 'Aprobado',
+            value: 'approved',
+        },
+        {
+            id: 3,
+            label: 'Pendiente de Aprobación',
+            value: 'pending',
+        }
+    ]
+
+    const {data, setData, get, processing, reset, errors} = useForm({
         filter: '',
         value: '',
         form_id: 1,
@@ -42,6 +65,7 @@ export default function useFilters() {
         operator: '',
         from: new Date().toISOString().slice(0, 10),
         to: new Date().toISOString().slice(0, 10),
+        status: '',
     })
 
     const handleSearch = () => {
@@ -70,6 +94,7 @@ export default function useFilters() {
         reset,
         errors,
         handleSearch,
+        statusFilters,
         exportToExcel,
     }
 }

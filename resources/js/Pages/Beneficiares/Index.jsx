@@ -15,6 +15,7 @@ export default function Index({
     projects,
     forms,
     auth,
+    programs
 }) {
 
 
@@ -66,7 +67,7 @@ export default function Index({
                     </div>
                 </div>
 
-                <Filters projects={projects} fields={{}} forms={forms} />
+                <Filters projects={projects} forms={forms} programs={programs}/>
 
                 <div className="row">
 
@@ -175,6 +176,15 @@ export default function Index({
                                                                             className="btn btn-primary btn-sm"
                                                                         >
                                                                             <i className="fa fa-edit"></i>
+                                                                        </Link>
+                                                                    )}
+                                                                </>
+                                                            )}
+                                                            {!beneficiary.is_trashed && (
+                                                                <>
+                                                                    {can('Ver Beneficiarios', auth.user.abilities) && (
+                                                                        <Link href={route('beneficiaries.visits', beneficiary.uuid)} className="btn btn-info btn-sm">
+                                                                            <i className="fa fa-calendar"></i>
                                                                         </Link>
                                                                     )}
                                                                 </>

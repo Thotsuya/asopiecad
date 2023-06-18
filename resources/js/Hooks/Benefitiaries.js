@@ -6,7 +6,8 @@ export default function useBenefitiaries(
     isNew = false,
     project = null,
     beneficiary = null,
-    programs = null
+    programs = null,
+    previous_route = null
 ) {
     const { success, error } = useToasts()
     const { data, setData, post, put, processing, errors, reset, isDirty } =
@@ -18,6 +19,7 @@ export default function useBenefitiaries(
             formData['forms'] = forms
             formData['programs'] = programs
             formData['approve'] = false
+            formData['previous_route'] = previous_route
 
             forms.forEach((form) => {
                 form.tabs.forEach((tab) => {
@@ -73,6 +75,7 @@ export default function useBenefitiaries(
 
     const handleSubmitForDataOnly = (approve = false) => {
 
+        console.log(previous_route)
         data.approve = approve;
 
         if (isNew) {

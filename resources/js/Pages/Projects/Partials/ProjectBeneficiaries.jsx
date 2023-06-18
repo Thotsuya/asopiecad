@@ -1,22 +1,22 @@
 import Pagination from '@/Components/Pagination'
-import { Link } from '@inertiajs/inertia-react'
+import {Link} from '@inertiajs/inertia-react'
 import useToasts from '@/Hooks/Toasts'
-import { Inertia } from '@inertiajs/inertia'
-import { useEffect, useState } from 'react'
+import {Inertia} from '@inertiajs/inertia'
+import {useEffect, useState} from 'react'
 
 export default function ProjectBeneficiaries({
-    beneficiaries = [],
-    project,
-    onBeneficiarySelected,
-    auth,
-}) {
-    const { promptWithInput, info, prompt, error } = useToasts()
+                                                 beneficiaries = [],
+                                                 project,
+                                                 onBeneficiarySelected,
+                                                 auth,
+                                             }) {
+    const {promptWithInput, info, prompt, error} = useToasts()
 
     const [beneficiarySearch, setBeneficiarySearch] = useState('')
 
     const handleDelete = (beneficiary) => {
         promptWithInput(
-            `¿Está seguro de eliminar el beneficiario ${beneficiary.name}?`,
+            `¿Está seguro de eliminar el participante ${beneficiary.name}?`,
             `Esta acción no se puede deshacer. Debe ingresar el motivo de la eliminación para continuar.`,
             {
                 input: 'text',
@@ -38,7 +38,7 @@ export default function ProjectBeneficiaries({
                             deletion_reason: result.value,
                         },
                         onSuccess: () => {
-                            info('Beneficiario eliminado correctamente')
+                            info('Participante eliminado correctamente')
                         },
                     }
                 )
@@ -131,65 +131,65 @@ export default function ProjectBeneficiaries({
                     {beneficiaries.data.length > 0 ? (
                         <table className="table table-striped table-hover">
                             <thead>
-                                <tr>
-                                    <th>Código Interno</th>
-                                    <th>Nombre</th>
-                                    <th>Programas</th>
-                                    <th>Última visita</th>
-                                    <th>Estado</th>
-                                    <th></th>
-                                </tr>
+                            <tr>
+                                <th>Código Interno</th>
+                                <th>Nombre</th>
+                                <th>Programas</th>
+                                <th>Última visita</th>
+                                <th>Estado</th>
+                                <th></th>
+                            </tr>
                             </thead>
                             <tbody>
-                                {beneficiaries.data.map(
-                                    (beneficiary, index) => (
-                                        <tr key={beneficiary.uuid}>
-                                            <td>{beneficiary.internal_id}</td>
-                                            <td>{beneficiary.name}</td>
-                                            <td>
-                                                {beneficiary.programs.length >
-                                                0 ? (
-                                                    <>
-                                                        {/*    Show only the first 3, the rest in a + */}
-                                                        {beneficiary.programs
-                                                            .slice(0, 3)
-                                                            .map((program) => (
-                                                                <span
-                                                                    key={
-                                                                        program.uuid
-                                                                    }
-                                                                    className="badge bg-primary"
-                                                                >
+                            {beneficiaries.data.map(
+                                (beneficiary, index) => (
+                                    <tr key={beneficiary.uuid}>
+                                        <td>{beneficiary.internal_id}</td>
+                                        <td>{beneficiary.name}</td>
+                                        <td>
+                                            {beneficiary.programs.length >
+                                            0 ? (
+                                                <>
+                                                    {/*    Show only the first 3, the rest in a + */}
+                                                    {beneficiary.programs
+                                                        .slice(0, 3)
+                                                        .map((program) => (
+                                                            <span
+                                                                key={
+                                                                    program.uuid
+                                                                }
+                                                                className="badge bg-primary"
+                                                            >
                                                                     {
                                                                         program.program_name
                                                                     }
                                                                 </span>
-                                                            ))}
-                                                        {beneficiary.programs
-                                                            .length > 3 && (
-                                                            <span className="badge bg-primary">
+                                                        ))}
+                                                    {beneficiary.programs
+                                                        .length > 3 && (
+                                                        <span className="badge bg-primary">
                                                                 +{' '}
-                                                                {beneficiary
-                                                                    .programs
-                                                                    .length - 3}
+                                                            {beneficiary
+                                                                .programs
+                                                                .length - 3}
                                                             </span>
-                                                        )}
-                                                    </>
-                                                ) : (
-                                                    'No hay programas registrados'
-                                                )}
-                                            </td>
-                                            <td>
-                                                {!beneficiary.last_visited_at ? (
-                                                    <span className="label label-danger">
+                                                    )}
+                                                </>
+                                            ) : (
+                                                'No hay programas registrados'
+                                            )}
+                                        </td>
+                                        <td>
+                                            {!beneficiary.last_visited_at ? (
+                                                <span className="label label-danger">
                                                         No hay visitas
                                                         registradas
                                                     </span>
-                                                ) : (
-                                                    beneficiary.last_visited_at
-                                                )}
-                                            </td>
-                                            <td>
+                                            ) : (
+                                                beneficiary.last_visited_at
+                                            )}
+                                        </td>
+                                        <td>
                                                 <span
                                                     className={`badge bg-${beneficiary.badge}`}
                                                 >
@@ -197,126 +197,136 @@ export default function ProjectBeneficiaries({
                                                         beneficiary.internal_status
                                                     }
                                                 </span>
-                                            </td>
-                                            <td>
-                                                <div className="btn-group">
-                                                    <button
-                                                        type="button"
-                                                        className="btn btn-default btn-sm dropdown-toggle"
-                                                        data-toggle="dropdown"
-                                                        aria-haspopup="true"
-                                                        aria-expanded="false"
-                                                    >
-                                                        Acciones{' '}
-                                                        <span className="caret" />
-                                                    </button>
-                                                    <ul className="dropdown-menu">
-                                                        {project.can[
+                                        </td>
+                                        <td>
+                                            <div className="btn-group">
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-default btn-sm dropdown-toggle"
+                                                    data-toggle="dropdown"
+                                                    aria-haspopup="true"
+                                                    aria-expanded="false"
+                                                >
+                                                    Acciones{' '}
+                                                    <span className="caret"/>
+                                                </button>
+                                                <ul className="dropdown-menu">
+                                                    <li>
+                                                        <Link
+                                                            href={route(
+                                                                'beneficiaries.visits',
+                                                                beneficiary.uuid
+                                                            )}
+                                                        >
+                                                            Ver visitas
+                                                        </Link>
+                                                    </li>
+                                                    {project.can[
                                                             'register-appointments'
-                                                        ] &&
-                                                            !beneficiary.is_trashed && (
-                                                                <li>
-                                                                    <a
-                                                                        href="#"
-                                                                        onClick={() => {
-                                                                            onBeneficiarySelected(
-                                                                                beneficiary
-                                                                            )
-                                                                        }}
-                                                                        data-toggle="modal"
-                                                                        data-target="#modal-register-appointment"
-                                                                    >
-                                                                        Registrar
-                                                                        visita
-                                                                    </a>
-                                                                </li>
-                                                            )}
-                                                        {project.can[
+                                                            ] &&
+                                                        !beneficiary.is_trashed && (
+                                                            <li>
+                                                                <a
+                                                                    href="#"
+                                                                    onClick={() => {
+                                                                        onBeneficiarySelected(
+                                                                            beneficiary
+                                                                        )
+                                                                    }}
+                                                                    data-toggle="modal"
+                                                                    data-target="#modal-register-appointment"
+                                                                >
+                                                                    Registrar
+                                                                    visita
+                                                                </a>
+                                                            </li>
+                                                        )}
+                                                    {project.can[
                                                             'edit-beneficiary'
-                                                        ] &&
-                                                            !beneficiary.is_trashed && (
-                                                                <li>
-                                                                    <Link
-                                                                        href={route(
-                                                                            'projects.forms.edit',
-                                                                            {
-                                                                                project:
-                                                                                    project.uuid,
-                                                                                beneficiary:
-                                                                                    beneficiary.uuid,
-                                                                            }
-                                                                        )}
-                                                                    >
-                                                                        Editar
-                                                                        Información
-                                                                    </Link>
-                                                                </li>
-                                                            )}
-
-                                                        {project.can[
-                                                            'delete-beneficiary'
-                                                        ] &&
-                                                            beneficiary.is_trashed && (
-                                                                <li>
-                                                                    <a
-                                                                        href="#"
-                                                                        onClick={() => {
-                                                                            handleRestore(
-                                                                                beneficiary.id
-                                                                            )
-                                                                        }}
-                                                                    >
-                                                                        Restaurar
-                                                                    </a>
-                                                                </li>
-                                                            )}
-                                                        {project.can[
-                                                            'delete-beneficiary'
-                                                        ] &&
-                                                            !beneficiary.is_trashed && (
-                                                                <li>
-                                                                    {project[
-                                                                        'can'
-                                                                    ][
-                                                                        'delete-beneficiary'
-                                                                    ] && (
-                                                                        <a
-                                                                            href="#"
-                                                                            onClick={() =>
-                                                                                handleDelete(
-                                                                                    beneficiary
-                                                                                )
-                                                                            }
-                                                                        >
-                                                                            Eliminar
-                                                                        </a>
+                                                            ] &&
+                                                        !beneficiary.is_trashed && (
+                                                            <li>
+                                                                <Link
+                                                                    href={route(
+                                                                        'projects.forms.edit',
+                                                                        {
+                                                                            project:
+                                                                            project.uuid,
+                                                                            beneficiary:
+                                                                            beneficiary.uuid,
+                                                                        }
                                                                     )}
-                                                                </li>
-                                                            )}
-                                                        {project.can[
-                                                            'approve-beneficiary'
-                                                        ] &&
-                                                            !beneficiary.is_trashed &&
-                                                            !beneficiary.is_approved && (
-                                                                <li>
+                                                                >
+                                                                    Editar
+                                                                    Información
+                                                                </Link>
+                                                            </li>
+                                                        )}
+
+                                                    {project.can[
+                                                            'delete-beneficiary'
+                                                            ] &&
+                                                        beneficiary.is_trashed && (
+                                                            <li>
+                                                                <a
+                                                                    href="#"
+                                                                    onClick={() => {
+                                                                        handleRestore(
+                                                                            beneficiary.id
+                                                                        )
+                                                                    }}
+                                                                >
+                                                                    Restaurar
+                                                                </a>
+                                                            </li>
+                                                        )}
+                                                    {project.can[
+                                                            'delete-beneficiary'
+                                                            ] &&
+                                                        !beneficiary.is_trashed && (
+                                                            <li>
+                                                                {project[
+                                                                    'can'
+                                                                    ][
+                                                                    'delete-beneficiary'
+                                                                    ] && (
                                                                     <a
                                                                         href="#"
                                                                         onClick={() =>
-                                                                            handleApprove(
+                                                                            handleDelete(
                                                                                 beneficiary
                                                                             )
                                                                         }
                                                                     >
-                                                                        Aprobar
+                                                                        Eliminar
                                                                     </a>
-                                                                </li>
-                                                            )}
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    )
-                                )}
+                                                                )}
+                                                            </li>
+                                                        )}
+                                                    {project.can[
+                                                            'approve-beneficiary'
+                                                            ] &&
+                                                        !beneficiary.is_trashed &&
+                                                        !beneficiary.is_approved && (
+                                                            <li>
+                                                                <a
+                                                                    href="#"
+                                                                    onClick={() =>
+                                                                        handleApprove(
+                                                                            beneficiary
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    Aprobar
+                                                                </a>
+                                                            </li>
+                                                        )}
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )
+                            )}
                             </tbody>
                         </table>
                     ) : (

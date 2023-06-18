@@ -107,7 +107,7 @@ class ProjectController extends Controller
             'paginated_programs' => $project->programs()
                 ->with('beneficiaries')
                 ->withCount('beneficiaries')
-                ->latest('id')
+                ->orderBy('order')
                 ->paginate(20)
                 ->through(function ($program) {
                     return PaginatedProgramsResource::make($program);

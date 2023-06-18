@@ -10,8 +10,10 @@ use App\Http\Resources\BeneficiaryFormsResource;
 use App\Http\Resources\BeneficiaryResource;
 use App\Models\Benefitiary;
 use App\Models\Form;
+use App\Models\Program;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class BeneficiariesController extends Controller
@@ -32,6 +34,7 @@ class BeneficiariesController extends Controller
             'beneficiaries_paginated' => Benefitiary::query()
                 ->withTrashed()
                 ->filter($request)
+                ->beneficiaryStatus($request)
                 ->withCount('projects')
                 ->with('projects')
                 ->latest('id')
@@ -64,6 +67,10 @@ class BeneficiariesController extends Controller
                 ->map(function (Form $form) {
                     return $form->getFormFieldsWithValues();
                 })->flatten(1),
+
+            'programs' => Program::query()
+                            ->select('id', 'program_name')
+                            ->get(),
         ]);
     }
 
@@ -116,9 +123,11 @@ class BeneficiariesController extends Controller
 
     public function edit(Benefitiary $beneficiary)
     {
+        // Get the previous visited route
         return Inertia::render('Beneficiares/EditDataOnly', [
             'beneficiary' => BeneficiaryResource::make($beneficiary->load('answers.pivot.field.tab')),
             'forms'       => BeneficiaryFormsResource::collection($beneficiary->forms()->get()),
+            'previous_route' => url()->previous(),
         ]);
     }
 
@@ -165,7 +174,8 @@ class BeneficiariesController extends Controller
 
         $benefitiary->forms()->syncWithoutDetaching($forms);
 
-        return redirect()->route('beneficiaries.index');
+        $url = Str::contains($request->previous_route,'/beneficiaries' ) ? redirect($request->previous_route) : redirect()->route('beneficiaries.index') ;
+        return $url->with('success', 'Beneficiario creado correctamente');
     }
 
     public function update(BeneficiaryDataOnlyRequest $request, Benefitiary $beneficiary)
@@ -199,7 +209,8 @@ class BeneficiariesController extends Controller
 
         $beneficiary->forms()->syncWithoutDetaching($forms);
 
-        return redirect()->route('beneficiaries.index');
+        $url = Str::contains($request->previous_route,'/beneficiaries' ) ? redirect($request->previous_route) : redirect()->route('beneficiaries.index') ;
+        return $url->with('success', 'Beneficiario creado correctamente');
     }
 
     public function destroy(Benefitiary $beneficiary)

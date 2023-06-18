@@ -103,6 +103,9 @@ class Benefitiary extends Model
                     ->where('value', "{$this->queryOperands($request->operator)}", "{$this->queryValues($request->operator, $request->value)}");
             }),
             'created_at' => $query->whereBetween('created_at', [Carbon::parse($request->from)->startOfDay(), Carbon::parse($request->to)->endOfDay()]),
+            'program_id' => $query->whereHas('programs', function ($query) use ($request) {
+                $query->where('programs.id', 'like', "%{$request->value}%");
+            }),
             default => $query,
         };
     }
@@ -116,6 +119,17 @@ class Benefitiary extends Model
     {
         $query->whereHas('appointments', function ($query) {
             $query->where(DB::raw('DATE_ADD(start_date, INTERVAL 3 MONTH)'), '>', now());
+        });
+    }
+
+    public function scopeBeneficiaryStatus($query, $request)
+    {
+        return $query->when($request->status, function ($query) use ($request) {
+            return match ($request->status) {
+                'pending' => $query->whereNull('approved_at'),
+                'approved' => $query->whereNotNull('approved_at'),
+                default => $query,
+            };
         });
     }
 

@@ -1,9 +1,11 @@
 import useFilters from '@/Hooks/Filters'
 import Select from 'react-select'
 import {OPERATORS, OPERANDS} from "@/Constants/Operators";
+import {useEffect, useMemo} from "react";
 
-export default function Filters({projects, forms}) {
-    const {filters, data, setData, processing, handleSearch, exportToExcel} = useFilters()
+export default function Filters({projects, forms, programs}) {
+    const {filters, statusFilters, data, setData, processing, handleSearch, exportToExcel} = useFilters()
+
 
     return (
         <div className="row">
@@ -71,7 +73,30 @@ export default function Filters({projects, forms}) {
                             </>
                         )}
 
-                        {!data.filter.includes('form_id') && !data.filter.includes('created_at') && (
+                        {data.filter === 'program_id' && (
+                            <div className="col-md-6">
+                                <div className="form-group">
+                                    <label htmlFor="program">Programa:</label>
+                                    <Select
+                                        id="program"
+                                        name="program"
+                                        options={programs.map((program) => ({
+                                            value: program.id,
+                                            label: program.program_name,
+                                        }))}
+                                        placeholder="Seleccione un programa"
+                                        onChange={(option) => {
+                                            setData({
+                                                ...data,
+                                                value: option.value,
+                                            })
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {!data.filter.includes('form_id') && !data.filter.includes('created_at') && !data.filter.includes('program_id') && (
                             <div className="col-md-6">
                                 <div className="form-group">
                                     <label htmlFor="project">Valor:</label>
@@ -233,6 +258,30 @@ export default function Filters({projects, forms}) {
                                 >
                                     Buscar
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="row">
+                        <div className="col-md-4 col-xs-12">
+                            <div className="form-group">
+                                <label htmlFor="">Estado</label>
+                                <Select
+                                    id="status"
+                                    name="status"
+                                    options={statusFilters.map((status) => ({
+                                        value: status.value,
+                                        label: status.label,
+                                    }))}
+                                    placeholder="Seleccione un estado"
+                                    onChange={(option) => {
+                                        setData({
+                                            ...data,
+                                            status: option.value,
+                                        })
+                                    }}
+                                />
+
                             </div>
                         </div>
                     </div>

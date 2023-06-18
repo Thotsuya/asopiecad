@@ -40,7 +40,8 @@ export default function ProjectCard({ project, roles, auth }) {
                             {project.users_count}
                         </div>
                         <span className="feedable-time timeago">
-                            <b>Última actualización:</b> {project.updated_at}
+                            {/*Strip the word 'Hace'*/}
+                            <b>Última actualización:</b> {project.updated_at.replace('hace', '')}
                         </span>
                     </div>
                     <div className="row">
