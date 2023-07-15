@@ -16,7 +16,24 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command(
+            'asopiecad:update-project-reports-table'
+        )
+            ->everyFifteenMinutes()
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/update-project-reports-table.log'));
+
+        $schedule->command('inspire')->hourly();
+        // Max execution time 10 minutes
+        $schedule->command('queue:work --stop-when-empty --tries=3 --timeout=700')
+            ->everyMinute()
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/queue.log'));
+
+        $schedule->command('asopiecad:purge-older-reports')
+            ->dailyAt('00:00')
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/purge.log'));
     }
 
     /**

@@ -14,19 +14,19 @@ export const OPERATORS = [
     {
         id: '3',
         name: 'Es mayor que',
-        types: ['number', 'date'],
+        types: ['number', 'date', 'text'],
         value: '>',
     },
     {
         id: '4',
         name: 'Es mayor o igual que',
-        types: ['number', 'date'],
+        types: ['number', 'date','text'],
         value: '>=',
     },
     {
         id: '5',
         name: 'Es menor que',
-        types: ['number', 'date'],
+        types: ['number', 'date','text'],
         value: '<',
     },
     {
@@ -70,17 +70,17 @@ export const OPERANDS = [
             'radio',
         ],
     },
-    { value: '>', label: 'Mayor a', form_type: ['number', 'date'] },
+    { value: '>', label: 'Mayor a', form_type: ['number', 'date','text'] },
     {
         value: '>=',
         label: 'Mayor o igual a',
-        form_type: ['number', 'date'],
+        form_type: ['number', 'date', 'text'],
     },
-    { value: '<', label: 'Menor a', form_type: ['number', 'date'] },
+    { value: '<', label: 'Menor a', form_type: ['number', 'date','text'] },
     {
         value: '<=',
         label: 'Menor o igual a',
-        form_type: ['number', 'date'],
+        form_type: ['number', 'date', 'text'],
     },
     {
         value: 'contains',

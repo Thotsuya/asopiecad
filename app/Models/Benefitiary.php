@@ -94,9 +94,15 @@ class Benefitiary extends Model
         return match ($request->filter) {
             'name' => $query->where('name', 'like', "%{$request->value}%"),
             'code' => $query->where('internal_id', 'like', "%{$request->value}%"),
-            'project_id' => $query->whereHas('projects', function ($query) use ($request) {
-                $query->where('uuid', 'like', "%{$request->value}%");
-            }),
+            'project_id' => $query
+                ->whereHas('projects', function ($query) use ($request) {
+                    $query->where('uuid', 'like', "%{$request->value}%");
+                })
+                ->when($request->program_id, function ($query) use ($request) {
+                    $query->whereHas('programs', function ($query) use ($request) {
+                        $query->where('uuid', 'like', "%{$request->program_id}%");
+                    });
+                }),
             'form_id' => $query->whereHas('answers', function ($query) use ($request) {
                 $query
                     ->where('field_id', $request->field_id)
@@ -104,7 +110,7 @@ class Benefitiary extends Model
             }),
             'created_at' => $query->whereBetween('created_at', [Carbon::parse($request->from)->startOfDay(), Carbon::parse($request->to)->endOfDay()]),
             'program_id' => $query->whereHas('programs', function ($query) use ($request) {
-                $query->where('programs.id', 'like', "%{$request->value}%");
+                $query->where('programs.id', '=', $request->value);
             }),
             default => $query,
         };
@@ -130,6 +136,15 @@ class Benefitiary extends Model
                 'approved' => $query->whereNotNull('approved_at'),
                 default => $query,
             };
+        });
+    }
+
+    public function scopeViewableBy($query, User $user)
+    {
+        return $query->whereHas('projects', function ($query) use ($user) {
+            $query->whereHas('users', function ($query) use ($user) {
+                $query->where('users.id', $user->id);
+            });
         });
     }
 

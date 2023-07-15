@@ -17,7 +17,7 @@ class ProjectExport implements FromView, WithEvents
 {
     use Exportable, ReportResults, DynamicComparisons;
 
-    public function __construct(Project $project, Request $request)
+    public function __construct(Project $project, $request)
     {
         $this->project = $project;
         $this->request = $request;
@@ -34,11 +34,11 @@ class ProjectExport implements FromView, WithEvents
                             'answers.pivot.field',
                             'appointments'
                         ])->when(
-                            $this->request->has('start_date') && $this->request->has('end_date'),
+                            $this->request['start_date'] && $this->request['end_date'],
                             function ($query) {
                                 $query->whereBetween(
                                     'benefitiary_program.created_at',
-                                    [$this->request->start_date, $this->request->end_date]
+                                    [$this->request['start_date'], $this->request['end_date']]
                                 );
                             }
                         );

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\ProjectExport;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MeetingResource;
+use App\Jobs\ExportBenefitiariesReportToExcel;
 use App\Models\Project;
 use App\Traits\DynamicComparisons;
 use App\Traits\ReportResults;
@@ -27,49 +29,12 @@ class ProjectReportsController extends Controller
             'rgba(153, 102, 255, 1)',
         ];
 
-        $project->load(['beneficiaries.appointments'])->loadCount(['beneficiaries']);
+        $project->load(['beneficiaries','meetings.participants'])->loadCount(['beneficiaries','meetings']);
 
-        $goals = $project
-            ->goals()
-            ->with([
-                'program' => [
-                    'forms',
-                    'beneficiaries' => function ($query) use ($request) {
-                        $query->with([
-                            'answers.pivot.field',
-                            'appointments'
-                        ])
-                            ->whereNotNull('approved_at')
-                            ->when(
-                            $request->has('start_date') && $request->has('end_date'),
-                            function ($query) use ($request) {
-                                $query->whereBetween(
-                                    'benefitiary_program.created_at',
-                                    [$request->date('start_date')->startOfDay(), $request->date('end_date')->endOfDay()]
-                                );
-                            }
-                        );
-                    },
-                    'project'
-                ]
-            ])
-            ->orderBy(function ($query) {
-                $query->select('order')
-                    ->from('programs')
-                    ->whereColumn('programs.id', 'goals.program_id')
-                    ->orderBy('order', 'desc')
-                    ->limit(1);
-            })
-            ->get();
 
         $beneficiaries = $project
             ->beneficiaries()
             ->approved()
-            ->with([
-                'forms',
-                'programs',
-                'appointments'
-            ])
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 $query->whereBetween('benefitiary_project.created_at', [$request->start_date, $request->end_date]);
             })
@@ -99,28 +64,31 @@ class ProjectReportsController extends Controller
             ];
         })->values()->toArray();
 
-        $results = $this->getProjectResults($goals);
-        $headers = $this->getHeaders($results);
-        $globalResults = $this->getGlobalResults($project, $results);
+
+
+        $results = $project->report->fields;
+        $headers = $this->getHeaders(collect($results));
+        $globalResults = $project->report->global_fields;
+
 
         return inertia('Reports/Show', [
             'project' => $project,
             'global' => $globalResults,
-            'results' => $results->toArray(),
+            'results' => $results,
             'labels' => $labels,
             'datasets' => $datasets,
             'headers' => $headers,
             'start_date' => $request->date('start_date') ? $request->date('start_date')->translatedFormat('l d F Y') : null,
             'end_date' => $request->date('end_date') ? $request->date('end_date')->translatedFormat('l d F Y') : null,
             'screenings' => $this->getScreeningsReport(),
+            'meeting_goals' => MeetingResource::collection($project->meetings)
         ]);
     }
 
     public function export(Request $request, Project $project)
     {
-        return (new ProjectExport($project, $request))->download(
-            'reportes-proyecto-' . $project->project_name . '.xlsx'
-        );
+        ExportBenefitiariesReportToExcel::dispatch($project, $request->all());
+        return back()->with('success', 'Report is being generated, you will receive an email with the download link');
     }
 
 }

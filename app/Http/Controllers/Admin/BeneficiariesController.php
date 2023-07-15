@@ -8,6 +8,7 @@ use App\Http\Requests\BeneficiaryDataOnlyRequest;
 use App\Http\Requests\BeneficiaryRequest;
 use App\Http\Resources\BeneficiaryFormsResource;
 use App\Http\Resources\BeneficiaryResource;
+use App\Jobs\ExportBenefitiariesCompleteReportToExcel;
 use App\Models\Benefitiary;
 use App\Models\Form;
 use App\Models\Program;
@@ -34,9 +35,10 @@ class BeneficiariesController extends Controller
             'beneficiaries_paginated' => Benefitiary::query()
                 ->withTrashed()
                 ->filter($request)
+                ->viewableBy(auth()->user())
                 ->beneficiaryStatus($request)
                 ->withCount('projects')
-                ->with('projects')
+                ->with(['projects','programs'])
                 ->latest('id')
                 ->paginate(20)
                 ->through(function ($beneficiary) {
@@ -49,10 +51,14 @@ class BeneficiariesController extends Controller
                 ->select('id', 'uuid', 'name')
                 ->get(),
 
-            'projects' => Project::query()
-                ->latest('id')
-                ->select('id', 'uuid', 'project_name')
-                ->with('programs')
+            'projects' => auth()->user()->projects()
+                ->latest('projects.id')
+                ->select('projects.id', 'projects.uuid', 'projects.project_name')
+                ->with([
+                    'programs' => function ($query) {
+                        $query->orderBy('order');
+                    }
+                ])
                 ->get(),
 
             'forms' => Form::query()
@@ -67,10 +73,6 @@ class BeneficiariesController extends Controller
                 ->map(function (Form $form) {
                     return $form->getFormFieldsWithValues();
                 })->flatten(1),
-
-            'programs' => Program::query()
-                            ->select('id', 'program_name')
-                            ->get(),
         ]);
     }
 
@@ -249,6 +251,20 @@ class BeneficiariesController extends Controller
     }
 
     public function export(Request $request){
-        return \Excel::download(new BenefitiaryExport($request),'participantes.xlsx');
+
+        $beneficiaries = Benefitiary::query()
+            ->withTrashed()
+            ->filter($request)
+            ->viewableBy(auth()->user())
+            ->beneficiaryStatus($request)
+            ->withCount('projects')
+            ->with(['answers.pivot.field', 'answers.pivot','projects'])
+            ->latest('id')
+            ->get();
+
+
+        ExportBenefitiariesCompleteReportToExcel::dispatch($beneficiaries);
+
+        return redirect()->route('beneficiaries.index');
     }
 }

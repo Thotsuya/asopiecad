@@ -20,7 +20,8 @@ class DatabaseSeeder extends Seeder
 //            FormSeeder::class,
 //            RolePermissionSeeder::class,
 //            ProjectSeeder::class,
-            NewFormsSeeder::class,
+            //NewFormsSeeder::class,
+            GoalSeeder::class
         ]);
 
 //        $users = [

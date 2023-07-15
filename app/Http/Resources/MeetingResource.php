@@ -20,7 +20,7 @@ class MeetingResource extends JsonResource
             'title' => $this->title,
             'total_meetings' => $this->count,
             'participants_count' => $this->participants_count,
-            'participants' => MeetingParticipantsResource::collection($this->participants),
+            'participants' => MeetingParticipantsResource::collection($this->whenLoaded('participants')),
         ];
     }
 }

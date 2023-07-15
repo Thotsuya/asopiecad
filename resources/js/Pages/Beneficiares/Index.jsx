@@ -1,29 +1,28 @@
-import { Head, Link } from '@inertiajs/inertia-react'
+import {Head, Link} from '@inertiajs/inertia-react'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import RegisterBeneficiaryModal from '@/Components/Beneficiaries/RegisterBeneficiaryModal'
 import Pagination from '@/Components/Pagination'
-import { useState } from 'react'
+import {useState} from 'react'
 import BeneficiaryProjectModal from '@/Components/Beneficiaries/BeneficiaryProjectModal'
 import useUsers from '@/Hooks/Users'
 import Filters from '@/Pages/Beneficiares/Partials/Filters'
 import useToasts from '@/Hooks/Toasts'
-import { Inertia } from '@inertiajs/inertia'
+import {Inertia} from '@inertiajs/inertia'
 
 export default function Index({
-    beneficiaries_paginated,
-    beneficiaries,
-    projects,
-    forms,
-    auth,
-    programs
-}) {
+                                  beneficiaries_paginated,
+                                  beneficiaries,
+                                  projects,
+                                  forms,
+                                  auth
+                              }) {
 
 
     const [beneficiary, setBeneficiary] = useState(null)
 
-    const { can } = useUsers()
+    const {can} = useUsers()
 
-    const { success, error, prompt } = useToasts()
+    const {success, error, prompt} = useToasts()
 
     const handleApprove = (beneficiary) => {
         prompt(
@@ -50,7 +49,7 @@ export default function Index({
     return (
         <>
             <AuthenticatedLayout auth={auth}>
-                <Head title="Beneficiarios" />
+                <Head title="Beneficiarios"/>
                 <div className="prj-header margin-bottom-30">
                     {can('Registrar Beneficiarios', auth.user.abilities) && (
                         <button
@@ -67,7 +66,7 @@ export default function Index({
                     </div>
                 </div>
 
-                <Filters projects={projects} forms={forms} programs={programs}/>
+                <Filters projects={projects} forms={forms}/>
 
                 <div className="row">
 
@@ -83,74 +82,106 @@ export default function Index({
                                 <div className="table-responsive">
                                     <table className="table table-striped table-hover">
                                         <thead>
-                                            <tr>
-                                                <th>Código</th>
-                                                <th>Nombre</th>
-                                                <th>Proyectos</th>
-                                                <th>Estado</th>
-                                                <th>Acciones</th>
-                                            </tr>
+                                        <tr>
+                                            <th>Código</th>
+                                            <th>Nombre</th>
+                                            <th>Proyectos</th>
+                                            <th>Programas</th>
+                                            <th>Estado</th>
+                                            <th>Acciones</th>
+                                        </tr>
                                         </thead>
                                         <tbody>
-                                            {beneficiaries_paginated.data.map(
-                                                (beneficiary, index) => (
-                                                    <tr key={beneficiary.id}>
-                                                        <td>
-                                                            {
-                                                                beneficiary.internal_id
-                                                            }
-                                                        </td>
-                                                        <td>
-                                                            {beneficiary.name}
-                                                        </td>
+                                        {beneficiaries_paginated.data.map(
+                                            (beneficiary, index) => (
+                                                <tr key={beneficiary.id}>
+                                                    <td>
+                                                        {
+                                                            beneficiary.internal_id
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        {beneficiary.name}
+                                                    </td>
 
-                                                        <td>
-                                                            {/*    Show only 3, then a badge with the rest*/}
-                                                            {beneficiary.projects
-                                                                .slice(0, 3)
-                                                                .map(
-                                                                    (
-                                                                        project
-                                                                    ) => (
-                                                                        <Link
-                                                                            key={
-                                                                                project.id
-                                                                            }
-                                                                            href={route(
-                                                                                'projects.show',
-                                                                                project.uuid
-                                                                            )}
-                                                                            className="badge bg-info"
-                                                                        >
-                                                                            {
-                                                                                project.project_name
-                                                                            }
-                                                                        </Link>
-                                                                    )
-                                                                )}
-                                                            {beneficiary
-                                                                .projects
-                                                                .length > 3 && (
-                                                                <span className="badge bg-primary">
+                                                    <td
+                                                        style={{
+                                                            maxWidth: '200px',
+                                                        }}
+                                                    >
+                                                        {/*    Show only 3, then a badge with the rest*/}
+                                                        {beneficiary.projects
+                                                            .slice(0, 3)
+                                                            .map(
+                                                                (
+                                                                    project
+                                                                ) => (
+                                                                    <Link
+                                                                        key={
+                                                                            project.id
+                                                                        }
+                                                                        href={route(
+                                                                            'projects.show',
+                                                                            project.uuid
+                                                                        )}
+                                                                        className="badge bg-info"
+                                                                        style={{
+                                                                            maxWidth: '200px',
+                                                                        }}
+                                                                    >
+                                                                        {
+                                                                            project.project_name
+                                                                        }
+                                                                    </Link>
+                                                                )
+                                                            )}
+                                                        {beneficiary
+                                                            .projects
+                                                            .length > 3 && (
+                                                            <span className="badge bg-primary">
                                                                     +
-                                                                    {beneficiary
+                                                                {beneficiary
                                                                         .projects
                                                                         .length -
-                                                                        3}
+                                                                    3}
                                                                 </span>
-                                                            )}
-                                                            {beneficiary
+                                                        )}
+                                                        {beneficiary
                                                                 .projects
                                                                 .length ===
-                                                                0 && (
+                                                            0 && (
                                                                 <span className="badge bg-warning">
                                                                     No
                                                                     registrado
                                                                     en proyectos
                                                                 </span>
                                                             )}
-                                                        </td>
-                                                        <td>
+                                                    </td>
+                                                    <td style={{
+                                                        maxWidth: '200px',
+                                                    }}>
+                                                        {/*    Show only 3, then a badge with the rest*/}
+                                                        {beneficiary
+                                                            .programs
+                                                            .slice(0, 3)
+                                                            .map((program) => (
+                                                                <span
+                                                                    key={
+                                                                        beneficiary.uuid + program.id
+                                                                    }
+                                                                    className={`badge bg-primary`}
+                                                                    style={{
+                                                                        maxWidth: '200px',
+                                                                    }}
+                                                                >
+                                                                            {
+                                                                                program.program_name
+                                                                            }
+                                                                        </span>
+                                                            ))}
+
+                                                    </td>
+                                                    <td>
                                                             <span
                                                                 className={`badge bg-${beneficiary.badge}`}
                                                             >
@@ -158,61 +189,63 @@ export default function Index({
                                                                     beneficiary.internal_status
                                                                 }
                                                             </span>
-                                                        </td>
-                                                        <td>
-                                                            {!beneficiary.is_trashed && (
-                                                                <>
-                                                                    {can(
-                                                                        'Editar Beneficiarios',
-                                                                        auth
-                                                                            .user
-                                                                            .abilities
-                                                                    ) && (
-                                                                        <Link
-                                                                            href={route(
-                                                                                'beneficiaries.edit',
-                                                                                beneficiary.uuid
-                                                                            )}
-                                                                            className="btn btn-primary btn-sm"
-                                                                        >
-                                                                            <i className="fa fa-edit"></i>
-                                                                        </Link>
-                                                                    )}
-                                                                </>
-                                                            )}
-                                                            {!beneficiary.is_trashed && (
-                                                                <>
-                                                                    {can('Ver Beneficiarios', auth.user.abilities) && (
-                                                                        <Link href={route('beneficiaries.visits', beneficiary.uuid)} className="btn btn-info btn-sm">
-                                                                            <i className="fa fa-calendar"></i>
-                                                                        </Link>
-                                                                    )}
-                                                                </>
-                                                            )}
-                                                            {!beneficiary.is_trashed &&
-                                                                can(
-                                                                    'Aprobar Beneficiarios',
-                                                                    auth.user
+                                                    </td>
+                                                    <td>
+                                                        {!beneficiary.is_trashed && (
+                                                            <>
+                                                                {can(
+                                                                    'Editar Beneficiarios',
+                                                                    auth
+                                                                        .user
                                                                         .abilities
-                                                                ) &&
-                                                                !beneficiary.is_approved && (
-                                                                    <button
-                                                                        type="button"
-                                                                        className="btn btn-success btn-sm"
-                                                                        onClick={() => {
-                                                                            handleApprove(
-                                                                                beneficiary
-                                                                            )
-                                                                        }}
-                                                                        title="Aprobar"
+                                                                ) && (
+                                                                    <Link
+                                                                        href={route(
+                                                                            'beneficiaries.edit',
+                                                                            beneficiary.uuid
+                                                                        )}
+                                                                        className="btn btn-primary btn-sm"
                                                                     >
-                                                                        <i className="fa fa-check"></i>
-                                                                    </button>
+                                                                        <i className="fa fa-edit"></i>
+                                                                    </Link>
                                                                 )}
-                                                        </td>
-                                                    </tr>
-                                                )
-                                            )}
+                                                            </>
+                                                        )}
+                                                        {!beneficiary.is_trashed && (
+                                                            <>
+                                                                {can('Ver Beneficiarios', auth.user.abilities) && (
+                                                                    <Link
+                                                                        href={route('beneficiaries.visits', beneficiary.uuid)}
+                                                                        className="btn btn-info btn-sm">
+                                                                        <i className="fa fa-calendar"></i>
+                                                                    </Link>
+                                                                )}
+                                                            </>
+                                                        )}
+                                                        {!beneficiary.is_trashed &&
+                                                            can(
+                                                                'Aprobar Beneficiarios',
+                                                                auth.user
+                                                                    .abilities
+                                                            ) &&
+                                                            !beneficiary.is_approved && (
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-success btn-sm"
+                                                                    onClick={() => {
+                                                                        handleApprove(
+                                                                            beneficiary
+                                                                        )
+                                                                    }}
+                                                                    title="Aprobar"
+                                                                >
+                                                                    <i className="fa fa-check"></i>
+                                                                </button>
+                                                            )}
+                                                    </td>
+                                                </tr>
+                                            )
+                                        )}
                                         </tbody>
                                     </table>
                                     <Pagination

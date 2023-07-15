@@ -54,11 +54,17 @@ class Project extends Model implements HasMedia
         return $this->hasMany(Goal::class);
     }
 
-    public function report(){
-        return $this->hasMany(ProjectReport::class);
-    }
-
     public function meetings(){
         return $this->hasMany(Meeting::class);
+    }
+
+    public function report()
+    {
+        return $this->hasOne(Report::class);
+    }
+
+    public function excelReports()
+    {
+        return $this->morphMany(ExcelReports::class, 'reportable');
     }
 }

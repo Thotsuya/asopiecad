@@ -1,8 +1,12 @@
 import {useForm} from '@inertiajs/inertia-react'
 import useToasts from '@/Hooks/Toasts'
+import {Inertia} from "@inertiajs/inertia";
+import {useState} from "react";
 
 export default function useFilters() {
     const {success, error} = useToasts()
+    const [exporting, setExporting] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const filters = [
         {
@@ -29,11 +33,6 @@ export default function useFilters() {
             id: 5,
             label: 'Fecha de Creación',
             value: 'created_at'
-        },
-        {
-            id: 6,
-            label: 'Programa',
-            value: 'program_id'
         }
 
     ]
@@ -59,6 +58,7 @@ export default function useFilters() {
     const {data, setData, get, processing, reset, errors} = useForm({
         filter: '',
         value: '',
+        program_id: '',
         form_id: 1,
         field_id: '',
         field_type: '',
@@ -83,7 +83,24 @@ export default function useFilters() {
     }
 
     const exportToExcel = () => {
-        window.open(route('beneficiaries.export', data), '_blank')
+        Inertia.post(route('beneficiaries.export'), data, {
+            preserveScroll: true,
+            preserveState: true,
+            onBefore: () => {
+                setExporting(false)
+                setLoading(true)
+            },
+            onSuccess: () => {
+                success('Exportando datos...')
+                setExporting(true)
+                setLoading(false)
+            },
+            onError: (err) => {
+                console.log(err)
+                error('No se pudo exportar los datos')
+                setExporting(false)
+            }
+        })
     }
 
     return {
@@ -96,5 +113,7 @@ export default function useFilters() {
         handleSearch,
         statusFilters,
         exportToExcel,
+        exporting,
+        loading
     }
 }

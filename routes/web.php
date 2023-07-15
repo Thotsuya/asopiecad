@@ -28,7 +28,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/screenings/report', App\Http\Controllers\Admin\ScreeningsReportsController::class)->name('screenings.report');
 
-    Route::get('beneficiaries/export', [App\Http\Controllers\Admin\BeneficiariesController::class, 'export'])->name('beneficiaries.export');
+    Route::post('beneficiaries/export', [App\Http\Controllers\Admin\BeneficiariesController::class, 'export'])->name('beneficiaries.export');
 
     Route::resource('forms', App\Http\Controllers\Admin\FormController::class);
     Route::resource('projects', App\Http\Controllers\Admin\ProjectController::class)->except('create');
@@ -51,7 +51,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('projects/{project}/beneficiaries/{beneficiary}', [App\Http\Controllers\Admin\ProjectFormController::class, 'destroy'])->name('projects.forms.destroy');
     Route::patch('projects/{project}/beneficiaries/{beneficiary}/approve', [App\Http\Controllers\Admin\ProjectFormController::class, 'approve'])->name('projects.forms.approve');
     Route::post('/projects/{project}/programs', [App\Http\Controllers\Admin\ProgramController::class, 'store'])->name('projects.programs.store');
-    Route::get('/project/{project}/export', [App\Http\Controllers\Admin\ProjectReportsController::class, 'export'])->name('projects.export');
+    Route::post('/project/{project}/export', [App\Http\Controllers\Admin\ProjectReportsController::class, 'export'])->name('projects.export');
 
     Route::put('/programs/{program}', [App\Http\Controllers\Admin\ProgramController::class, 'update'])->name('projects.programs.update');
     Route::delete('/programs/{program}', [App\Http\Controllers\Admin\ProgramController::class, 'destroy'])->name('projects.programs.destroy');
@@ -89,6 +89,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/participants/{participant}', [App\Http\Controllers\Admin\ParticipantController::class, 'update'])->name('participants.update');
     Route::post('/participants', [App\Http\Controllers\Admin\ParticipantController::class, 'store'])->name('participants.store');
 
+    Route::get('excel-reports', [App\Http\Controllers\Admin\ExcelReportsController::class, 'index'])->name('excel-reports.index');
 
 });
 

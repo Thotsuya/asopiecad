@@ -153,6 +153,21 @@ export default function Sidebar({ auth }) {
                                 </Link>
                             </li>
                         )}
+                        {can('Ver Proyectos', auth.user.abilities) && (
+                            <li
+                                className={
+                                    route().current('excel-reports.*') ? 'current' : ''
+                                }
+                            >
+                                <Link
+                                    href={route('excel-reports.index')}
+                                    className="waves-effect"
+                                >
+                                    <i className="menu-icon ti-file"></i>
+                                    <span>Reportes Excel</span>
+                                </Link>
+                            </li>
+                        )}
                     </ul>
                 </div>
             </div>

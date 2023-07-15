@@ -184,6 +184,7 @@ trait DynamicComparisons{
             'm','mes', 'meses' => $valueToConvert / 12,
             'd','día', 'días', 'dia', 'dias' => $valueToConvert / 365,
             'a','año', 'años' => $valueToConvert,
+            default => $valueToConvert,
         };
     }
 }

@@ -13,6 +13,7 @@ import {
 import {Line} from 'react-chartjs-2'
 import {Inertia} from '@inertiajs/inertia'
 import {useRef, useState} from 'react'
+import ScreeningsRow from "@/Components/Screenings/ScreeningsIndicator";
 
 export default function Show({
                                  auth,
@@ -25,6 +26,7 @@ export default function Show({
                                  start_date = null,
                                  end_date = null,
                                  screenings = [],
+                                 meeting_goals = [],
                              }) {
     ChartJS.register(
         CategoryScale,
@@ -69,35 +71,68 @@ export default function Show({
             })
         }
 
-        window.open(route('projects.export', params), '_blank')
+        Inertia.post(
+            route('projects.export', {project: project.uuid}),
+            {
+                start_date: startDate,
+                end_date: endDate,
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                onBefore: () => {
+                    setFilterLoading(true)
+                    setReportLoading(false)
+                },
+                onSuccess: () => {
+                    setFilterLoading(false)
+                    setReportLoading(true)
+                },
+                onFinish: () => {
+                    setFilterLoading(false)
+                },
+                onError: (err) => {
+                    console.log(err)
+                }
+            }
+        )
+
+
     }
 
     const startDateRef = useRef(null)
     const endDateRef = useRef(null)
     const [filterloading, setFilterLoading] = useState(false)
+    const [reportLoading, setReportLoading] = useState(false)
 
     const filterResults = () => {
         const startDate = startDateRef.current.value
         const endDate = endDateRef.current.value
-        if (startDate && endDate) {
-            Inertia.get(
-                route('projects.reports.index', {project: project.uuid}),
-                {
-                    start_date: startDate,
-                    end_date: endDate,
+        Inertia.post(
+            route('projects.export', {project: project.uuid}),
+            {
+                start_date: startDate,
+                end_date: endDate,
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                onBefore: () => {
+                    setFilterLoading(true)
+                    setReportLoading(false)
                 },
-                {
-                    preserveState: true,
-                    preserveScroll: true,
-                    onBefore: () => {
-                        setFilterLoading(true)
-                    },
-                    onFinish: () => {
-                        setFilterLoading(false)
-                    },
+                onSuccess: () => {
+                    setFilterLoading(false)
+                    setReportLoading(true)
+                },
+                onFinish: () => {
+                    setFilterLoading(false)
+                },
+                onError: (err) => {
+                    console.log(err)
                 }
-            )
-        }
+            }
+        )
     }
 
     const resetFilters = () => {
@@ -130,8 +165,10 @@ export default function Show({
                             style={{
                                 marginLeft: '10px',
                             }}
+                            disabled={filterloading || reportLoading}
                         >
-                            <i className="fa fa-file-excel-o"/> Exportar
+                            <i className="fa fa-file-excel-o"/>
+                            {reportLoading ? 'Generando...' : 'Exportar a Excel'}
                         </button>
                     </h4>
                     <div className="alert alert-info">
@@ -143,8 +180,21 @@ export default function Show({
                             proyecto, elige un tipo de grafico, nombre y
                             descripción del indicador, para luego agregarlo a la
                             lista de indicadores.
+                            <br/>
+                            <strong>Nota:</strong> Los
+                            indicadores se actualizarán cada 15 minutos.
                         </p>
                     </div>
+
+                    {reportLoading && (
+                        <div className="alert alert-success">
+                            <p>
+                                <i className="fa fa-check-circle"/> El Reporte está siendo generado. Por favor espera un momento.
+                                Puedes seguir trabajando en el sistema mientras se genera el reporte. Una vez que el reporte esté listo, se mostrara en la sección de reportes
+                                en el menú lateral.
+                            </p>
+                        </div>
+                    )}
                 </div>
 
                 <div className="col-xs-12">
@@ -178,7 +228,7 @@ export default function Show({
                             <div className="col-xs-12">
                                 <button
                                     onClick={filterResults}
-                                    disabled={filterloading}
+                                    disabled={filterloading || reportLoading}
                                     className="btn btn-primary pull-right"
                                 >
                                     Filtrar <i className="fa fa-filter"/>
@@ -224,7 +274,7 @@ export default function Show({
                 )}
 
                 {!filterloading && (
-                    <div className="col-xs-12 col-md-12">
+                    <div className="col-xs-12 col-md-12 overflow-auto">
                         <div className="row">
                             <div className="col-md-12">
                                 <div className="table-responsive">
@@ -285,9 +335,17 @@ export default function Show({
 
                                         <tbody>
                                         {results &&
-                                            results.map((result, index) => (
-                                                <tr key={index}>
-                                                    <td className="text-center text-sm padding-10">
+                                            results.map((result, index) => {
+
+                                                if(index === 2 && project.id === 1) return <ScreeningsRow screenings={screenings}/>
+
+                                                return <tr key={index}>
+                                                    <td
+                                                        className="text-center text-sm padding-10"
+                                                        style={{
+                                                            minWidth: '400px',
+                                                        }}
+                                                    >
                                                         {
                                                             result.goal_description
                                                         }
@@ -322,9 +380,11 @@ export default function Show({
                                                     >
                                                             <span className="text-white">
                                                                 {
-                                                                    result
-                                                                        .program
-                                                                        .beneficiaries_count
+                                                                    result.is_grouped
+                                                                        ? result.program.total_grouped
+                                                                        :  result
+                                                                            .program
+                                                                            .beneficiaries_count
                                                                 }
                                                                 {result.is_grouped && (
                                                                     <>
@@ -423,7 +483,85 @@ export default function Show({
                                                         </strong>
                                                     </td>
                                                 </tr>
-                                            ))}
+                                            })}
+
+                                        {meeting_goals && meeting_goals.length > 0 && meeting_goals.map((meeting_goal, index) => (
+                                            <tr key={`meeting_goal_${index}`}>
+                                                <td
+                                                    className="text-center text-sm padding-10"
+                                                    style={{
+                                                        minWidth: '400px',
+                                                    }}
+                                                >
+                                                    {
+                                                        meeting_goal.title
+                                                    }
+                                                </td>
+                                                <td
+                                                    style={{
+                                                        backgroundColor:
+                                                            '#FFFF99',
+                                                    }}
+                                                    className="text-center text-sm padding-10"
+                                                >
+                                                    <strong>
+                                                        -
+                                                    </strong>
+                                                </td>
+                                                <td className="text-center bg-info text-sm padding-10">
+                                                            <span className="text-white">
+                                                               -
+                                                            </span>
+                                                </td>
+                                                <td
+                                                    className="text-center bg-success text-sm padding-10"
+                                                >
+                                                            <span className="text-white">
+                                                                {
+                                                                    meeting_goal.total_meetings
+                                                                }
+                                                            </span>
+                                                </td>
+                                                <td className="text-sm padding-10">
+                                                    -
+                                                </td>
+                                                {headers &&
+                                                    headers.map(
+                                                        (
+                                                            header,
+                                                            index
+                                                        ) => (
+                                                            <td
+                                                                key={
+                                                                    `meeting_goal_${index}`
+                                                                }
+                                                                style={{
+                                                                    backgroundColor:
+                                                                        '#FFFF99',
+                                                                }}
+                                                                className="text-center text-sm padding-10"
+                                                            >
+                                                                <strong>
+                                                                   N/A
+                                                                </strong>
+                                                            </td>
+                                                        )
+                                                    )}
+                                                <td className="text-center text-sm padding-10">
+                                                    N/A
+                                                </td>
+                                                <td className="text-center text-sm padding-10">
+                                                    <strong>
+                                                       N/A
+                                                    </strong>
+                                                </td>
+                                                <td className="text-center text-sm padding-10">
+                                                    <strong>
+                                                       N/A
+                                                    </strong>
+                                                </td>
+                                            </tr>
+                                        ))}
                                         </tbody>
                                     </table>
                                 </div>
@@ -607,107 +745,6 @@ export default function Show({
                     </div>
                 )}
 
-                {project.id === 1 && (
-                    <div className="col-xs-12 col-md-12">
-                        <div className="row">
-                            <div className="col-md-12">
-                                <div className="table-responsive">
-                                    <table className="table-xs table-bordered table-striped margin-bottom-10">
-                                        <thead>
-                                        <tr>
-                                            <th className="text-center text-sm padding-10 bg-primary">
-                                                Descripción de los
-                                                indicadores
-                                            </th>
-                                            <th className="text-center text-sm padding-10 bg-primary">
-                                                Meta
-                                            </th>
-                                            <th className="text-center text-sm padding-10 bg-primary">
-                                                Progreso Total
-                                            </th>
-                                            <th className="text-center text-sm padding-10 bg-primary">
-                                                Porcentaje completado
-                                            </th>
-                                            <th className="text-center text-sm padding-10 bg-primary">
-                                                Niños menores de 18 años sin discapacidad
-                                            </th>
-                                            <th className="text-center text-sm padding-10 bg-primary">
-                                                Niños menores de 18 años con discapacidad
-                                            </th>
-                                            <th className="text-center text-sm padding-10 bg-primary">
-                                                Niñas menores de 18 años sin discapacidad
-                                            </th>
-                                            <th className="text-center text-sm padding-10 bg-primary">
-                                                Niñas menores de 18 años con discapacidad
-                                            </th>
-                                            <th className="text-center text-sm padding-10 bg-primary">
-                                                Hombres mayores de 18 años sin discapacidad
-                                            </th>
-                                            <th className="text-center text-sm padding-10 bg-primary">
-                                                Hombres mayores de 18 años con discapacidad
-                                            </th>
-                                            <th className="text-center text-sm padding-10 bg-primary">
-                                                Mujeres mayores de 18 años sin discapacidad
-                                            </th>
-                                            <th className="text-center text-sm padding-10 bg-primary">
-                                                Mujeres mayores de 18 años con discapacidad
-                                            </th>
-
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {console.log(screenings)}
-                                        <tr>
-                                            <td className="text-center text-sm padding-10">
-                                                {screenings.title}
-                                            </td>
-                                            <td className="text-center bg-warning text-sm padding-10">
-                                                <span className="text-white">
-                                                    7200
-                                                </span>
-                                            </td>
-                                            <td className="text-center bg-success text-sm padding-10">
-                                                <span className="text-white">
-                                                    {screenings.total_screenings}
-                                                </span>
-                                            </td>
-                                            <td className="text-center bg-info text-sm padding-10">
-                                                <span className="text-white">
-                                                    {screenings.completed_percentage}%
-                                                </span>
-                                            </td>
-                                            <td className="text-center text-sm padding-10">
-                                                {screenings.males_below_18_without_disabilities}
-                                            </td>
-                                            <td className="text-center text-sm padding-10">
-                                                0
-                                            </td>
-                                            <td className="text-center text-sm padding-10">
-                                                {screenings.females_below_18_without_disabilities}
-                                            </td>
-                                            <td className="text-center text-sm padding-10">
-                                                0
-                                            </td>
-                                            <td className="text-center text-sm padding-10">
-                                                0
-                                            </td>
-                                            <td className="text-center text-sm padding-10">
-                                                0
-                                            </td>
-                                            <td className="text-center text-sm padding-10">
-                                                0
-                                            </td>
-                                            <td className="text-center text-sm padding-10">
-                                                0
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
 
                 {datasets && (
                     <div className="col-xs-12 col-md-12">
@@ -716,6 +753,7 @@ export default function Show({
                                 <div className="col-xs-12">
                                     <Line options={options} data={data}/>
                                 </div>
+
                             </div>
                         </div>
                     </div>

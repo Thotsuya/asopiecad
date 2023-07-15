@@ -105,7 +105,11 @@ class ProjectController extends Controller
                 })
                 ->withQueryString(),
             'paginated_programs' => $project->programs()
-                ->with('beneficiaries')
+                ->with([
+                    'beneficiaries' => function ($query) use ($request) {
+                        $query->whereNotNull('approved_at');
+                    },
+                ])
                 ->withCount('beneficiaries')
                 ->orderBy('order')
                 ->paginate(20)
@@ -113,7 +117,13 @@ class ProjectController extends Controller
                     return PaginatedProgramsResource::make($program);
                 }),
             'programs' => ProgramsResource::collection($project->programs()
-                ->with(['forms.tabs','forms.fields','beneficiaries'])
+                ->with([
+                    'forms.tabs',
+                    'forms.fields',
+                    'beneficiaries' => function ($query) use ($request) {
+                        $query->whereNotNull('approved_at');
+                    },
+                ])
                 ->orderBy('order')
                 ->get()),
             'appointments' => AppointmentResource::collection($project->appointments->load('user', 'benefitiary')),

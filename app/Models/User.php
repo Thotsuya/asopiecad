@@ -73,4 +73,8 @@ class User extends Authenticatable
     public function screenings(){
         return $this->hasMany(Screening::class);
     }
+
+    public function excelReports(){
+        return $this->morphMany(ExcelReports::class, 'reportable');
+    }
 }

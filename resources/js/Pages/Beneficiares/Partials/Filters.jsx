@@ -3,8 +3,8 @@ import Select from 'react-select'
 import {OPERATORS, OPERANDS} from "@/Constants/Operators";
 import {useEffect, useMemo} from "react";
 
-export default function Filters({projects, forms, programs}) {
-    const {filters, statusFilters, data, setData, processing, handleSearch, exportToExcel} = useFilters()
+export default function Filters({projects, forms}) {
+    const {filters, statusFilters, data, setData, processing, handleSearch, exportToExcel,exporting,loading} = useFilters()
 
 
     return (
@@ -73,68 +73,73 @@ export default function Filters({projects, forms, programs}) {
                             </>
                         )}
 
-                        {data.filter === 'program_id' && (
-                            <div className="col-md-6">
-                                <div className="form-group">
-                                    <label htmlFor="program">Programa:</label>
-                                    <Select
-                                        id="program"
-                                        name="program"
-                                        options={programs.map((program) => ({
-                                            value: program.id,
-                                            label: program.program_name,
-                                        }))}
-                                        placeholder="Seleccione un programa"
-                                        onChange={(option) => {
-                                            setData({
-                                                ...data,
-                                                value: option.value,
-                                            })
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        )}
+                        {!data.filter.includes('form_id') && !data.filter.includes('created_at') && (
+                            <>
+                                <div className="col-md-4">
+                                    <div className="form-group">
+                                        <label htmlFor="project">Valor:</label>
+                                        {data.filter === 'project_id' && (
+                                            <Select
+                                                id="project"
+                                                name="project"
+                                                options={projects.map((project) => ({
+                                                    value: project.uuid,
+                                                    label: project.project_name,
+                                                }))}
+                                                placeholder="Seleccione un proyecto"
+                                                onChange={(option) => {
+                                                    setData({
+                                                        ...data,
+                                                        value: option.value,
+                                                    })
+                                                }}
+                                            />
+                                        )}
 
-                        {!data.filter.includes('form_id') && !data.filter.includes('created_at') && !data.filter.includes('program_id') && (
-                            <div className="col-md-6">
-                                <div className="form-group">
-                                    <label htmlFor="project">Valor:</label>
-                                    {data.filter === 'project_id' && (
-                                        <Select
-                                            id="project"
-                                            name="project"
-                                            options={projects.map((project) => ({
-                                                value: project.uuid,
-                                                label: project.project_name,
-                                            }))}
-                                            placeholder="Seleccione un proyecto"
-                                            onChange={(option) => {
-                                                setData({
-                                                    ...data,
-                                                    value: option.value,
-                                                })
-                                            }}
-                                        />
-                                    )}
-
-                                    {data.filter !== 'project_id' && (
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="value"
-                                            name="value"
-                                            placeholder="Escribe el valor a buscar"
-                                            onChange={(e) => {
-                                                setData({
-                                                    ...data,
-                                                    value: e.target.value,
-                                                })
-                                            }}
-                                        />
-                                    )}
+                                        {data.filter !== 'project_id' && (
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                id="value"
+                                                name="value"
+                                                placeholder="Escribe el valor a buscar"
+                                                onChange={(e) => {
+                                                    setData({
+                                                        ...data,
+                                                        value: e.target.value,
+                                                    })
+                                                }}
+                                            />
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
+
+                                {data.filter === 'project_id' && (
+                                    <div className="col-md-4">
+                                        <div className="form-group">
+                                            <label htmlFor="program_id">Programa:</label>
+                                            <Select
+                                                id="program_id"
+                                                name="program_id"
+                                                isClearable={true}
+                                                options={projects.find(project => project.uuid === data.value)?.programs.map((program) => {
+                                                    return {
+                                                        value: program.uuid,
+                                                        label: program.program_name,
+                                                    }
+                                                })}
+                                                placeholder="Seleccione un programa"
+                                                onChange={(option) => {
+                                                    setData({
+                                                        ...data,
+                                                        program_id: option?.value ? option?.value : null,
+                                                    })
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                            </>
                         )}
 
                         {data.filter === 'form_id' && (
@@ -287,10 +292,28 @@ export default function Filters({projects, forms, programs}) {
                     </div>
                 </div>
             </div>
+
+            {exporting && (
+                <div className="col-xs-12">
+                    <div className="alert alert-success">
+                        <p>
+                            <i className="fa fa-check"></i> Tu archivo esta siendo generado, espera un momento...
+                            puedes seguir navegando en la plataforma. Cuando el archivo este listo, lo podrás descargar en la sección de
+                            Reportes Excel.
+                        </p>
+                    </div>
+                </div>
+            )}
+
             <div className="col-xs-12">
                 <div className="box-content">
-                    <button className="btn btn-primary btn-block" onClick={exportToExcel}>
-                        Exportar
+                    <button
+                        className="btn btn-primary btn-block"
+                        onClick={exportToExcel}
+                        disabled={exporting || loading}
+
+                    >
+                        {exporting ? 'Exportando...' : 'Exportar a Excel'}
                     </button>
                 </div>
             </div>

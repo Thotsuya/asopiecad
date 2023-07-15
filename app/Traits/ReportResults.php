@@ -4,6 +4,7 @@ namespace App\Traits;
 
 
 use App\Models\Benefitiary;
+use App\Models\Project;
 use App\Models\Screening;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -27,12 +28,13 @@ trait ReportResults
                     'program_name'         => $goal->program->program_name,
                     'beneficiaries_count'  => $this->getGoalProgress($goal),
                     'total_ungrouped'     => $goal->program->beneficiaries->count(),
+                    'total_grouped'       => $goal->group_every > 1 ? round($goal->program->beneficiaries->count() / $goal->group_every) : 0,
                     'completed_percentage' => round(
                         $goal->program->beneficiaries->count() / $goal->goal_target * 100,
                         2
                     )
                     > 100 ? 100 : round($goal->program->beneficiaries->count() / $goal->goal_target * 100, 2),
-                    'pending' => $goal->goal_target - $goal->program->beneficiaries->count(),
+                    'pending' => $goal->group_every > 1 ? round($goal->program->beneficiaries->count() % $goal->group_every) : $goal->goal_target - $goal->program->beneficiaries->count(),
                     'visits' => $goal->program->beneficiaries->map(function ($beneficiary) {
                         return $beneficiary->appointments->count();
                     })->sum(),
