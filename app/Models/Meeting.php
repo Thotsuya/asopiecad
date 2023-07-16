@@ -13,7 +13,9 @@ class Meeting extends Model
     protected $fillable = [
         'project_id',
         'title',
-        'count'
+        'count',
+        'meeting_target',
+        'form_id',
     ];
 
     public function getRouteKeyName()
@@ -38,5 +40,10 @@ class Meeting extends Model
     public function participants()
     {
         return $this->hasMany(MeetingParticipant::class);
+    }
+
+    public function form()
+    {
+        return $this->belongsTo(Form::class);
     }
 }

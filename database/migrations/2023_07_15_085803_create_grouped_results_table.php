@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('grouped_results', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->text('title');
             $table->foreignId('project_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });

@@ -19,8 +19,10 @@ class MeetingResource extends JsonResource
             'uuid'=> $this->uuid,
             'title' => $this->title,
             'total_meetings' => $this->count,
-            'participants_count' => $this->participants_count,
-            'participants' => MeetingParticipantsResource::collection($this->whenLoaded('participants')),
+            'form_id' => $this->form_id,
+            'form' => $this->whenLoaded('form', function () {
+                    return BeneficiaryFormsResource::make($this->form);
+            }),
         ];
     }
 }

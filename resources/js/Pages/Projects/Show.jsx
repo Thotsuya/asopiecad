@@ -114,6 +114,7 @@ export default function Show({
                                 <MeetingsTab
                                     project={project}
                                     meetings={meetings}
+                                    forms={forms}
                                 />
                                 <ResultsTab
                                     project={project}

@@ -10,7 +10,6 @@ export default function ResultsTab({project,goals}){
         >
             <div className="row">
                 <ResultsCreate project={project} goals={goals}/>
-                {console.log(project)}
 
                 <div className="col-md-7">
                     <div className="box-content">

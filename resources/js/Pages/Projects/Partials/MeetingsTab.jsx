@@ -2,13 +2,14 @@ import {Link, useForm} from "@inertiajs/inertia-react";
 import MeetingsCreate from "@/Pages/Projects/Partials/MeetingsCreate";
 import useToasts from "@/Hooks/Toasts";
 
-export default function MeetingsTab({project, meetings}) {
+export default function MeetingsTab({project, meetings,forms}) {
 
 
     const {data, setData, post, processing, errors, reset} = useForm({
         title: '',
         project_id: project.id,
-        participants: [],
+        form_id: '',
+        meeting_target: 1,
     });
 
     const {success, error} = useToasts()
@@ -42,7 +43,9 @@ export default function MeetingsTab({project, meetings}) {
                         data={data}
                         setData={setData}
                         onSubmit={onSubmit}
-                        project={project}/>
+                        project={project}
+                        forms={forms}
+                    />
 
                     <div className="col-md-8">
                         <div className="box-content">
@@ -52,7 +55,6 @@ export default function MeetingsTab({project, meetings}) {
                                 <tr>
                                     <th>Título</th>
                                     <th className="text-center">Cantidad de reuniones</th>
-                                    <th className="text-center">Participantes</th>
                                     <th className="text-center">Acciones</th>
                                 </tr>
                                 </thead>
@@ -63,7 +65,6 @@ export default function MeetingsTab({project, meetings}) {
                                         <tr key={meeting.uuid}>
                                             <td>{meeting.title}</td>
                                             <td className="text-center">{meeting.total_meetings}</td>
-                                            <td className="text-center">{meeting.participants_count}</td>
                                             <td className="text-center">
                                                 <Link href={route('meetings.edit', meeting.uuid)}>
                                                     <button className="btn btn-warning btn-xs waves-effect waves-light">

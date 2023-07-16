@@ -1,124 +1,254 @@
 import {useState} from "react";
 import {useForm} from "@inertiajs/inertia-react";
 import useToasts from "@/Hooks/Toasts";
+import FormTabs from "@/Pages/Beneficiares/Partials/FormTabs";
+import FormTabContent from "@/Pages/Beneficiares/Partials/FormTabContent";
+import LargeInput from "@/Pages/Forms/Fields/LargeInput";
+import CheckboxInput from "@/Pages/Forms/Fields/CheckboxInput";
+import SelectInput from "@/Pages/Forms/Fields/SelectInput";
+import RadioInput from "@/Pages/Forms/Fields/RadioInput";
+import SmallInput from "@/Pages/Forms/Fields/SmallInput";
 
-export default function NewParticipant({meeting}) {
-
-    const [newParticipant, setNewParticipant] = useState(false)
-
-    const {data, setData, post, processing, errors, reset} = useForm({
-        meeting_id: meeting.id,
-        name: '',
-        document: '',
-        date: new Date().toISOString().split('T')[0],
-    })
-
-    const {success,error} = useToasts()
-
-    const onSubmit = () => {
-        post(route('participants.store'), {
-            preserveScroll: true,
-            preserveState: true,
-            onSuccess: () => {
-                success('Participante agregado con éxito');
-                reset()
-                setNewParticipant(false)
-            },
-            onError: (err) => {
-                console.log(err)
-                error('Error al agregar el participante');
-            },
-        });
-    }
+export default function NewParticipant({form,data,setData,errors}) {
 
     return (
         <>
-            <div className="col-md-12">
-                <div className="form-group">
-                    <button
-                        className={"btn btn-info btn-sm btn-block waves-effect waves-light" + (newParticipant ? ' btn-danger' : '')}
-                        onClick={(e) => {
-                            setNewParticipant((newParticipant) => !newParticipant)
-                        }}
-                    >
-                        {newParticipant ? 'Cancelar' : 'Agregar Participante'}
-                    </button>
+            <div className="row">
+                <div className="col-xs-12">
+                    <div className="box-content">
+                        <h4 className="box-title">{form.form_name}</h4>
+                        <FormTabs form={form}/>
+
+
+                        <div
+                            className="tab-content"
+                            id="beneficiary-form-tabs"
+                        >
+                            {form.tabs
+                                .sort((a, b) => a.order - b.order)
+                                .map((tab, index) => (
+                                    <>
+                                        <FormTabContent
+                                            key={`${form.form_slug}-${index}`}
+                                            tab={tab}
+                                            form={form}
+                                            index={index}
+                                        >
+                                            {tab.fields.map(
+                                                (field, index) => {
+                                                    if (
+                                                        field.type ===
+                                                        'textarea'
+                                                    ) {
+                                                        return (
+                                                            <LargeInput
+                                                                key={index}
+                                                                field={
+                                                                    field
+                                                                }
+                                                                editable={
+                                                                    false
+                                                                }
+                                                                onChange={(
+                                                                    e
+                                                                ) => {
+                                                                    setData(
+                                                                        `${field.slug}-${form.form_slug}-${form.id}`,
+                                                                        e
+                                                                            .target
+                                                                            .value
+                                                                    )
+                                                                }}
+                                                                value={
+                                                                    data[
+                                                                        `${field.slug}-${form.form_slug}-${form.id}`
+                                                                        ]
+                                                                }
+                                                                error={
+                                                                    errors[
+                                                                        `${field.slug}-${form.form_slug}-${form.id}`
+                                                                        ]
+                                                                }
+                                                            />
+                                                        )
+                                                    }
+
+                                                    if (
+                                                        field.type ===
+                                                        'checkbox'
+                                                    ) {
+                                                        return (
+                                                            <CheckboxInput
+                                                                key={index}
+                                                                field={
+                                                                    field
+                                                                }
+                                                                editable={
+                                                                    false
+                                                                }
+                                                                onChange={() => {
+                                                                    setData(
+                                                                        `${field.slug}-${form.form_slug}-${form.id}`,
+                                                                        !data[
+                                                                            `${field.slug}-${form.form_slug}-${form.id}`
+                                                                            ]
+                                                                    )
+                                                                }}
+                                                                checked={
+                                                                    data[
+                                                                        `${field.slug}-${form.form_slug}-${form.id}`
+                                                                        ]
+                                                                }
+                                                                error={
+                                                                    errors[
+                                                                        `${field.slug}-${form.form_slug}-${form.id}`
+                                                                        ]
+                                                                }
+                                                            />
+                                                        )
+                                                    }
+
+                                                    if (
+                                                        field.type ===
+                                                        'select'
+                                                    ) {
+                                                        return (
+                                                            <SelectInput
+                                                                key={index}
+                                                                field={
+                                                                    field
+                                                                }
+                                                                editable={
+                                                                    false
+                                                                }
+                                                                onChange={(
+                                                                    value
+                                                                ) => {
+                                                                    setData(
+                                                                        `${field.slug}-${form.form_slug}-${form.id}`,
+                                                                        value
+                                                                    )
+                                                                }}
+                                                                value={
+                                                                    data[
+                                                                        `${field.slug}-${form.form_slug}-${form.id}`
+                                                                        ]
+                                                                }
+                                                                error={
+                                                                    errors[
+                                                                        `${field.slug}-${form.form_slug}-${form.id}`
+                                                                        ]
+                                                                }
+                                                            />
+                                                        )
+                                                    }
+
+                                                    if (
+                                                        field.type ===
+                                                        'select multiple'
+                                                    ) {
+                                                        return (
+                                                            <SelectInput
+                                                                key={index}
+                                                                field={
+                                                                    field
+                                                                }
+                                                                editable={
+                                                                    false
+                                                                }
+                                                                onChange={(
+                                                                    value
+                                                                ) => {
+                                                                    // Push or remove from array
+                                                                    setData(
+                                                                        `${field.slug}-${form.form_slug}-${form.id}`,
+                                                                        value
+                                                                    )
+                                                                }}
+                                                                value={
+                                                                    data[
+                                                                        `${field.slug}-${form.form_slug}-${form.id}`
+                                                                        ]
+                                                                }
+                                                                error={
+                                                                    errors[
+                                                                        `${field.slug}-${form.form_slug}-${form.id}`
+                                                                        ]
+                                                                }
+                                                            />
+                                                        )
+                                                    }
+
+                                                    if (
+                                                        field.type ===
+                                                        'radio'
+                                                    ) {
+                                                        return (
+                                                            <RadioInput
+                                                                key={index}
+                                                                field={
+                                                                    field
+                                                                }
+                                                                editable={
+                                                                    false
+                                                                }
+                                                                onChange={() => {
+                                                                    setData(
+                                                                        `${field.slug}-${form.form_slug}-${form.id}`,
+                                                                        !data[
+                                                                            `${field.slug}-${form.form_slug}-${form.id}`
+                                                                            ]
+                                                                    )
+                                                                }}
+                                                                checked={
+                                                                    data[
+                                                                        `${field.slug}-${form.form_slug}-${form.id}`
+                                                                        ]
+                                                                }
+                                                                error={
+                                                                    errors[
+                                                                        `${field.slug}-${form.form_slug}-${form.id}`
+                                                                        ]
+                                                                }
+                                                            />
+                                                        )
+                                                    }
+
+                                                    return (
+                                                        <SmallInput
+                                                            key={index}
+                                                            field={field}
+                                                            editable={false}
+                                                            onChange={(
+                                                                e
+                                                            ) => {
+                                                                setData(
+                                                                    `${field.slug}-${form.form_slug}-${form.id}`,
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }}
+                                                            value={
+                                                                data[
+                                                                    `${field.slug}-${form.form_slug}-${form.id}`
+                                                                    ]
+                                                            }
+                                                            error={
+                                                                errors[
+                                                                    `${field.slug}-${form.form_slug}-${form.id}`
+                                                                    ]
+                                                            }
+                                                        />
+                                                    )
+                                                }
+                                            )}
+                                        </FormTabContent>
+                                    </>
+                                ))}
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            {newParticipant && (
-                <>
-                    <div className="col-md-12">
-                        <div className="form-group">
-                            <label htmlFor="name">
-                                Nombre del participante
-                            </label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                id="name"
-                                placeholder="Nombre del participante"
-                                value={data.name}
-                                onChange={(e) => {
-                                    setData((data) => ({
-                                        ...data,
-                                        name: e.target.value
-                                    }))
-                                }}
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="document">
-                                Cédula del participante (opcional)
-                            </label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                id="document"
-                                placeholder="Cédula del participante"
-                                value={data.document}
-                                onChange={(e) => {
-                                    setData((data) => ({
-                                        ...data,
-                                        document: e.target.value
-                                    }))
-                                }}
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="date">
-                                Fecha de la reunión
-                            </label>
-                            <input
-                                type="date"
-                                className="form-control"
-                                id="date"
-                                placeholder="Fecha de la reunión"
-                                value={data.date}
-                                onChange={(e) => {
-                                    setData((data) => ({
-                                        ...data,
-                                        date: e.target.value
-                                    }))
-                                }}
-                            />
-                        </div>
-                    </div>
-                    <div className="col-md-12">
-                        <div className="form-group">
-                            <button
-                                className="btn btn-success btn-sm btn-block waves-effect waves-light"
-                                disabled={processing}
-                                onClick={onSubmit}
-                            >
-                                {processing ? 'Guardando...' : 'Guardar'}
-                            </button>
-                        </div>
-                    </div>
-                </>
-            )}
         </>
     )
 }

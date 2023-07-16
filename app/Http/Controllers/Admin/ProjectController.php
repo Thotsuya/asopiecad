@@ -18,6 +18,7 @@ use App\Models\Form;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 
@@ -43,7 +44,7 @@ class ProjectController extends Controller
         //Check if there are
 
 
-        $projects = \Cache::remember('projects', 60 * 60, function () {
+        $projects = Cache::remember('projects', 60 * 60, function () {
             return Project::query()
                 ->when(!auth()->user()->hasRole(User::SUPER_ADMIN), function ($query) {
                     $query->whereHas('users', function ($query) {
@@ -96,7 +97,8 @@ class ProjectController extends Controller
     {
         return inertia('Projects/Show', [
             // Paginate the beneficiaries
-            'beneficiaries' => $project->beneficiaries()
+            'beneficiaries' => $project
+                ->beneficiaries()
                 ->when($request->has('search'), function ($query) use ($request) {
                     $query->where('name', 'like', "%{$request->search}%");
                 })
@@ -110,12 +112,11 @@ class ProjectController extends Controller
                 })
                 ->withQueryString(),
             'paginated_programs' => $project->programs()
-                ->with([
+                ->withCount([
                     'beneficiaries' => function ($query) use ($request) {
                         $query->whereNotNull('approved_at');
                     },
                 ])
-                ->withCount('beneficiaries')
                 ->orderBy('order')
                 ->paginate(20)
                 ->through(function ($program) {
@@ -125,14 +126,11 @@ class ProjectController extends Controller
                 $project->programs()
                 ->with([
                     'forms.tabs',
-                    'forms.fields',
-                    'beneficiaries' => function ($query) use ($request) {
-                        $query->whereNotNull('approved_at');
-                    },
+                    'forms.fields'
                 ])
                 ->orderBy('order')
                 ->get()),
-            'appointments' => AppointmentResource::collection($project->appointments->load('user', 'benefitiary')),
+            'appointments' => AppointmentResource::collection($project->appointments),
             'paginated_appointments' => $project->appointments()
                 ->with(['benefitiary', 'user'])
                 ->latest('id')
@@ -145,7 +143,7 @@ class ProjectController extends Controller
                 ->get(),
             'project' => new ProjectResource(
                 $project
-                    ->load('beneficiaries', 'users','programs','groupedResults')
+                    ->load('users','programs','groupedResults')
                     ->loadCount('beneficiaries', 'users', 'programs')),
             'goals' => $project->goals()
                 ->oldest()

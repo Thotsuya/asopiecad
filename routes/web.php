@@ -86,7 +86,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/meetings/{meeting}/edit', [App\Http\Controllers\Admin\MeetingController::class, 'edit'])->name('meetings.edit');
     Route::put('/meetings/{meeting}', [App\Http\Controllers\Admin\MeetingController::class, 'update'])->name('meetings.update');
 
-    Route::put('/participants/{participant}', [App\Http\Controllers\Admin\ParticipantController::class, 'update'])->name('participants.update');
     Route::post('/participants', [App\Http\Controllers\Admin\ParticipantController::class, 'store'])->name('participants.store');
 
     Route::get('excel-reports', [App\Http\Controllers\Admin\ExcelReportsController::class, 'index'])->name('excel-reports.index');

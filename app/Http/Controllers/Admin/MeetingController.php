@@ -39,20 +39,8 @@ class MeetingController extends Controller
      */
     public function store(MeetingRequest $request)
     {
-        $meeting = Meeting::create([
-            'project_id' => $request->project_id,
-            'title' => $request->title,
-        ]);
 
-        foreach ($request->participants as $participant) {
-            $meeting->participants()->create([
-                'name' => $participant['name'],
-                'document' => $participant['document'],
-                'date' => $participant['date'],
-                'count' => 1
-            ]);
-        }
-
+        $meeting = Meeting::create($request->validated());
         return redirect()->route('projects.show',$meeting->project);
     }
 
@@ -76,7 +64,11 @@ class MeetingController extends Controller
     public function edit(Meeting $meeting)
     {
         return Inertia::render('Meetings/Edit',[
-            'meeting' => MeetingResource::make($meeting->load('participants')),
+            'meeting' => MeetingResource::make($meeting->load(
+                ['form' => function($query){
+                    $query->with(['tabs','fields']);
+                }]
+            )),
         ]);
     }
 

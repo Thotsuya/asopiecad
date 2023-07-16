@@ -26,10 +26,8 @@ class MeetingRequest extends FormRequest
         return [
             'title' => ['required', 'string'],
             'project_id' => ['required', 'integer', 'exists:projects,id'],
-            'participants' => ['sometimes', 'array'],
-            'participants.*.name' => ['sometimes', 'string'],
-            'participants.*.document' => ['nullable', 'string'],
-            'participants.*.date' => ['sometimes', 'date'],
+            'form_id' => ['required', 'integer', 'exists:forms,id'],
+            'meeting_target' => ['required', 'integer'],
         ];
     }
 

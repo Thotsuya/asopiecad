@@ -11,11 +11,12 @@ class MeetingParticipant extends Model
 
     protected $fillable = [
         'meeting_id',
-        'name',
-        'document',
-        'count',
-        'date',
-        'last_meeting_date',
+        'form_id',
+        'form_data',
+    ];
+
+    protected $casts = [
+        'form_data' => 'json',
     ];
 
     public function meeting()

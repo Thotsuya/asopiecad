@@ -49,4 +49,9 @@ class Form extends Model
     {
         return $this->hasManyThrough(Field::class, Tab::class);
     }
+
+    public function meetings()
+    {
+        return $this->hasMany(Meeting::class);
+    }
 }
