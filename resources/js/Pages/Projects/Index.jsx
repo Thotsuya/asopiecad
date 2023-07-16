@@ -111,8 +111,8 @@ export default function Index({ auth, projects, roles }) {
             )}
 
             <div className="prj-list row">
-                {projects.data && projects.data.length > 0 ? (
-                    projects.data.map((project) => (
+                {projects && projects.length > 0 ? (
+                    projects.map((project) => (
                         <ProjectCard
                             key={project.id}
                             project={project}
@@ -133,18 +133,6 @@ export default function Index({ auth, projects, roles }) {
                 )}
             </div>
 
-            <div className="row">
-                <div className="col-lg-12">
-                    <Pagination
-                        current_page={projects.current_page}
-                        last_page={projects.last_page}
-                        total={projects.total}
-                        per_page={projects.per_page}
-                        next_page_url={projects.next_page_url}
-                        prev_page_url={projects.prev_page_url}
-                    />
-                </div>
-            </div>
         </AuthenticatedLayout>
     )
 }

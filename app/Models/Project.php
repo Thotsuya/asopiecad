@@ -25,6 +25,7 @@ class Project extends Model implements HasMedia
         return 'uuid';
     }
 
+
     protected static function booted()
     {
         parent::boot();
@@ -66,5 +67,10 @@ class Project extends Model implements HasMedia
     public function excelReports()
     {
         return $this->morphMany(ExcelReports::class, 'reportable');
+    }
+
+    public function groupedResults()
+    {
+        return $this->hasMany(GroupedResult::class);
     }
 }

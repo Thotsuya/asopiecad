@@ -14,6 +14,7 @@ import {Line} from 'react-chartjs-2'
 import {Inertia} from '@inertiajs/inertia'
 import {useRef, useState} from 'react'
 import ScreeningsRow from "@/Components/Screenings/ScreeningsIndicator";
+import ResultRow from "@/Pages/Reports/ResultRow";
 
 export default function Show({
                                  auth,
@@ -189,8 +190,10 @@ export default function Show({
                     {reportLoading && (
                         <div className="alert alert-success">
                             <p>
-                                <i className="fa fa-check-circle"/> El Reporte está siendo generado. Por favor espera un momento.
-                                Puedes seguir trabajando en el sistema mientras se genera el reporte. Una vez que el reporte esté listo, se mostrara en la sección de reportes
+                                <i className="fa fa-check-circle"/> El Reporte está siendo generado. Por favor espera un
+                                momento.
+                                Puedes seguir trabajando en el sistema mientras se genera el reporte. Una vez que el
+                                reporte esté listo, se mostrara en la sección de reportes
                                 en el menú lateral.
                             </p>
                         </div>
@@ -233,15 +236,6 @@ export default function Show({
                                 >
                                     Filtrar <i className="fa fa-filter"/>
                                 </button>
-                                <button
-                                    onClick={resetFilters}
-                                    disabled={filterloading}
-                                    style={{marginRight: '10px'}}
-                                    className="btn btn-danger pull-right"
-                                >
-                                    <i className="fa fa-times"/> Limpiar
-                                    filtros
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -272,6 +266,93 @@ export default function Show({
                         </div>
                     </div>
                 )}
+
+
+                <div className="col-xs-12 col-md-12 overflow-auto">
+                    <div className="row">
+                        <div className="col-md-12">
+                            <div className="table-responsive">
+                                <table className="table-xs table-bordered table-striped margin-bottom-10">
+                                    <thead>
+                                    <tr>
+                                        <th className="text-center text-sm padding-10 bg-primary">
+                                            Resultado
+                                        </th>
+                                        <th className="text-center text-sm padding-10 bg-primary">
+                                            Descripción de los
+                                            indicadores
+                                        </th>
+                                        <th
+                                            className="text-center text-sm padding-10 bg-primary"
+                                        >
+                                            Meta
+                                        </th>
+                                        <th
+                                            className="text-center text-sm padding-10 bg-primary"
+                                        >
+                                            Meta Anual
+                                        </th>
+
+                                        <th
+                                            className="text-center text-sm padding-10 bg-primary"
+                                        >
+                                            Progreso
+                                        </th>
+                                        <th className="text-center text-sm padding-10 bg-primary">
+                                            Porcentaje completado
+                                        </th>
+                                        {headers &&
+                                            headers.length > 0 &&
+                                            headers.map(
+                                                (header, index) => (
+                                                    <th
+                                                        key={`header-${index}`}
+                                                        className="text-center text-sm padding-10 bg-primary"
+                                                    >
+                                                        {header}
+                                                    </th>
+                                                )
+                                            )}
+                                        <th className="text-center text-white text-sm padding-10 bg-info">
+                                            Visitas realizadas a los
+                                            participantes en este
+                                            indicador
+                                        </th>
+                                        <th className="text-center  text-sm padding-10 bg-primary">
+                                            Número total de personas
+                                        </th>
+                                        <th className="text-center text-sm padding-10  bg-primary">
+                                            Pendientes
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        {project.grouped_results && project.grouped_results.length > 0 && project.grouped_results.map((result, index) => (
+                                            <>
+                                                <tr key={`result-${index}`}>
+                                                    <td
+                                                        style={{
+                                                            minWidth: '400px',
+                                                        }}
+                                                        rowSpan={result.goals.length + 1}
+                                                        className="text-center text-sm padding-10">
+                                                        {result.title}
+                                                    </td>
+                                                </tr>
+                                                {result.goals.map((goal, index) => {
+                                                    let result = JSON.parse(goal.pivot.value);
+
+                                                    return <ResultRow key={`goal-${index}`} headers={headers} result={result} />
+                                                })}
+
+                                            </>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 {!filterloading && (
                     <div className="col-xs-12 col-md-12 overflow-auto">
@@ -337,152 +418,10 @@ export default function Show({
                                         {results &&
                                             results.map((result, index) => {
 
-                                                if(index === 2 && project.id === 1) return <ScreeningsRow screenings={screenings}/>
+                                                if (index === 2 && project.id === 1) return <ScreeningsRow
+                                                    screenings={screenings}/>
 
-                                                return <tr key={index}>
-                                                    <td
-                                                        className="text-center text-sm padding-10"
-                                                        style={{
-                                                            minWidth: '400px',
-                                                        }}
-                                                    >
-                                                        {
-                                                            result.goal_description
-                                                        }
-                                                    </td>
-                                                    <td
-                                                        style={{
-                                                            backgroundColor:
-                                                                '#FFFF99',
-                                                        }}
-                                                        className="text-center text-sm padding-10"
-                                                    >
-                                                        <strong>
-                                                            {
-                                                                result.goal_target
-                                                            }
-                                                        </strong>
-                                                    </td>
-                                                    <td className="text-center bg-info text-sm padding-10">
-                                                            <span className="text-white">
-                                                                {
-                                                                    parseInt(result.goal_target_year)
-                                                                }
-                                                            </span>
-                                                    </td>
-                                                    <td
-                                                        title={
-                                                            result.is_grouped
-                                                                ? `Se añadira un valor cada ${result.group_every} registros`
-                                                                : ''
-                                                        }
-                                                        className="text-center bg-success text-sm padding-10"
-                                                    >
-                                                            <span className="text-white">
-                                                                {
-                                                                    result.is_grouped
-                                                                        ? result.program.total_grouped
-                                                                        :  result
-                                                                            .program
-                                                                            .beneficiaries_count
-                                                                }
-                                                                {result.is_grouped && (
-                                                                    <>
-                                                                        {' '}
-                                                                        <i className="fa fa-group"/>
-                                                                    </>
-                                                                )}
-                                                            </span>
-                                                    </td>
-                                                    <td className="text-sm padding-10">
-                                                        <div className="progress">
-                                                            <div
-                                                                className="progress-bar progress-bar-striped progress-bar-success active"
-                                                                role="progressbar"
-                                                                aria-valuenow="40"
-                                                                aria-valuemin="0"
-                                                                aria-valuemax="100"
-                                                                style={{
-                                                                    width:
-                                                                        result
-                                                                            .program
-                                                                            .completed_percentage +
-                                                                        '%',
-                                                                }}
-                                                            >
-                                                                    <span>
-                                                                        {parseInt(
-                                                                            result
-                                                                                .program
-                                                                                .completed_percentage
-                                                                        )}
-                                                                        %
-                                                                    </span>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    {headers &&
-                                                        headers.map(
-                                                            (
-                                                                header,
-                                                                index
-                                                            ) => (
-                                                                <td
-                                                                    key={
-                                                                        index
-                                                                    }
-                                                                    style={{
-                                                                        backgroundColor:
-                                                                            '#FFFF99',
-                                                                    }}
-                                                                    className="text-center text-sm padding-10"
-                                                                >
-                                                                    <strong>
-                                                                        {result.conditions.find(
-                                                                            (
-                                                                                condition
-                                                                            ) =>
-                                                                                condition.label ===
-                                                                                header
-                                                                        )
-                                                                            ? result.conditions.find(
-                                                                                (
-                                                                                    condition
-                                                                                ) =>
-                                                                                    condition.label ===
-                                                                                    header
-                                                                            )
-                                                                                .value
-                                                                            : 'N/A'}
-                                                                    </strong>
-                                                                </td>
-                                                            )
-                                                        )}
-                                                    <td className="text-center text-sm padding-10">
-                                                        {
-                                                            result.program
-                                                                .visits
-                                                        }
-                                                    </td>
-                                                    <td className="text-center text-sm padding-10">
-                                                        <strong>
-                                                            {
-                                                                result
-                                                                    .program
-                                                                    .total_ungrouped
-                                                            }
-                                                        </strong>
-                                                    </td>
-                                                    <td className="text-center text-sm padding-10">
-                                                        <strong>
-                                                            {
-                                                                result
-                                                                    .program
-                                                                    .pending
-                                                            }
-                                                        </strong>
-                                                    </td>
-                                                </tr>
+                                                return <ResultRow key={`goal-result-${index}`} headers={headers} result={result} />
                                             })}
 
                                         {meeting_goals && meeting_goals.length > 0 && meeting_goals.map((meeting_goal, index) => (
@@ -542,7 +481,7 @@ export default function Show({
                                                                 className="text-center text-sm padding-10"
                                                             >
                                                                 <strong>
-                                                                   N/A
+                                                                    N/A
                                                                 </strong>
                                                             </td>
                                                         )
@@ -552,12 +491,12 @@ export default function Show({
                                                 </td>
                                                 <td className="text-center text-sm padding-10">
                                                     <strong>
-                                                       N/A
+                                                        N/A
                                                     </strong>
                                                 </td>
                                                 <td className="text-center text-sm padding-10">
                                                     <strong>
-                                                       N/A
+                                                        N/A
                                                     </strong>
                                                 </td>
                                             </tr>

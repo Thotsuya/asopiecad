@@ -91,6 +91,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('excel-reports', [App\Http\Controllers\Admin\ExcelReportsController::class, 'index'])->name('excel-reports.index');
 
+    Route::post('/grouped-results', [App\Http\Controllers\Admin\GroupedResultsController::class, 'store'])->name('grouped-results.store');
 });
 
 require __DIR__.'/auth.php';

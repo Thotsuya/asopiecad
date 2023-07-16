@@ -34,6 +34,10 @@ class Goal extends Model
     }
 
 
+    public function groupedResults()
+    {
+        return $this->belongsToMany(GroupedResult::class)->withPivot('value');
+    }
 
 
 }

@@ -34,6 +34,7 @@ class UpdateProjectReportsFile extends Command
         $this->comment('Fetching projects...');
 
         $projects = Project::all()->each(function ($project) {
+            $this->info('=============================================================================================================================');
             $this->comment('Updating Report for Project ' . $project->project_name . '...');
             $goals = $project
                 ->goals()
@@ -74,8 +75,27 @@ class UpdateProjectReportsFile extends Command
 
             $this->info('Report for Project ' . $project->project_name . ' updated!');
 
+
+            $this->comment('Updating Grouped Results for project:  ' . $project->project_name . '...');
+
+            $project->groupedResults->each(function ($groupedResult) use ($project,$results) {
+                $newGroupedResults = $groupedResult->goals->mapWithKeys(function ($goal) use ($project,$results) {
+                    return [
+                        $goal->id => [
+                            'value' => json_encode(collect($results)->firstWhere('id', $goal->id))
+                        ]
+                    ];
+                });
+
+                $groupedResult->goals()->syncWithoutDetaching($newGroupedResults);
+            });
+
+            $this->info('Grouped Results for project:  ' . $project->project_name . ' updated!');
+
         });
 
+
+        $this->comment('=============================================================================================');
         $this->info('All Project Reports updated!');
     }
 }

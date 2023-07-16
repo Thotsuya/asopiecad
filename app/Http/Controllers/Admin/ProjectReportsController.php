@@ -29,7 +29,14 @@ class ProjectReportsController extends Controller
             'rgba(153, 102, 255, 1)',
         ];
 
-        $project->load(['beneficiaries','meetings.participants'])->loadCount(['beneficiaries','meetings']);
+        $project
+            ->load([
+                'beneficiaries',
+                'meetings.participants',
+                'groupedResults.goals',
+            ])
+
+            ->loadCount(['beneficiaries','meetings']);
 
 
         $beneficiaries = $project

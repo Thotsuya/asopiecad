@@ -79,6 +79,8 @@ class ProjectResource extends JsonResource
                 $this->getMedia('project_featured_image')->last() ?
                     $this->getMedia('project_featured_image')->last()->getFullUrl() :
                     asset('images/placeholder.png'),
+
+            'grouped_results'     => $this->whenLoaded('groupedResults', $this->groupedResults),
         ];
     }
 

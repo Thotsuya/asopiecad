@@ -40,19 +40,24 @@ class ProjectController extends Controller
     public function index()
     {
 
-        $projects = auth()->user()->hasRole(User::SUPER_ADMIN)
-            ? Project::query()
-            : auth()->user()->projects();
+        //Check if there are
 
-        return inertia('Projects/Index', [
-            'projects' => $projects
+
+        $projects = \Cache::remember('projects', 60 * 60, function () {
+            return Project::query()
+                ->when(!auth()->user()->hasRole(User::SUPER_ADMIN), function ($query) {
+                    $query->whereHas('users', function ($query) {
+                        $query->where('user_id', auth()->id());
+                    });
+                })
                 ->with('media')
                 ->withCount('beneficiaries', 'users','programs')
                 ->latest('id')
-                ->paginate(6)
-                ->through(function (Project $project) {
-                    return ProjectResource::make($project, $this->roles);
-                }),
+                ->get();
+        });
+
+        return inertia('Projects/Index', [
+            'projects' => ProjectResource::collection($projects),
         ]);
     }
 
@@ -116,7 +121,8 @@ class ProjectController extends Controller
                 ->through(function ($program) {
                     return PaginatedProgramsResource::make($program);
                 }),
-            'programs' => ProgramsResource::collection($project->programs()
+            'programs' => ProgramsResource::collection(
+                $project->programs()
                 ->with([
                     'forms.tabs',
                     'forms.fields',
@@ -139,7 +145,7 @@ class ProjectController extends Controller
                 ->get(),
             'project' => new ProjectResource(
                 $project
-                    ->load('beneficiaries', 'users','programs')
+                    ->load('beneficiaries', 'users','programs','groupedResults')
                     ->loadCount('beneficiaries', 'users', 'programs')),
             'goals' => $project->goals()
                 ->oldest()
@@ -148,6 +154,11 @@ class ProjectController extends Controller
                 ->through(function ($goal) {
                     return GoalResource::make($goal);
                 }),
+            'unpaginated_goals' => $project
+                ->goals()
+                ->select('id', 'goal_description', 'project_id', 'program_id')
+                ->oldest()
+                ->get(),
             'forms' => Form::query()
                 ->with('tabs.fields')
                 ->get(),

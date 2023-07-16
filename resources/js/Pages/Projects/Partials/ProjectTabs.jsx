@@ -94,6 +94,20 @@ export default function ProjectTabs({ project }) {
                     <i className="fa fa-users" aria-hidden="true" />
                 </a>
             </li>
+
+            <li role="presentation">
+                <a
+                    href="#results"
+                    role="tab"
+                    id="results-tab"
+                    data-toggle="tab"
+                    aria-controls="results"
+                >
+                    Resultados{' '}
+                    <i className="fa fa-bar-chart" aria-hidden="true" />
+
+                </a>
+            </li>
         </ul>
     )
 }
