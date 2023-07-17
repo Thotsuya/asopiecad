@@ -268,65 +268,66 @@ export default function Show({
                 )}
 
 
-                <div className="col-xs-12 col-md-12 overflow-auto">
-                    <div className="row">
-                        <div className="col-md-12">
-                            <div className="table-responsive">
-                                <table className="table-xs table-bordered table-striped margin-bottom-10">
-                                    <thead>
-                                    <tr>
-                                        <th className="text-center text-sm padding-10 bg-primary">
-                                            Resultado
-                                        </th>
-                                        <th className="text-center text-sm padding-10 bg-primary">
-                                            Descripción de los
-                                            indicadores
-                                        </th>
-                                        <th
-                                            className="text-center text-sm padding-10 bg-primary"
-                                        >
-                                            Meta
-                                        </th>
-                                        <th
-                                            className="text-center text-sm padding-10 bg-primary"
-                                        >
-                                            Meta Anual
-                                        </th>
+                {project.grouped_results.length > 0 && (
+                    <div className="col-xs-12 col-md-12 overflow-auto">
+                        <div className="row">
+                            <div className="col-md-12">
+                                <div className="table-responsive">
+                                    <table className="table-xs table-bordered table-striped margin-bottom-10">
+                                        <thead>
+                                        <tr>
+                                            <th className="text-center text-sm padding-10 bg-primary">
+                                                Resultado
+                                            </th>
+                                            <th className="text-center text-sm padding-10 bg-primary">
+                                                Descripción de los
+                                                indicadores
+                                            </th>
+                                            <th
+                                                className="text-center text-sm padding-10 bg-primary"
+                                            >
+                                                Meta
+                                            </th>
+                                            <th
+                                                className="text-center text-sm padding-10 bg-primary"
+                                            >
+                                                Meta Anual
+                                            </th>
 
-                                        <th
-                                            className="text-center text-sm padding-10 bg-primary"
-                                        >
-                                            Progreso
-                                        </th>
-                                        <th className="text-center text-sm padding-10 bg-primary">
-                                            Porcentaje completado
-                                        </th>
-                                        {headers &&
-                                            headers.length > 0 &&
-                                            headers.map(
-                                                (header, index) => (
-                                                    <th
-                                                        key={`header-${index}`}
-                                                        className="text-center text-sm padding-10 bg-primary"
-                                                    >
-                                                        {header}
-                                                    </th>
-                                                )
-                                            )}
-                                        <th className="text-center text-white text-sm padding-10 bg-info">
-                                            Visitas realizadas a los
-                                            participantes en este
-                                            indicador
-                                        </th>
-                                        <th className="text-center  text-sm padding-10 bg-primary">
-                                            Número total de personas
-                                        </th>
-                                        <th className="text-center text-sm padding-10  bg-primary">
-                                            Pendientes
-                                        </th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
+                                            <th
+                                                className="text-center text-sm padding-10 bg-primary"
+                                            >
+                                                Progreso
+                                            </th>
+                                            <th className="text-center text-sm padding-10 bg-primary">
+                                                Porcentaje completado
+                                            </th>
+                                            {headers &&
+                                                headers.length > 0 &&
+                                                headers.map(
+                                                    (header, index) => (
+                                                        <th
+                                                            key={`header-${index}`}
+                                                            className="text-center text-sm padding-10 bg-primary"
+                                                        >
+                                                            {header}
+                                                        </th>
+                                                    )
+                                                )}
+                                            <th className="text-center text-white text-sm padding-10 bg-info">
+                                                Visitas realizadas a los
+                                                participantes en este
+                                                indicador
+                                            </th>
+                                            <th className="text-center  text-sm padding-10 bg-primary">
+                                                Número total de personas
+                                            </th>
+                                            <th className="text-center text-sm padding-10  bg-primary">
+                                                Pendientes
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
                                         {project.grouped_results && project.grouped_results.length > 0 && project.grouped_results.map((result, index) => (
                                             <>
                                                 <tr key={`result-${index}`}>
@@ -352,12 +353,13 @@ export default function Show({
 
                                             </>
                                         ))}
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                )}
 
                 {!filterloading && (
                     <div className="col-xs-12 col-md-12 overflow-auto">

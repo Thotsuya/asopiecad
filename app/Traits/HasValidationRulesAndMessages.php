@@ -11,36 +11,15 @@ trait HasValidationRulesAndMessages {
 
                 $rule = [];
 
-                if ($field['required']) {
-                    $rule[] = 'required';
-                } else {
-                    $rule[] = 'nullable';
-                }
-
-                if ($field['type'] == 'email') {
-                    $rule[] = 'email';
-                }
-
-                if ($field['type'] == 'number') {
-                    $rule[] = 'numeric';
-                }
-
-                if ($field['type'] == 'date') {
-                    $rule[] = 'date';
-                }
-
-                if ($field['type'] == 'file') {
-                    $rule[] = 'file';
-                }
-
-                if ($field['type'] == 'image') {
-                    $rule[] = 'image';
-                }
-
-                if ($field['type'] == 'text') {
-                    $rule[] = 'string';
-                    $rule[] = 'max:255';
-                }
+                match ($field['type']) {
+                    'email' => $rule[] = ['email'],
+                    'number' => $rule[] = ['numeric'],
+                    'date' => $rule[] = ['date'],
+                    'file' => $rule[] = ['file'],
+                    'image' => $rule[] = ['image'],
+                    'text' => $rule[] = ['string', 'max:255'],
+                    default => $rule[] = ['string'],
+                };
 
 
                 $rules[$field['slug'] . '-' . $this->form_slug . '-' . $this->id] = $rule;

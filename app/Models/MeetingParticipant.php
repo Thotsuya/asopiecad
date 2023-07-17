@@ -16,7 +16,7 @@ class MeetingParticipant extends Model
     ];
 
     protected $casts = [
-        'form_data' => 'json',
+        'form_data' => 'array',
     ];
 
     public function meeting()

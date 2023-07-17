@@ -29,6 +29,7 @@ class MeetingParticipantsRequest extends FormRequest
         return array_merge($form->getFormValidationRules(), [
             'meeting_id' => ['required','exists:meetings,id'],
             'form_id' => ['required','exists:forms,id'],
+            'add_one_meeting' => ['required','boolean'],
         ]);
     }
 
@@ -46,6 +47,8 @@ class MeetingParticipantsRequest extends FormRequest
             'meeting_id.exists' => 'La reunión no existe',
             'form_id.required' => 'El formulario es requerido',
             'form_id.exists' => 'El formulario no existe',
+            'add_one_meeting.required' => 'El campo add_one_meeting es requerido',
+            'add_one_meeting.boolean' => 'El campo add_one_meeting debe ser booleano',
         ]);
     }
 }

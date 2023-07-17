@@ -87,6 +87,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/meetings/{meeting}', [App\Http\Controllers\Admin\MeetingController::class, 'update'])->name('meetings.update');
 
     Route::post('/participants', [App\Http\Controllers\Admin\ParticipantController::class, 'store'])->name('participants.store');
+    Route::put('/participants/{participant}', [App\Http\Controllers\Admin\ParticipantController::class, 'update'])->name('participants.update');
 
     Route::get('excel-reports', [App\Http\Controllers\Admin\ExcelReportsController::class, 'index'])->name('excel-reports.index');
 

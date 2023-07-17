@@ -1,18 +1,22 @@
 import useToasts from "@/Hooks/Toasts";
 import {useForm} from "@inertiajs/inertia-react";
+import {useState} from "react";
 
 export default function useMeetings(
     meeting,
     form,
 ) {
     const { success, error } = useToasts()
+    const [editMode, setEditMode] = useState(false)
 
-    const { data, setData, post, put, processing, errors, reset, isDirty } = useForm(() => {
+    const { data, setData, post, put, processing, errors, reset, isDirty, wasSuccessful } = useForm(() => {
         const formData = {}
 
         formData['title'] = meeting.title
         formData['meeting_id'] = meeting.id
         formData['form_id'] = form.id
+        formData['add_one_meeting'] = true
+        formData['participant_id'] = null
 
         form.tabs.forEach((tab) => {
             tab.fields.forEach((field) => {
@@ -65,8 +69,7 @@ export default function useMeetings(
         }
     }
 
-    const storeMeeting = (e) => {
-        e.preventDefault()
+    const storeMeeting = () => {
         post(route('participants.store'), {
             preserveScroll: true,
             onSuccess: () => {
@@ -78,6 +81,28 @@ export default function useMeetings(
         })
     }
 
+    const clearForm = () => {
+        reset()
+    }
+
+    const updateMeeting = () => {
+        put(route('participants.update', data.participant_id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                success('Reunion actualizada correctamente.')
+                setEditMode(false)
+                reset()
+            },
+            onError: () => {
+                error('No se pudo guardar la reunion.')
+            },
+        })
+    }
+
+
+
+
+
     return {
         data,
         setData,
@@ -88,7 +113,12 @@ export default function useMeetings(
         reset,
         calculateSimilarity,
         isDirty,
-        storeMeeting
+        storeMeeting,
+        clearForm,
+        updateMeeting,
+        wasSuccessful,
+        editMode,
+        setEditMode
     }
 
 }

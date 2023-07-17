@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 class MeetingParticipantsResource extends JsonResource
 {
@@ -17,7 +18,8 @@ class MeetingParticipantsResource extends JsonResource
     {
         return [
             'id'                => $this->id,
-            'form_data'         => $this->form_data,
+            //Flip the order, so the last item is the first
+            'form_data'         => $this->form_data
         ];
     }
 }

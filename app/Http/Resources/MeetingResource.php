@@ -23,6 +23,9 @@ class MeetingResource extends JsonResource
             'form' => $this->whenLoaded('form', function () {
                     return BeneficiaryFormsResource::make($this->form);
             }),
+            'headers' => $this->whenLoaded('form', function () {
+                return $this->form->fields->pluck('name', 'id')->toArray();
+            }),
             'participants' => $this->whenLoaded('participants', function () {
                     return MeetingParticipantsResource::collection($this->participants);
             }),
