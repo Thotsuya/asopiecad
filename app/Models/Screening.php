@@ -65,7 +65,8 @@ class Screening extends Model
         'screened_refered',
         'screened_visual_acuity',
         'screened_visual_acuity_left',
-        'screened_visual_acuity_right'
+        'screened_visual_acuity_right',
+        'date_of_birth',
     ];
 
     protected $casts = [
