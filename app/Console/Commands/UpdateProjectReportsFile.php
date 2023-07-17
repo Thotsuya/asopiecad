@@ -63,7 +63,6 @@ class UpdateProjectReportsFile extends Command
             $meetings = $project->meetings()->orderBy('order')->get();
 
             $results = $this->getProjectResults($goals,$meetings);
-            get_class($results);
             $globalResults = $this->getGlobalResults($project,$results);
 
             $project->report()->updateOrCreate(
@@ -85,12 +84,22 @@ class UpdateProjectReportsFile extends Command
                 $newGroupedResults = $groupedResult->goals->mapWithKeys(function ($goal) use ($project,$results) {
                     return [
                         $goal->id => [
-                            'value' => json_encode(collect($results)->firstWhere('id', $goal->id))
+                            'value' => json_encode(collect($results)->where('id', $goal->id)->where('type', 'goal')->first())
                         ]
                     ];
                 });
 
                 $groupedResult->goals()->syncWithoutDetaching($newGroupedResults);
+
+                $newGroupedMeetingResults = $groupedResult->meetings->mapWithKeys(function ($meeting) use ($project,$results) {
+                    return [
+                        $meeting->id => [
+                            'value' => json_encode(collect($results)->where('id', $meeting->id)->where('type', 'meeting')->first())
+                        ]
+                    ];
+                });
+
+                $groupedResult->meetings()->syncWithoutDetaching($newGroupedMeetingResults);
             });
 
             $this->info('Grouped Results for project:  ' . $project->project_name . ' updated!');

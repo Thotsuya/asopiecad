@@ -25,4 +25,9 @@ class GroupedResult extends Model
     {
         return $this->belongsToMany(Goal::class)->withPivot('value');
     }
+
+    public function meetings()
+    {
+        return $this->belongsToMany(Meeting::class)->withPivot('value');
+    }
 }

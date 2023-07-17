@@ -46,4 +46,9 @@ class Meeting extends Model
     {
         return $this->belongsTo(Form::class);
     }
+
+    public function groupedResults()
+    {
+        return $this->belongsToMany(GroupedResult::class)->withPivot('value');
+    }
 }

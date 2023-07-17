@@ -32,9 +32,6 @@ class ProjectController extends Controller
     public function index()
     {
 
-        //Check if there are
-
-
         $projects = Cache::remember('projects', 60 * 60, function () {
             return Project::query()
                 ->when(!auth()->user()->hasRole(User::SUPER_ADMIN), function ($query) {
@@ -48,8 +45,9 @@ class ProjectController extends Controller
                 ->get();
         });
 
+
         return inertia('Projects/Index', [
-            'projects' => ProjectResource::collection($projects),
+            'projects' => ProjectResource::collection(Cache::get('projects')),
         ]);
     }
 
@@ -134,7 +132,7 @@ class ProjectController extends Controller
                 ->get(),
             'project' => new ProjectResource(
                 $project
-                    ->load('users','programs','groupedResults')
+                    ->load('users','programs','groupedResults','meetings')
                     ->loadCount('beneficiaries', 'users', 'programs')),
             'goals' => $project->goals()
                 ->oldest()

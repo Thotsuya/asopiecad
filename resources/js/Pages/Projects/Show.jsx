@@ -119,6 +119,7 @@ export default function Show({
                                 <ResultsTab
                                     project={project}
                                     goals={unpaginated_goals}
+                                    meetings={project.meetings}
                                     />
                             </div>
                         </div>

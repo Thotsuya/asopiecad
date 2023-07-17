@@ -1,6 +1,6 @@
 import ResultsCreate from "@/Pages/Projects/Partials/ResultsCreate";
 
-export default function ResultsTab({project,goals}){
+export default function ResultsTab({project,goals,meetings}){
     return (
         <div
             className="tab-pane fade"
@@ -9,7 +9,11 @@ export default function ResultsTab({project,goals}){
             aria-labelledby="results-tab"
         >
             <div className="row">
-                <ResultsCreate project={project} goals={goals}/>
+                <ResultsCreate
+                    project={project}
+                    goals={goals}
+                    meetings={meetings}
+                />
 
                 <div className="col-md-7">
                     <div className="box-content">

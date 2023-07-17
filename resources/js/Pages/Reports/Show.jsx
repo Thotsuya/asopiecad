@@ -334,7 +334,7 @@ export default function Show({
                                                         style={{
                                                             minWidth: '400px',
                                                         }}
-                                                        rowSpan={result.goals.length + 1}
+                                                        rowSpan={result.goals.length + result.meetings.length + 1}
                                                         className="text-center text-sm padding-10">
                                                         {result.title}
                                                     </td>
@@ -343,6 +343,11 @@ export default function Show({
                                                     let result = JSON.parse(goal.pivot.value);
 
                                                     return <ResultRow key={`goal-${index}`} headers={headers} result={result} />
+                                                })}
+                                                {result.meetings.map((meeting, index) => {
+                                                    let result = JSON.parse(meeting.pivot.value);
+
+                                                    return <ResultRow key={`meeting-${index}`} headers={headers} result={result} />
                                                 })}
 
                                             </>

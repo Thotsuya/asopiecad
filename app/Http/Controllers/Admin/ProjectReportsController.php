@@ -34,6 +34,7 @@ class ProjectReportsController extends Controller
                 'beneficiaries',
                 'meetings.participants',
                 'groupedResults.goals',
+                'groupedResults.meetings',
             ])
 
             ->loadCount(['beneficiaries','meetings']);

@@ -65,9 +65,12 @@ class MeetingController extends Controller
     {
         return Inertia::render('Meetings/Edit',[
             'meeting' => MeetingResource::make($meeting->load(
-                ['form' => function($query){
-                    $query->with(['tabs','fields']);
-                }]
+                [
+                    'form' => function($query){
+                        $query->with(['tabs','fields']);
+                    },
+                    'participants'
+                ]
             )),
         ]);
     }

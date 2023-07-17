@@ -81,6 +81,7 @@ class ProjectResource extends JsonResource
                     asset('images/placeholder.png'),
 
             'grouped_results'     => $this->whenLoaded('groupedResults', $this->groupedResults),
+            'meetings'            => $this->whenLoaded('meetings', $this->meetings),
         ];
     }
 

@@ -81,6 +81,15 @@ export default function Edit({auth, meeting}) {
                     </div>
                 </div>
 
+                <div className="row">
+                    <div className="col-md-12">
+                        <div className="box-content">
+                            <h4 className="box-title">Registros</h4>
+
+                        </div>
+                    </div>
+                </div>
+
             </AuthenticatedLayout>
         </>
     )

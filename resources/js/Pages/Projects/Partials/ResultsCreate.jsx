@@ -2,12 +2,13 @@ import {useForm} from "@inertiajs/inertia-react";
 import Select from "react-select";
 import useToasts from "@/Hooks/Toasts";
 
-export default function ResultsCreate({project, goals}){
+export default function ResultsCreate({project, goals, meetings}){
 
     const {data, setData, post, processing, errors, reset} = useForm({
         title: '',
         project_id: project.id,
         goals: [],
+        meetings: [],
     });
 
     const {success, error} = useToasts()
@@ -30,6 +31,7 @@ export default function ResultsCreate({project, goals}){
 
     return (
         <div className="col-md-5">
+            {console.log(meetings)}
             <div className="box-content">
                 <h4 className="box-title">Resultados Agrupados</h4>
 
@@ -56,6 +58,22 @@ export default function ResultsCreate({project, goals}){
                         classNamePrefix="select"
                         onChange={(e) => setData('goals', e.map(goal => goal.value))}
                         closeMenuOnSelect={false}
+                        placeholder={'Seleccione las metas que desea agrupar'}
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="meetings">Reuniones</label>
+                    <Select
+                        id="meetings"
+                        name="meetings"
+                        isMulti
+                        options={meetings.map(meeting => ({value: meeting.id, label: meeting.title}))}
+                        className={`basic-multi-select ${errors.meetings ? 'is-invalid' : ''}`}
+                        classNamePrefix="select"
+                        onChange={(e) => setData('meetings', e.map(meeting => meeting.value))}
+                        closeMenuOnSelect={false}
+                        placeholder={'Seleccione las reuniones que desea agrupar'}
                     />
                 </div>
 
