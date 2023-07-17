@@ -28,24 +28,28 @@ class ScreeningController extends Controller
         return \inertia('Screenings/Index', [
             'screenings' => Screening::query()
                 ->search($request)
+                ->filterByType($request->type)
                 ->latest()
                 ->with('user')
                 ->paginate(20)
                 ->through(function ($screening) {
                     return ScreeningResource::make($screening);
                 })
-                ->withQueryString()
+                ->withQueryString(),
+            'type' => $request->type ?? 'P-4211'
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Inertia\Response|\Inertia\ResponseFactory
      */
-    public function create()
+    public function create(Request $request)
     {
-        return \inertia('Screenings/Create');
+        return \inertia('Screenings/Create',[
+            'type' => $request->type ?? 'P-4211'
+        ]);
     }
 
     /**
@@ -78,10 +82,11 @@ class ScreeningController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Screening $screening)
+    public function edit(Screening $screening, Request $request)
     {
         return \inertia('Screenings/Edit', [
-            'screening' => $screening
+            'screening' => $screening,
+            'type' => $request->type ?? 'P-4211'
         ]);
     }
 

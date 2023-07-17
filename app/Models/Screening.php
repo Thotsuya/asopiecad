@@ -49,6 +49,27 @@ class Screening extends Model
         'social_individual_level_4',
         'social_individual_level_5',
         'social_individual_level_6',
+        'type',
+        'document',
+        'address',
+        'disability_type',
+        'disability_yes_no',
+        'first_name',
+        'second_name',
+        'first_surname',
+        'second_surname',
+        'screened_deparment',
+        'screened_municipality',
+        'screened_observations',
+        'screened_phone_number',
+        'screened_refered',
+        'screened_visual_acuity',
+        'screened_visual_acuity_left',
+        'screened_visual_acuity_right'
+    ];
+
+    protected $casts = [
+        'disability_type' => 'array',
     ];
 
     public function getRouteKeyName()
@@ -59,6 +80,8 @@ class Screening extends Model
     public const GENDERS = [
         'masculino' => 'Masculino',
         'femenino' => 'Femenino',
+        'm-1' => 'Masculino',
+        'f-2' => 'Femenino',
     ];
 
     protected static function booted()
@@ -77,6 +100,12 @@ class Screening extends Model
     public function scopeSearch($query,$request){
         return $query->when($request->search, function($query) use($request){
             $query->where('name', 'like', '%' . $request->search . '%');
+        });
+    }
+
+    public function scopeFilterByType($query,$type = 'P-4211'){
+        return $query->when($type, function($query) use($type){
+            $query->where('type', $type);
         });
     }
 }

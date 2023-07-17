@@ -162,9 +162,9 @@ trait ReportResults
             : $goal->program->beneficiaries->count();
     }
 
-    public function getScreeningsReport()
+    public function getScreeningsReport($type = 'P-4211')
     {
-        $screenings = Screening::all();
+        $screenings = Screening::where('type', $type)->get();
 
         return [
             'title'                                 => '1.3  Detección precoz de 7.200 niños de 0 a 6 años.',

@@ -1,8 +1,8 @@
-export default function ResultRow({result, headers}){
+export default function ResultRow({result, headers, showGoalDescription = true}){
 
     if(result.type === 'goal'){
         return <tr>
-            <td
+            {showGoalDescription &&  <td
                 className="text-center text-sm padding-10"
                 style={{
                     minWidth: '400px',
@@ -11,7 +11,7 @@ export default function ResultRow({result, headers}){
                 {
                     result.goal_description
                 }
-            </td>
+            </td>}
             <td
                 style={{
                     backgroundColor:
@@ -148,7 +148,7 @@ export default function ResultRow({result, headers}){
     }
 
     return <tr>
-        <td
+        {showGoalDescription &&  <td
             className="text-center text-sm padding-10"
             style={{
                 minWidth: '400px',
@@ -157,7 +157,7 @@ export default function ResultRow({result, headers}){
             {
                 result.goal_description
             }
-        </td>
+        </td>}
         <td
             style={{
                 backgroundColor:

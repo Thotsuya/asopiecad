@@ -69,6 +69,7 @@ export default function Registrant({ auth, data, setData }) {
                         <div className="col-xs-12 col-md-3">
                             <div className="form-group">
                                 <label htmlFor="Municipio">Municipio</label>
+                                {console.log(data.municipality)}
                                 <Select
                                     id="Municipio"
                                     options={
@@ -87,9 +88,12 @@ export default function Registrant({ auth, data, setData }) {
                                                     option.value ===
                                                     data.department
                                             )
-                                        ],
-                                        (option) =>
-                                            option.value === data.municipality
+                                            ].find((option) => {
+                                            return (
+                                                option.value ===
+                                                data.municipality
+                                            )
+                                        })
                                     )}
                                     onChange={(option) => {
                                         setData('municipality', option.value)

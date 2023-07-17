@@ -7,6 +7,18 @@ export default function Screened({
     processing,
     errors,
 }) {
+
+    const genderOptions = [
+        {
+            label: 'Masculino',
+            value: 'masculino',
+        },
+        {
+            label: 'Femenino',
+            value: 'femenino',
+        },
+    ]
+
     return (
         <>
             <div className="row">
@@ -54,21 +66,17 @@ export default function Screened({
                             <div className="col-lg-4">
                                 <div className="form-group">
                                     <label htmlFor="gender">Sexo</label>
+                                    {console.log(data.gender)}
                                     <Select
-                                        options={[
-                                            {
-                                                label: 'Masculino',
-                                                value: 'masculino',
-                                            },
-                                            {
-                                                label: 'Femenino',
-                                                value: 'femenino',
-                                            },
-                                        ]}
-                                        defaultValue={{
-                                            label: 'Masculino',
-                                            value: 'masculino',
-                                        }}
+                                        options={genderOptions}
+                                        value={genderOptions.find(
+                                            (option) =>
+                                                option.value === data.gender
+                                        )}
+                                        defaultValue={genderOptions.find(
+                                            (option) =>
+                                                option.value === data.gender
+                                        )   }
                                         placeholder="Sexo"
                                         onChange={(option) => {
                                             setData('gender', option.value)

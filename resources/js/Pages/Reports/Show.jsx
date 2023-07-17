@@ -279,10 +279,6 @@ export default function Show({
                                             <th className="text-center text-sm padding-10 bg-primary">
                                                 Resultado
                                             </th>
-                                            <th className="text-center text-sm padding-10 bg-primary">
-                                                Descripción de los
-                                                indicadores
-                                            </th>
                                             <th
                                                 className="text-center text-sm padding-10 bg-primary"
                                             >
@@ -343,12 +339,12 @@ export default function Show({
                                                 {result.goals.map((goal, index) => {
                                                     let result = JSON.parse(goal.pivot.value);
 
-                                                    return <ResultRow key={`goal-${index}`} headers={headers} result={result} />
+                                                    return <ResultRow key={`goal-${index}`} headers={headers} result={result} showGoalDescription={false} />
                                                 })}
                                                 {result.meetings.map((meeting, index) => {
                                                     let result = JSON.parse(meeting.pivot.value);
 
-                                                    return <ResultRow key={`meeting-${index}`} headers={headers} result={result} />
+                                                    return <ResultRow key={`meeting-${index}`} headers={headers} result={result} showGoalDescription={false}/>
                                                 })}
 
                                             </>
@@ -430,84 +426,6 @@ export default function Show({
 
                                                 return <ResultRow key={`goal-result-${index}`} headers={headers} result={result} />
                                             })}
-
-                                        {meeting_goals && meeting_goals.length > 0 && meeting_goals.map((meeting_goal, index) => (
-                                            <tr key={`meeting_goal_${index}`}>
-                                                <td
-                                                    className="text-center text-sm padding-10"
-                                                    style={{
-                                                        minWidth: '400px',
-                                                    }}
-                                                >
-                                                    {
-                                                        meeting_goal.title
-                                                    }
-                                                </td>
-                                                <td
-                                                    style={{
-                                                        backgroundColor:
-                                                            '#FFFF99',
-                                                    }}
-                                                    className="text-center text-sm padding-10"
-                                                >
-                                                    <strong>
-                                                        -
-                                                    </strong>
-                                                </td>
-                                                <td className="text-center bg-info text-sm padding-10">
-                                                            <span className="text-white">
-                                                               -
-                                                            </span>
-                                                </td>
-                                                <td
-                                                    className="text-center bg-success text-sm padding-10"
-                                                >
-                                                            <span className="text-white">
-                                                                {
-                                                                    meeting_goal.total_meetings
-                                                                }
-                                                            </span>
-                                                </td>
-                                                <td className="text-sm padding-10">
-                                                    -
-                                                </td>
-                                                {headers &&
-                                                    headers.map(
-                                                        (
-                                                            header,
-                                                            index
-                                                        ) => (
-                                                            <td
-                                                                key={
-                                                                    `meeting_goal_${index}`
-                                                                }
-                                                                style={{
-                                                                    backgroundColor:
-                                                                        '#FFFF99',
-                                                                }}
-                                                                className="text-center text-sm padding-10"
-                                                            >
-                                                                <strong>
-                                                                    N/A
-                                                                </strong>
-                                                            </td>
-                                                        )
-                                                    )}
-                                                <td className="text-center text-sm padding-10">
-                                                    N/A
-                                                </td>
-                                                <td className="text-center text-sm padding-10">
-                                                    <strong>
-                                                        N/A
-                                                    </strong>
-                                                </td>
-                                                <td className="text-center text-sm padding-10">
-                                                    <strong>
-                                                        N/A
-                                                    </strong>
-                                                </td>
-                                            </tr>
-                                        ))}
                                         </tbody>
                                     </table>
                                 </div>

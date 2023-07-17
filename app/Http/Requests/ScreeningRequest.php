@@ -24,7 +24,7 @@ class ScreeningRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'                      => ['required', 'string', 'max:255'],
+            'name'                      => ['nullable', 'string', 'max:255'],
             'registrant_name'           => ['required', 'string', 'max:255'],
             'gender'                    => ['required', 'string', 'max:255'],
             'age'                       => ['required', 'string', 'max:255'],
@@ -61,6 +61,33 @@ class ScreeningRequest extends FormRequest
             'social_individual_level_4' => ['required', 'integer', 'min:0', 'max:10'],
             'social_individual_level_5' => ['required', 'integer', 'min:0', 'max:10'],
             'social_individual_level_6' => ['required', 'integer', 'min:0', 'max:10'],
+
+            'type' => ['required', 'string', 'max:255'],
+            'first_name' => ['nullable', 'string', 'max:255'],
+            'second_name' => ['nullable', 'string', 'max:255'],
+            'first_surname' => ['nullable', 'string', 'max:255'],
+            'second_surname' => ['nullable', 'string', 'max:255'],
+            'disability_yes_no' => ['nullable', 'string', 'max:255'],
+            'disability_type' => ['nullable', 'array'],
+            'date_of_birth' => ['nullable', 'date', 'max:255'],
+            'document' => ['nullable', 'string', 'max:255'],
+            'address' => ['nullable', 'string'],
+            'screened_deparment' => ['nullable', 'string', 'max:255'],
+            'screened_municipality' => ['nullable', 'string', 'max:255'],
+            'screened_phone_number' => ['nullable', 'string', 'max:255'],
+            'screened_visual_acuity' => ['nullable', 'string', 'max:255'],
+            'screened_refered' => ['nullable', 'string', 'max:255'],
+            'screened_observations' => ['nullable', 'string'],
+            'screened_visual_acuity_right' => ['nullable', 'string', 'max:255'],
+            'screened_visual_acuity_left' => ['nullable', 'string', 'max:255'],
+
         ];
+    }
+
+    public function validated($key = null, $default = null)
+    {
+        return array_merge(parent::validated(), [
+            'name' => $this->first_name . ' ' . $this->second_name . ' ' . $this->first_surname . ' ' . $this->second_surname,
+        ]);
     }
 }

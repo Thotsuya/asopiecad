@@ -18,6 +18,7 @@ trait HasValidationRulesAndMessages {
                     'file' => $rule[] = ['file'],
                     'image' => $rule[] = ['image'],
                     'text' => $rule[] = ['string', 'max:255'],
+                    'select multiple' => $rule[] = ['array'],
                     default => $rule[] = ['string'],
                 };
 

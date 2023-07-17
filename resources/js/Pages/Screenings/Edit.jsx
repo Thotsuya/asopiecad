@@ -4,8 +4,9 @@ import Registrant from '@/Pages/Screenings/Partials/Registrant'
 import Screened from '@/Pages/Screenings/Partials/Screened'
 import useToasts from '@/Hooks/Toasts'
 import { useEffect } from 'react'
+import ScreenedP4353 from "@/Pages/Screenings/Partials/ScreenedP4353";
 
-export default function Edit({ screening, auth }) {
+export default function Edit({ screening, auth, type }) {
     const { data, setData, put, processing, errors, reset } = useForm({
         department: screening.department,
         municipality: screening.municipality,
@@ -49,6 +50,28 @@ export default function Edit({ screening, auth }) {
         social_individual_level_4: screening.social_individual_level_4,
         social_individual_level_5: screening.social_individual_level_5,
         social_individual_level_6: screening.social_individual_level_6,
+
+        //P-4353
+        first_name: screening.first_name,
+        second_name: screening.second_name,
+        first_surname: screening.first_surname,
+        second_surname: screening.second_surname,
+        //gender
+        //age
+        disability_yes_no: screening.disability_yes_no,
+        disability_type: screening.disability_type,
+        date_of_birth: screening.date_of_birth,
+        document: screening.document,
+        address: screening.address,
+        screened_deparment: screening.screened_deparment,
+        screened_municipality: screening.screened_municipality,
+        screened_phone_number: screening.screened_phone_number,
+        screened_visual_acuity: screening.screened_visual_acuity,
+        screened_refered: screening.screened_refered,
+        screened_observations: screening.screened_observations,
+        screened_visual_acuity_right: screening.screened_visual_acuity_right,
+        screened_visual_acuity_left: screening.screened_visual_acuity_left,
+        type: screening.type,
     })
 
     const { success, error } = useToasts()
@@ -59,7 +82,8 @@ export default function Edit({ screening, auth }) {
             onSuccess: () => {
                 success('Tamizaje actualizado correctamente')
             },
-            onError: () => {
+            onError: (err) => {
+                console.log(err)
                 error('Error al actualizar el tamizaje')
             },
         })
@@ -69,16 +93,27 @@ export default function Edit({ screening, auth }) {
         <AuthenticatedLayout auth={auth}>
             <Head title="Editar Tamizaje" />
 
-            <h1 className="page-title">Editar Tamizaje</h1>
+            <h1 className="page-title">Editar Tamizaje - {type}</h1>
 
             <Registrant data={data} setData={setData} auth={auth} />
 
-            <Screened
-                data={data}
-                setData={setData}
-                handleSubmit={handleFormSubmit}
-                processing={processing}
-            />
+            {type === 'P-4211' && (
+                <Screened
+                    data={data}
+                    setData={setData}
+                    handleSubmit={handleFormSubmit}
+                    processing={processing}
+                />
+            )}
+
+            {type === 'P-4353' && (
+                <ScreenedP4353
+                    data={data}
+                    setData={setData}
+                    handleSubmit={handleFormSubmit}
+                    processing={processing}
+                />
+            )}
         </AuthenticatedLayout>
     )
 }
