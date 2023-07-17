@@ -48,7 +48,9 @@ class ProjectExport implements FromView, WithEvents
             ])
             ->get();
 
-        $results = $this->getProjectResults($goals);
+        $meetings = $this->project->meetings()->sortBy('order')->get();
+
+        $results = $this->getProjectResults($goals,$meetings);
         $global = $this->getGlobalResults($this->project, $results);
 
         $headers = $this->getHeaders($results);

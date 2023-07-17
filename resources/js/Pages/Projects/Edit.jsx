@@ -7,8 +7,9 @@ import FormsAndMembers from '@/Pages/Projects/Partials/FormsAndMembers'
 import Programs from '@/Pages/Projects/Partials/Programs'
 import { useEffect, useState } from 'react'
 
-export default function Edit({ auth, project, forms, users, roles }) {
+export default function Edit({ auth, project, forms, users }) {
     const [programs, setPrograms] = useState(project.programs ?? [])
+    const [draggableEntities, setDraggableEntities] = useState(project.draggables ?? [])
 
     const { data, setData, put, processing, errors, reset, transform } =
         useForm({
@@ -24,12 +25,7 @@ export default function Edit({ auth, project, forms, users, roles }) {
                 ? project.users.map((user) => {
                       return {
                           id: user.id,
-                          name: user.name,
-                          role_id: user.pivot.role_id
-                              ? user.pivot.role_id
-                              : roles[0]
-                              ? roles[0].id
-                              : null,
+                          name: user.name
                       }
                   })
                 : [],
@@ -102,29 +98,29 @@ export default function Edit({ auth, project, forms, users, roles }) {
     const handleDrop = (droppedItem) => {
         if (!droppedItem.destination) return
 
-        let updatedPrograms = [...project.programs]
-        const [removed] = updatedPrograms.splice(droppedItem.source.index, 1)
+        let updatedDraggableEntities = [...project.draggables]
+        const [removed] = updatedDraggableEntities.splice(droppedItem.source.index, 1)
 
-        updatedPrograms.splice(droppedItem.destination.index, 0, removed)
+        updatedDraggableEntities.splice(droppedItem.destination.index, 0, removed)
 
-        setPrograms(
-            updatedPrograms.map((program, index) => {
-                program.order = index + 1
-                return program
-            })
-        )
+        setDraggableEntities(
+            updatedDraggableEntities.map((draggable, index) => {
+                draggable.order = index + 1
+                return draggable
+            }))
+
 
         Inertia.patch(
             route('projects.programs.order', project.uuid),
             {
-                programs: updatedPrograms,
+                entities: updatedDraggableEntities,
             },
             {
                 onSuccess: () => {
-                    success('Programas ordenados correctamente')
+                    success('Programas y reuniones ordenados correctamente')
                 },
                 onError: (err) => {
-                    error('No se pudo ordenar los programas')
+                    error('No se pudo ordenar los programas y reuniones')
                 },
             }
         )
@@ -163,6 +159,7 @@ export default function Edit({ auth, project, forms, users, roles }) {
     }
 
     useEffect(() => {
+        setDraggableEntities(project.draggables)
         setPrograms(project.programs)
     }, [project])
 
@@ -192,7 +189,6 @@ export default function Edit({ auth, project, forms, users, roles }) {
                         }
                         forms={forms}
                         project={data}
-                        roles={roles}
                         onMemberSelect={onMemberSelect}
                         onFormSelect={onFormSelect}
                         onMemberRemove={onMemberRemove}
@@ -207,6 +203,7 @@ export default function Edit({ auth, project, forms, users, roles }) {
                 <div className="col-lg-8 col-xs-12">
                     <Programs
                         programs={programs}
+                        draggableEntities={draggableEntities}
                         forms={forms}
                         onProgramAdd={onProgramAdd}
                         toggleProgramEdit={toggleProgramEdit}

@@ -23,7 +23,6 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, DynamicComparisons, ReportResults;
 
-    public $goals;
     public $project;
     public $request;
     /**
@@ -34,7 +33,19 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
     public function __construct($project, $request)
     {
         $this->request = $request;
-        $this->goals = $project->goals()
+        $this->project = $project;
+    }
+
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        //Generate Excel Report and save it to storage
+
+        $goals = $this->project->goals()
             ->with([
                 'program' => [
                     'forms',
@@ -64,17 +75,7 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
             })
             ->get();
 
-        $this->project = $project;
-    }
-
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        //Generate Excel Report and save it to storage
+        $meetings = $this->project->meetings()->orderBy('order', 'asc')->get();
 
         if($this->request['start_date'] && $this->request['end_date']) {
             $fileName = Str::limit($this->project->project_name,40) . '-' . $this->request['start_date'] . '-' . $this->request['end_date'];
@@ -85,7 +86,7 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
         $fileName = $fileName.time().'.xlsx';
 
 
-        $results = $this->getProjectResults($this->goals);
+        $results = $this->getProjectResults($goals,$meetings);
         $global = $this->getGlobalResults($this->project, $results);
         $headers = $this->getHeaders($results);
 
@@ -106,16 +107,35 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
         ]);
 
         foreach ($results as $result){
-            $writer->addRow([
-                $result['goal_description'],
-                $result['goal_target'],
-                $result['program']['beneficiaries_count'],
-                $result['program']['completed_percentage'],
-                $result['goal_target'] / $this->project->project_duration,
-                ...Arr::flatten(collect($headers)->map(function ($header) use ($result) {
-                     return Arr::get(collect($result['conditions'])->where('label', $header)->first(),'value','N/A');
-                })->toArray()),
-            ]);
+
+            match ($result['type']){
+                'goal' => $writer->addRow([
+                    $result['goal_description'],
+                    $result['goal_target'],
+                    $result['program']['beneficiaries_count'],
+                    $result['program']['completed_percentage'],
+                    $result['goal_target'] / $this->project->project_duration,
+                    ...Arr::flatten(collect($headers)->map(function ($header) use ($result) {
+                        return Arr::get(collect($result['conditions'])->where('label', $header)->first(),'value','N/A');
+                    })->toArray()),
+                    $result['program']['visits'],
+                    $result['program']['beneficiaries_count'],
+                    $result['program']['pending'],
+                ]),
+                'meeting' => $writer->addRow([
+                    $result['goal_description'],
+                    $result['goal_target'],
+                    $result['current_progress'],
+                    $result['completed_percentage'],
+                    'N/A',
+                    ...Arr::flatten(collect($headers)->map(function ($header) use ($result) {
+                        return 'N/A';
+                    })->toArray()),
+                    'N/A',
+                    'N/A',
+                    $result['pending'],
+                ]),
+            };
         }
 
         $this->project->excelReports()->create([

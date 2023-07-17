@@ -24,15 +24,6 @@ use Spatie\Permission\Models\Role;
 
 class ProjectController extends Controller
 {
-
-    public function __construct()
-    {
-        $this->roles = Role::query()
-            ->where('name', '!=', 'Super Admin')
-            ->with('permissions')
-            ->get();
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -181,10 +172,9 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         return inertia('Projects/Edit', [
-            'project' => new ProjectEditResource($project->load( 'users', 'beneficiaries', 'programs.forms')),
+            'project' => new ProjectEditResource($project->load( 'users', 'beneficiaries', 'programs.forms','meetings')),
             'forms' => Form::select('id', 'form_name')->get(),
-            'users' => User::all(),
-            'roles' => Role::where('name', '!=', User::SUPER_ADMIN)->get(),
+            'users' => User::with('roles.permissions','permissions')->get()
         ]);
     }
 

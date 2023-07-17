@@ -20,8 +20,12 @@ class ProgramController extends Controller
 
     public function order(Project $project, Request $request)
     {
-        collect($request->programs)->each(function($program, $index) use ($project) {
-            $project->programs()->where('uuid', $program['uuid'])->update(['order' => $index + 1]);
+
+        collect($request->entities)->each(function($entity, $index) use ($project) {
+            match ($entity['type']) {
+                'program' => $project->programs()->where('uuid', $entity['uuid'])->update(['order' => $index + 1]),
+                'meeting' => $project->meetings()->where('uuid', $entity['uuid'])->update(['order' => $index + 1]),
+            };
         });
 
         return redirect()->route('projects.edit', $project);

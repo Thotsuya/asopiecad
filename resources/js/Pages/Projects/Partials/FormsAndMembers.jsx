@@ -12,7 +12,6 @@ export default function FormsAndMembers({
     onProjectStartDateChange,
     onGlobalGoalChange,
     onProjectFeaturedImageChange,
-    roles,
 }) {
     const [member, setMember] = useState({
         id: users[0] ? users[0].id : null,
@@ -39,8 +38,7 @@ export default function FormsAndMembers({
 
         setMember({
             id: newUsers[0] ? newUsers[0].id : null,
-            name: newUsers[0] ? newUsers[0].name : null,
-            role_id: roles[0] ? roles[0].id : null,
+            name: newUsers[0] ? newUsers[0].name : null
         })
     }
 

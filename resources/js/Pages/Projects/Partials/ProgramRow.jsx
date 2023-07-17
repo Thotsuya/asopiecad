@@ -4,7 +4,7 @@ import { Inertia } from '@inertiajs/inertia'
 import usePrevious from '@/Utils/usePrevious'
 import useToasts from '@/Hooks/Toasts'
 
-export default function ProgramRow({ program, options }) {
+export default function ProgramRow({ program, options, showActions = false }) {
     const [editProgram, setEditProgram] = useState({
         id: program.id,
         program_name: program.program_name,
@@ -61,63 +61,77 @@ export default function ProgramRow({ program, options }) {
         }
     }, [edit])
 
-    return (
-        <div className="row">
-            <div className={`col-xs-12 ${edit ? 'col-lg-6' : 'col-lg-10'}`}>
-                {edit ? (
-                    <input
-                        type="text"
-                        className="form-control"
-                        value={editProgram.program_name}
-                        onChange={(e) => {
-                            setEditProgram((editProgram) => ({
-                                ...editProgram,
-                                program_name: e.target.value,
-                            }))
-                        }}
-                    />
-                ) : (
-                    editProgram.program_name
+    if(program.type === 'program') {
+        return (
+            <div className="row">
+                <div className={`col-xs-12 ${edit ? 'col-lg-6' : 'col-lg-10'}`}>
+                    {edit ? (
+                        <input
+                            type="text"
+                            className="form-control"
+                            value={editProgram.program_name}
+                            onChange={(e) => {
+                                setEditProgram((editProgram) => ({
+                                    ...editProgram,
+                                    program_name: e.target.value,
+                                }))
+                            }}
+                        />
+                    ) : (
+                        editProgram.program_name
+                    )}
+                </div>
+                {edit && (
+                    <div className="col-xs-12 col-lg-4">
+                        <Select
+                            options={options}
+                            isMulti
+                            isSearchable
+                            closeMenuOnSelect={false}
+                            noOptionsMessage={() => 'No hay opciones'}
+                            defaultValue={setSelectedOptions(program)}
+                            placeholder="Selecciona un formulario"
+                            onChange={(options) => {
+                                setEditProgram((editProgram) => ({
+                                    ...editProgram,
+                                    forms: options.map((option) => option.value),
+                                }))
+                            }}
+                        />
+                    </div>
+                )}
+                {showActions && (
+                    <div className="col-xs-4 col-lg-2">
+                        <button
+                            className={`btn btn-${edit ? 'danger' : 'primary'} btn-sm`}
+                            onClick={ToggleEditMode}
+                        >
+                            {edit ? (
+                                <i className="fa fa-times" />
+                            ) : (
+                                <i className="fa fa-pencil" />
+                            )}
+                        </button>
+                        <button
+                            className="btn btn-danger btn-sm"
+                            disabled={edit}
+                            onClick={() => deleteProgram(program)}
+                        >
+                            <i className="fa fa-trash" />
+                        </button>
+                    </div>
                 )}
             </div>
-            {edit && (
-                <div className="col-xs-12 col-lg-4">
-                    <Select
-                        options={options}
-                        isMulti
-                        isSearchable
-                        closeMenuOnSelect={false}
-                        noOptionsMessage={() => 'No hay opciones'}
-                        defaultValue={setSelectedOptions(program)}
-                        placeholder="Selecciona un formulario"
-                        onChange={(options) => {
-                            setEditProgram((editProgram) => ({
-                                ...editProgram,
-                                forms: options.map((option) => option.value),
-                            }))
-                        }}
-                    />
-                </div>
-            )}
-            <div className="col-xs-4 col-lg-2">
-                <button
-                    className={`btn btn-${edit ? 'danger' : 'primary'} btn-sm`}
-                    onClick={ToggleEditMode}
-                >
-                    {edit ? (
-                        <i className="fa fa-times" />
-                    ) : (
-                        <i className="fa fa-pencil" />
-                    )}
-                </button>
-                <button
-                    className="btn btn-danger btn-sm"
-                    disabled={edit}
-                    onClick={() => deleteProgram(program)}
-                >
-                    <i className="fa fa-trash" />
-                </button>
+        )
+    }
+
+    return (
+        <div className="row">
+            <div className="col-xs-12 text-white">
+                {program.meeting_name}
             </div>
         </div>
     )
+
+
 }

@@ -8,34 +8,41 @@ use App\Models\Project;
 use App\Models\Screening;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Collection;
 
 trait ReportResults
 {
 
 
-    public function getProjectResults($goals)
+    public function getProjectResults(Collection $goals, Collection $meetings)
     {
         return $goals->map(function ($goal) {
             return [
                 'id'               => $goal->id,
                 'goal_description' => $goal->goal_description,
                 'goal_target'      => $goal->goal_target,
-                'is_grouped'           => $goal->group_every > 1,
+                'is_grouped'       => $goal->group_every > 1,
                 'group_every'      => $goal->group_every,
+                'type'             => 'goal',
                 'goal_target_year' => $goal->goal_target / $goal->program->project->project_duration,
+                'order'            => $goal->program->order,
                 'program'          => [
                     'id'                   => $goal->program->id,
                     'program_name'         => $goal->program->program_name,
                     'beneficiaries_count'  => $this->getGoalProgress($goal),
-                    'total_ungrouped'     => $goal->program->beneficiaries->count(),
-                    'total_grouped'       => $goal->group_every > 1 ? round($goal->program->beneficiaries->count() / $goal->group_every) : 0,
+                    'total_ungrouped'      => $goal->program->beneficiaries->count(),
+                    'total_grouped'        => $goal->group_every > 1 ? round(
+                        $goal->program->beneficiaries->count() / $goal->group_every
+                    ) : 0,
                     'completed_percentage' => round(
                         $goal->program->beneficiaries->count() / $goal->goal_target * 100,
                         2
                     )
                     > 100 ? 100 : round($goal->program->beneficiaries->count() / $goal->goal_target * 100, 2),
-                    'pending' => $goal->group_every > 1 ? round($goal->program->beneficiaries->count() % $goal->group_every) : $goal->goal_target - $goal->program->beneficiaries->count(),
-                    'visits' => $goal->program->beneficiaries->map(function ($beneficiary) {
+                    'pending'              => $goal->group_every > 1 ? round(
+                        $goal->program->beneficiaries->count() % $goal->group_every
+                    ) : $goal->goal_target - $goal->program->beneficiaries->count(),
+                    'visits'               => $goal->program->beneficiaries->map(function ($beneficiary) {
                         return $beneficiary->appointments->count();
                     })->sum(),
                 ],
@@ -75,14 +82,36 @@ trait ReportResults
                     }
                 )->toArray(),
             ];
-        });
+        })->merge(
+            $meetings->map(function ($meeting) {
+                return [
+                    'id'               => $meeting->id,
+                    'goal_description' => $meeting->title,
+                    'goal_target'      => $meeting->meeting_target,
+                    'current_progress' => $meeting->count,
+                    'completed_percentage' => round(
+                        $meeting->count / $meeting->meeting_target * 100,
+                        2
+                    ),
+                    'pending'          => max($meeting->meeting_target - $meeting->count, 0),
+                    'type'             => 'meeting',
+                    'order'            => $meeting->order
+                ];
+            })
+        )->sortBy('order')->values();
     }
 
     public function getGlobalResults($project, $results)
     {
-        $res = $results->map(function ($result) {
-            return $result['conditions'];
-        })->flatten(1)->groupBy('label');
+        $res = $results
+            ->filter(function ($result) {
+                return $result['type'] === 'goal';
+            })
+            ->map(function ($result) {
+                return $result['conditions'];
+            })
+            ->flatten(1)
+            ->groupBy('label');
 
         return [
             'goal_description'     => 'Meta Global del Proyecto: ' . $project->global_goal,
@@ -109,11 +138,18 @@ trait ReportResults
 
     public function getHeaders($results)
     {
-        return $results->map(function ($result) {
-            return collect($result['conditions'])->mapWithKeys(function ($condition, $key) {
-                return [$key => $condition['label']];
-            });
-        })->flatten()->unique()->values();
+        return $results
+            ->filter(function ($result) {
+                return $result['type'] === 'goal';
+            })
+            ->map(function ($result) {
+                return collect($result['conditions'])->mapWithKeys(function ($condition, $key) {
+                    return [$key => $condition['label']];
+                });
+            })
+            ->flatten()
+            ->unique()
+            ->values();
     }
 
     public function getGoalProgress($goal)
@@ -126,27 +162,36 @@ trait ReportResults
             : $goal->program->beneficiaries->count();
     }
 
-    public function getScreeningsReport(){
+    public function getScreeningsReport()
+    {
         $screenings = Screening::all();
 
         return [
-            'title' => 'Al finalizar el proyecto se realizaran 7200 tamizajes',
-            'total_screenings' => $screenings->count(),
-            'completed_percentage' => round(
+            'title'                                 => '1.3  Detección precoz de 7.200 niños de 0 a 6 años.',
+            'total_screenings'                      => $screenings->count(),
+            'completed_percentage'                  => round(
                 $screenings->count() / 7200 * 100,
                 2
             ),
-            'males_below_18_without_disabilities' => $screenings->filter(function($screening){
-                return floatval(trim(str_replace('meses', '', $screening->age))) / 12 < 18 && $screening->gender == 'masculino';
+            'males_below_18_without_disabilities'   => $screenings->filter(function ($screening) {
+                return floatval(
+                        trim(str_replace('meses', '', $screening->age))
+                    ) / 12 < 18 && $screening->gender == 'masculino';
             })->count(),
-            'females_below_18_without_disabilities' => $screenings->filter(function($screening){
-                return floatval(trim(str_replace('meses', '', $screening->age))) / 12 < 18 && $screening->gender == 'femenino';
+            'females_below_18_without_disabilities' => $screenings->filter(function ($screening) {
+                return floatval(
+                        trim(str_replace('meses', '', $screening->age))
+                    ) / 12 < 18 && $screening->gender == 'femenino';
             })->count(),
-            'males_over_18_without_disabilities' => $screenings->filter(function($screening){
-                return floatval(trim(str_replace('meses', '', $screening->age))) / 12 > 18 && $screening->gender == 'masculino';
+            'males_over_18_without_disabilities'    => $screenings->filter(function ($screening) {
+                return floatval(
+                        trim(str_replace('meses', '', $screening->age))
+                    ) / 12 > 18 && $screening->gender == 'masculino';
             })->count(),
-            'females_over_18_without_disabilities' => $screenings->filter(function($screening){
-                return floatval(trim(str_replace('meses', '', $screening->age))) / 12 > 18 && $screening->gender == 'femenino';
+            'females_over_18_without_disabilities'  => $screenings->filter(function ($screening) {
+                return floatval(
+                        trim(str_replace('meses', '', $screening->age))
+                    ) / 12 > 18 && $screening->gender == 'femenino';
             })->count(),
         ];
     }

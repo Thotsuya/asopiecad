@@ -60,7 +60,10 @@ class UpdateProjectReportsFile extends Command
                 })
                 ->get();
 
-            $results = $this->getProjectResults($goals);
+            $meetings = $project->meetings()->orderBy('order')->get();
+
+            $results = $this->getProjectResults($goals,$meetings);
+            get_class($results);
             $globalResults = $this->getGlobalResults($project,$results);
 
             $project->report()->updateOrCreate(

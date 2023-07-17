@@ -5,6 +5,7 @@ import ProgramRow from '@/Pages/Projects/Partials/ProgramRow'
 
 export default function Programs({
     programs,
+    draggableEntities,
     onProgramAdd,
     handleDrop,
     forms,
@@ -81,31 +82,34 @@ export default function Programs({
             <div className="margin-top-10">
                 {programs.length > 0 ? (
                     <DragDropContext onDragEnd={handleDrop}>
-                        <Droppable droppableId="programs">
+                        <Droppable droppableId="entities">
                             {(provided) => (
                                 <ul
                                     className="list-group"
                                     {...provided.droppableProps}
                                     ref={provided.innerRef}
                                 >
-                                    {programs
+                                    {draggableEntities
                                         .sort((a, b) => a.order - b.order)
-                                        .map((program, index) => (
+                                        .map((entity, index) => (
                                             <Draggable
-                                                key={program.id}
-                                                draggableId={program.id.toString()}
+                                                key={entity.uuid}
+                                                draggableId={entity.uuid}
                                                 index={index}
                                             >
                                                 {(provided) => (
                                                     <li
-                                                        className="list-group-item"
+                                                        className={`list-group-item ${
+                                                            entity.type === 'meeting' ? 'bg-warning' : ''
+                                                        }`}
                                                         ref={provided.innerRef}
                                                         {...provided.draggableProps}
                                                         {...provided.dragHandleProps}
                                                     >
                                                         <ProgramRow
-                                                            program={program}
+                                                            program={entity}
                                                             options={options}
+                                                            showActions={entity.type === 'program'}
                                                         />
                                                     </li>
                                                 )}
