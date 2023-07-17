@@ -32,22 +32,20 @@ class ProjectController extends Controller
     public function index()
     {
 
-        $projects = Cache::remember('projects', 60 * 60, function () {
-            return Project::query()
-                ->when(!auth()->user()->hasRole(User::SUPER_ADMIN), function ($query) {
+        $projects =
+            Project::
+                when(!auth()->user()->hasRole(User::SUPER_ADMIN), function ($query) {
                     $query->whereHas('users', function ($query) {
                         $query->where('user_id', auth()->id());
                     });
                 })
                 ->with('media')
-                ->withCount('beneficiaries', 'users','programs')
                 ->latest('id')
                 ->get();
-        });
 
 
         return inertia('Projects/Index', [
-            'projects' => ProjectResource::collection(Cache::get('projects')),
+            'projects' => ProjectResource::collection($projects),
         ]);
     }
 

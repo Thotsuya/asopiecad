@@ -13,11 +13,6 @@ class ProjectResource extends JsonResource
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
 
-    public function __construct($resource)
-    {
-        parent::__construct($resource);
-    }
-
     public function toArray($request)
     {
         return [
@@ -27,11 +22,8 @@ class ProjectResource extends JsonResource
             'project_description' => $this->project_description,
             'created_at'          => $this->created_at->translatedFormat('d F Y'),
             'updated_at'          => $this->updated_at->diffForHumans(),
-            'beneficiaries_count' => $this->beneficiaries_count,
             'project_duration'    => $this->project_duration,
             'project_start_date'  => $this->project_start_date,
-            'users_count'         => $this->users_count,
-            'programs_count'      => $this->programs_count,
             'global_goal'         => $this->global_goal,
             'users'               => $this->whenLoaded('users', function () {
                 return $this->users->map(function ($user) {
@@ -71,10 +63,10 @@ class ProjectResource extends JsonResource
                 'register-goal-progress' => auth()->user()->can('register-goal-progress', $this->resource) || auth(
                     )->user()->hasRole('Super Admin'),
             ],
-            'forms'               => $this->whenLoaded('forms', $this->forms),
-            'programs'            => $this->whenLoaded('programs', $this->programs),
-            'beneficiaries'       => $this->whenLoaded('beneficiaries', $this->beneficiaries),
-            'global_progress'     => $this->globalProgress(),
+            'forms'               => $this->whenLoaded('forms'),
+            'programs'            => $this->whenLoaded('programs'),
+            'beneficiaries'       => $this->whenLoaded('beneficiaries'),
+            'global_progress'     => $this->whenCounted('beneficiaries', $this->globalProgress()),
             'featured_image'      => // return latest media url or placeholder
                 $this->getMedia('project_featured_image')->last() ?
                     $this->getMedia('project_featured_image')->last()->getFullUrl() :

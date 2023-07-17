@@ -21,28 +21,6 @@ export default function ProjectCard({ project, roles, auth }) {
                 </div>
                 <div className="bottom-project-section">
                     <div className="meta">
-                        <div className="views">
-                            <i className="fa fa-book" title="Programas" />{' '}
-                            {project.programs_count}
-                        </div>
-                        <div className="views">
-                            <i
-                                className="fa fa-users"
-                                title="Usuarios / Beneficiarios"
-                            />{' '}
-                            {project.beneficiaries_count}
-                        </div>
-                        <div className="views">
-                            <i
-                                className="fa fa-cogs"
-                                title="Miembros del equipo de proyecto"
-                            />{' '}
-                            {project.users_count}
-                        </div>
-                        <span className="feedable-time timeago">
-                            {/*Strip the word 'Hace'*/}
-                            <b>Última actualización:</b> {project.updated_at.replace('hace', '')}
-                        </span>
                     </div>
                     <div className="row">
                         <div className="col-xs-12 margin-top-10">
