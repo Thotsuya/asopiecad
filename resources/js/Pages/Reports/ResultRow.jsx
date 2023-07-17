@@ -3,7 +3,7 @@ export default function ResultRow({result, headers, showGoalDescription = true})
     if(result.type === 'goal'){
         return <tr>
             {showGoalDescription &&  <td
-                className="text-center text-sm padding-10"
+                className="text-justify text-sm padding-10"
                 style={{
                     minWidth: '400px',
                 }}
@@ -149,7 +149,7 @@ export default function ResultRow({result, headers, showGoalDescription = true})
 
     return <tr>
         {showGoalDescription &&  <td
-            className="text-center text-sm padding-10"
+            className="text-justify text-sm padding-10"
             style={{
                 minWidth: '400px',
             }}

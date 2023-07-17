@@ -18,6 +18,11 @@ use Illuminate\Support\Str;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 use App\Traits\DynamicComparisons;
 use App\Traits\ReportResults;
+use OpenSpout\Common\Entity\Style\Color;
+use OpenSpout\Common\Entity\Style\CellAlignment;
+use OpenSpout\Common\Entity\Style\Style;
+use OpenSpout\Common\Entity\Style\Border;
+use OpenSpout\Common\Entity\Style\BorderPart;
 
 class ExportBenefitiariesReportToExcel implements ShouldQueue
 {
@@ -92,6 +97,20 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
 
 
         $writer = SimpleExcelWriter::create(Storage::path('public/reports/' . $fileName));
+
+        $style = (new Style())
+            ->setFontSize(12)
+            ->setFontName('Verdana');
+
+        $headerStyle = (new Style())
+            ->setFontSize(12)
+            ->setFontName('Verdana')
+            ->setFontColor(Color::WHITE)
+            ->setBackgroundColor('3F51B5');
+
+
+        $writer->setHeaderStyle($headerStyle);
+
         $writer->addHeader([
             'Descripcion de los Indicadores',
             'Meta',
@@ -105,6 +124,8 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
             'Numero total de participantes',
             'Pendientes'
         ]);
+
+
 
         foreach ($results as $result){
 
@@ -121,7 +142,7 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
                     $result['program']['visits'],
                     $result['program']['beneficiaries_count'],
                     $result['program']['pending'],
-                ]),
+                ], $style),
                 'meeting' => $writer->addRow([
                     $result['goal_description'],
                     $result['goal_target'],
@@ -134,7 +155,7 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
                     'N/A',
                     'N/A',
                     $result['pending'],
-                ]),
+                ], $style),
             };
         }
 

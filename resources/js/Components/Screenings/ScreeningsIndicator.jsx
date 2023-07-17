@@ -1,7 +1,7 @@
 export default function ScreeningsRow({screenings}){
     return (
         <tr>
-            <td className="text-center text-sm padding-10">
+            <td className="text-justify text-sm padding-10">
                 {screenings.title}
             </td>
             <td

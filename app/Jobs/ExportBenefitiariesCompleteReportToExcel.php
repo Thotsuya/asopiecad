@@ -14,13 +14,18 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\SimpleExcel\SimpleExcelWriter;
+use OpenSpout\Common\Entity\Style\Color;
+use OpenSpout\Common\Entity\Style\CellAlignment;
+use OpenSpout\Common\Entity\Style\Style;
+use OpenSpout\Common\Entity\Style\Border;
+use OpenSpout\Common\Entity\Style\BorderPart;
+
 
 class ExportBenefitiariesCompleteReportToExcel implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public Collection $beneficiaries;
-    public array $headers;
 
     /**
      * Create a new job instance.
@@ -29,7 +34,19 @@ class ExportBenefitiariesCompleteReportToExcel implements ShouldQueue
      */
     public function __construct(Collection $beneficiaries)
     {
-        $this->beneficiaries = $beneficiaries->map(function ($beneficiary) {
+        $this->beneficiaries = $beneficiaries;
+    }
+
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+
+
+        $beneficiaries = $this->beneficiaries->map(function ($beneficiary) {
             return [
                 'id'              => $beneficiary->id,
                 'uuid'            => $beneficiary->uuid,
@@ -48,39 +65,43 @@ class ExportBenefitiariesCompleteReportToExcel implements ShouldQueue
             ];
         });
 
-        $this->headers = $this->beneficiaries->pluck('answers')->flatten(1)->pluck('field')->unique()->toArray();
-    }
+        $headers = $beneficiaries->pluck('answers')->flatten(1)->pluck('field')->unique()->toArray();
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        //
+
         $fileName = 'Reporte de Participantes '.time().'.xlsx';
 
         $writer = SimpleExcelWriter::create(Storage::path('public/reports/' . $fileName));
 
-        info(json_encode(['ID', 'UUID', 'Estado Interno', 'Nombre', 'Proyectos', ...$this->headers]));
-        $writer->addHeader(['ID', 'UUID', 'Estado Interno', 'Nombre', 'Proyectos', ...$this->headers]);
+        $style = (new Style())
+            ->setFontSize(12)
+            ->setFontName('Verdana');
+
+        $headerStyle = (new Style())
+            ->setFontSize(12)
+            ->setFontName('Verdana')
+            ->setFontColor(Color::WHITE)
+            ->setBackgroundColor('3F51B5');
+
+
+        $writer->setHeaderStyle($headerStyle);
+
+        $writer->addHeader(['ID', 'UUID', 'Estado Interno', 'Nombre', 'Proyectos', ...$headers]);
 
         //Chunking the collection to avoid memory issues
 
-        $this->beneficiaries->chunk(1000)->each(function ($chunk) use ($writer) {
+        $beneficiaries->chunk(1000)->each(function ($chunk) use ($writer, $style,$headers) {
 
-            $chunk->each(function ($beneficiary) use ($writer) {
+            $chunk->each(function ($beneficiary) use ($writer, $style,$headers) {
                 $writer->addRow([
                     $beneficiary['id'],
                     $beneficiary['uuid'],
                     $beneficiary['internal_status'],
                     $beneficiary['name'],
                     $beneficiary['projects'],
-                    ...Arr::flatten(collect($this->headers)->map(function ($header) use ($beneficiary) {
+                    ...Arr::flatten(collect($headers)->map(function ($header) use ($beneficiary) {
                         return Arr::get(collect($beneficiary['answers'])->where('field', $header)->first(), 'answer', null);
                     })->toArray()),
-                ]);
+                ], $style);
             });
 
             //Flush the writer to avoid memory issues
