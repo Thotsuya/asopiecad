@@ -4,7 +4,8 @@ import Pagination from "@/Components/Pagination";
 
 export default function Dashboard({
                                       auth,
-                                      excelReports
+                                      excelReports,
+                                      pendingReports
                                   }) {
 
     return (
@@ -15,6 +16,15 @@ export default function Dashboard({
                 <div className="col-xs-12">
                     <h1>Reportes Excel</h1>
                 </div>
+
+                {pendingReports.length > 0 && pendingReports.map((pendingReport, index) => (
+                   <div className="col-xs-12" key={index}>
+                       <div className="alert alert-info">
+                           <strong>Atención: </strong> El Reporte <strong>{pendingReport.file_name}</strong> esta siendo generado, por favor espere.
+                       </div>
+                   </div>
+                ))}
+
 
                 <div className="col-xs-12">
                     <div className="box-content table-responsive">

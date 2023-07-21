@@ -167,12 +167,19 @@ trait ReportResults
         $screenings = Screening::where('type', $type)->get();
 
         return [
-            'title'                                 => '1.3  Detección precoz de 7.200 niños de 0 a 6 años.',
+            'title'                                 => 'Realización de tamizaje de 7,200 niños y niñas de 0 a 06 años a través de visitas domiciliares en la comunidad, centros de desarrollo infantil y preescolares comunitarios a través de redes comunitarias',
+            'goal' => 7200,
             'total_screenings'                      => $screenings->count(),
             'completed_percentage'                  => round(
                 $screenings->count() / 7200 * 100,
                 2
             ),
+            'anual_goal' => 'N/A',
+            'males_below_18_with_disabilities' => 0,
+            'females_below_18_with_disabilities' => 0,
+            'males_over_18_with_disabilities' => 0,
+            'females_over_18_with_disabilities' => 0,
+
             'males_below_18_without_disabilities'   => $screenings->filter(function ($screening) {
                 return floatval(
                         trim(str_replace('meses', '', $screening->age))
@@ -193,6 +200,9 @@ trait ReportResults
                         trim(str_replace('meses', '', $screening->age))
                     ) / 12 > 18 && $screening->gender == 'femenino';
             })->count(),
+            'visits' => 'N/A',
+            'total' => $screenings->count(),
+            'pending' => 7200 - $screenings->count(),
         ];
     }
 }

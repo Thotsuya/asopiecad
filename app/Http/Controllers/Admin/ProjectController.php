@@ -117,7 +117,12 @@ class ProjectController extends Controller
                 ])
                 ->orderBy('order')
                 ->get()),
-            'appointments' => AppointmentResource::collection($project->appointments),
+            'appointments' => AppointmentResource::collection($project
+                ->appointments()
+                ->with(['benefitiary', 'user'])
+                ->latest('id')
+                ->get()
+            ),
             'paginated_appointments' => $project->appointments()
                 ->with(['benefitiary', 'user'])
                 ->latest('id')

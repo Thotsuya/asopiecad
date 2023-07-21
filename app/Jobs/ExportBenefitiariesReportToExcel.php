@@ -23,6 +23,7 @@ use OpenSpout\Common\Entity\Style\CellAlignment;
 use OpenSpout\Common\Entity\Style\Style;
 use OpenSpout\Common\Entity\Style\Border;
 use OpenSpout\Common\Entity\Style\BorderPart;
+use OpenSpout\Writer\XLSX\Options;
 
 class ExportBenefitiariesReportToExcel implements ShouldQueue
 {
@@ -30,6 +31,8 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
 
     public $project;
     public $request;
+    public $filename;
+    public $reportResult;
     /**
      * Create a new job instance.
      *
@@ -39,6 +42,20 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
     {
         $this->request = $request;
         $this->project = $project;
+
+        if($this->request['start_date'] && $this->request['end_date']) {
+            $this->filename = Str::limit($this->project->project_name,40) . '-' . $this->request['start_date'] . '-' . $this->request['end_date'];
+        } else {
+            $this->filename = Str::limit($this->project->project_name,40).'-'.now()->format('Y-m-d');
+        }
+
+        $this->filename = $this->filename.time().'.xlsx';
+
+        //Generate the report
+        $this->reportResult = $this->project->excelReports()->create([
+            'file_name' => $this->filename,
+            'file_path' => 'public/reports/' . $this->filename
+        ]);
     }
 
     /**
@@ -50,63 +67,36 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
     {
         //Generate Excel Report and save it to storage
 
-        $goals = $this->project->goals()
-            ->with([
-                'program' => [
-                    'forms',
-                    'beneficiaries' => function ($query) {
-                        $query->with([
-                            'answers.pivot.field',
-                            'appointments'
-                        ])->when(
-                            $this->request['start_date'] && $this->request['end_date'],
-                            function ($query) {
-                                $query->whereBetween(
-                                    'benefitiary_program.created_at',
-                                    [$this->request['start_date'], $this->request['end_date']]
-                                );
-                            }
-                        );
-                    },
-                    'project'
-                ]
-            ])
-            ->orderBy(function ($query) {
-                $query->select('order')
-                    ->from('programs')
-                    ->whereColumn('programs.id', 'goals.program_id')
-                    ->orderBy('order', 'desc')
-                    ->limit(1);
-            })
-            ->get();
-
-        $meetings = $this->project->meetings()->orderBy('order', 'asc')->get();
-
-        if($this->request['start_date'] && $this->request['end_date']) {
-            $fileName = Str::limit($this->project->project_name,40) . '-' . $this->request['start_date'] . '-' . $this->request['end_date'];
-        } else {
-            $fileName = Str::limit($this->project->project_name,40);
-        }
-
-        $fileName = $fileName.time().'.xlsx';
 
 
-        $results = $this->getProjectResults($goals,$meetings);
-        $global = $this->getGlobalResults($this->project, $results);
-        $headers = $this->getHeaders($results);
+        $results = collect($this->project->report->fields)->unique('goal_description')->values();
+        $global = $this->project->report->global_fields;
+        $headers = $this->getHeaders(collect($results));
+        $screenings = $this->getScreeningsReport('P-4211');
 
 
-        $writer = SimpleExcelWriter::create(Storage::path('public/reports/' . $fileName));
+        $writer = SimpleExcelWriter::create(
+            file: Storage::path('public/reports/' . $this->filename),
+            configureWriter: function ($writer) {
+                $options = $writer->getOptions();
+                $options->DEFAULT_COLUMN_WIDTH=30; // set default width
+                $options->DEFAULT_ROW_HEIGHT=80; // set default height
+                // set columns 1, 3 and 8 to width 40
+                $options->setColumnWidth(50, 1);
+            }
+        );
 
         $style = (new Style())
             ->setFontSize(12)
-            ->setFontName('Verdana');
+            ->setFontName('Verdana')
+            ->setShouldWrapText();
 
         $headerStyle = (new Style())
             ->setFontSize(12)
             ->setFontName('Verdana')
             ->setFontColor(Color::WHITE)
-            ->setBackgroundColor('3F51B5');
+            ->setBackgroundColor('3F51B5')
+            ->setShouldWrapText();
 
 
         $writer->setHeaderStyle($headerStyle);
@@ -127,7 +117,13 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
 
 
 
+        $i = 0;
+
         foreach ($results as $result){
+
+            if($i == 2 && $this->project->id == 1){
+                $writer->addRow($screenings, $style);
+            }
 
             match ($result['type']){
                 'goal' => $writer->addRow([
@@ -157,12 +153,21 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
                     $result['pending'],
                 ], $style),
             };
+
+            $i++;
+
+            //For each 1k rows, flush the writer
+            if($i % 1000 == 0) {
+                flush();
+            }
+
         }
 
-        $this->project->excelReports()->create([
-            'file_name' => $fileName,
-            'file_path' => 'public/reports/' . $fileName,
-            'generated_at' => now(),
+        $writer->close();
+
+        $this->reportResult->update([
+            'generated_at' => now()
         ]);
+
     }
 }

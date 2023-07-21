@@ -30,6 +30,11 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/queue.log'));
 
+        $schedule->command('asopiecad:purge-failed-reports')
+            ->everyTenMinutes()
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/purge.log'));
+
         $schedule->command('asopiecad:purge-older-reports')
             ->dailyAt('00:00')
             ->withoutOverlapping()

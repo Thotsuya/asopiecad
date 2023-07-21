@@ -12,8 +12,18 @@ class ExcelReportsController extends Controller
     //
 
     public function index(){
+
+        //Get the pending queue jobs from the database
+
         return Inertia::render('ExcelReports/Index',[
-            'excelReports' => ExcelReports::query()->latest()->paginate(20)
+            'pendingReports' => ExcelReports::query()
+                                            ->pending()
+                                            ->latest()
+                                            ->get(),
+            'excelReports' => ExcelReports::query()
+                                            ->generated()
+                                            ->latest()
+                                            ->paginate(20)
         ]);
     }
 }

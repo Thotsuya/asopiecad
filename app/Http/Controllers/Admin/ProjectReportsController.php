@@ -11,6 +11,7 @@ use App\Traits\DynamicComparisons;
 use App\Traits\ReportResults;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class ProjectReportsController extends Controller
@@ -29,24 +30,28 @@ class ProjectReportsController extends Controller
             'rgba(153, 102, 255, 1)',
         ];
 
-        $project
-            ->load([
-                'beneficiaries',
-                'meetings.participants',
-                'groupedResults.goals',
-                'groupedResults.meetings',
-            ])
+        $project = Cache::remember('project-' . $project->id, 60 * 15, function () use ($project) {
+            return $project
+                ->load([
+                    'beneficiaries',
+                    'meetings.participants',
+                    'groupedResults.goals',
+                    'groupedResults.meetings',
+                ])
 
-            ->loadCount(['beneficiaries','meetings']);
+                ->loadCount(['beneficiaries','meetings']);
+        });
 
 
-        $beneficiaries = $project
-            ->beneficiaries()
-            ->approved()
-            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
-                $query->whereBetween('benefitiary_project.created_at', [$request->start_date, $request->end_date]);
-            })
-            ->get();
+        $beneficiaries = Cache::remember('beneficiaries', 60 * 15, function () use ($project, $request) {
+            return $project
+                ->beneficiaries()
+                ->approved()
+                ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                    $query->whereBetween('benefitiary_project.created_at', [$request->start_date, $request->end_date]);
+                })
+                ->get();
+        });
 
 
         $labels = $beneficiaries->groupBy(function ($beneficiary) {
@@ -95,7 +100,7 @@ class ProjectReportsController extends Controller
 
     public function export(Request $request, Project $project)
     {
-        ExportBenefitiariesReportToExcel::dispatch($project, $request->all());
+        ExportBenefitiariesReportToExcel::dispatch($project->load('report'), $request->all());
         return back()->with('success', 'Report is being generated, you will receive an email with the download link');
     }
 

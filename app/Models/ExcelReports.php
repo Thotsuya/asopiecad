@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -30,5 +31,14 @@ class ExcelReports extends Model
         return \Carbon\Carbon::parse($value)->diffForHumans();
     }
 
+    public function scopeGenerated(Builder $query): Builder
+    {
+        return $query->whereNotNull('generated_at');
+    }
+
+    public function scopePending(Builder $query): Builder
+    {
+        return $query->whereNull('generated_at');
+    }
 
 }

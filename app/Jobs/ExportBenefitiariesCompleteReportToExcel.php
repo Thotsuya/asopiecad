@@ -26,6 +26,8 @@ class ExportBenefitiariesCompleteReportToExcel implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public Collection $beneficiaries;
+    public $filename;
+    public $reportResult;
 
     /**
      * Create a new job instance.
@@ -35,6 +37,11 @@ class ExportBenefitiariesCompleteReportToExcel implements ShouldQueue
     public function __construct(Collection $beneficiaries)
     {
         $this->beneficiaries = $beneficiaries;
+        $this->filename = 'Reporte de Participantes '.now()->format('Y-m-d').time().'.xlsx';
+        $this->reportResult = User::first()->excelReports()->create([
+            'file_name' => $this->filename,
+            'file_path' => 'public/reports/' . $this->filename
+        ]);
     }
 
     /**
@@ -46,31 +53,32 @@ class ExportBenefitiariesCompleteReportToExcel implements ShouldQueue
     {
 
 
-        $beneficiaries = $this->beneficiaries->map(function ($beneficiary) {
-            return [
-                'id'              => $beneficiary->id,
-                'uuid'            => $beneficiary->uuid,
-                'internal_status' => $beneficiary->internal_status,
-                'name'            => $beneficiary->name,
-                'projects'        => // return a string, with all the project names separated by comma
-                    $beneficiary->projects->map(function ($project) {
-                        return $project->project_name;
-                    })->implode(', '),
-                'answers'         => $beneficiary->answers->map(function ($answer) {
-                    return [
-                        'field'  => $answer->pivot->field->name,
-                        'answer' => $this->getAnswerValue($answer),
-                    ];
-                })->values()->toArray(),
-            ];
+        $beneficiaries = \Cache::remember('beneficiaries-export',60 * 15, function () {
+            return $this->beneficiaries->map(function ($beneficiary) {
+                return [
+                    'id'              => $beneficiary->id,
+                    'uuid'            => $beneficiary->uuid,
+                    'internal_status' => $beneficiary->internal_status,
+                    'name'            => $beneficiary->name,
+                    'projects'        => // return a string, with all the project names separated by comma
+                        $beneficiary->projects->map(function ($project) {
+                            return $project->project_name;
+                        })->implode(', '),
+                    'answers'         => $beneficiary->answers->map(function ($answer) {
+                        return [
+                            'field'  => $answer->pivot->field->name,
+                            'answer' => $this->getAnswerValue($answer),
+                        ];
+                    })->values()->toArray(),
+                ];
+            });
         });
 
         $headers = $beneficiaries->pluck('answers')->flatten(1)->pluck('field')->unique()->toArray();
 
 
-        $fileName = 'Reporte de Participantes '.time().'.xlsx';
 
-        $writer = SimpleExcelWriter::create(Storage::path('public/reports/' . $fileName));
+        $writer = SimpleExcelWriter::create(Storage::path('public/reports/' . $this->filename));
 
         $style = (new Style())
             ->setFontSize(12)
@@ -110,10 +118,9 @@ class ExportBenefitiariesCompleteReportToExcel implements ShouldQueue
 
         $writer->close();
 
-        User::first()->excelReports()->create([
-            'file_name' => $fileName,
-            'file_path' => 'public/reports/' . $fileName,
-            'generated_at' => now()
+
+        $this->reportResult->update([
+            'generated_at' => now(),
         ]);
     }
 

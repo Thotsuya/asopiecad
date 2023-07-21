@@ -87,7 +87,7 @@ class ScreeningRequest extends FormRequest
     public function validated($key = null, $default = null)
     {
         return array_merge(parent::validated(), [
-            'name' => $this->first_name . ' ' . $this->second_name . ' ' . $this->first_surname . ' ' . $this->second_surname,
+            'name' => $this->type == 'P-4353' ? $this->first_name . ' ' . $this->second_name . ' ' . $this->first_surname . ' ' . $this->second_surname : $this->name,
         ]);
     }
 }
