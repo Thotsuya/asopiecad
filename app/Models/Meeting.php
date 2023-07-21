@@ -51,4 +51,9 @@ class Meeting extends Model
     {
         return $this->belongsToMany(GroupedResult::class)->withPivot('value');
     }
+
+    public function excelReports()
+    {
+        return $this->morphMany(ExcelReports::class, 'reportable');
+    }
 }

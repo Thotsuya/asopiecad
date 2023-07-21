@@ -5,6 +5,7 @@ import NewParticipant from "@/Pages/Meetings/Partials/NewParticipant";
 import useMeetings from "@/Hooks/Meetings";
 import {useCallback, useEffect, useState} from "react";
 import useToasts from "@/Hooks/Toasts";
+import {Inertia} from "@inertiajs/inertia";
 
 export default function Edit({auth, meeting}) {
 
@@ -23,6 +24,9 @@ export default function Edit({auth, meeting}) {
     const { prompt } = useToasts();
 
     const [addOneMeetingValue, setAddOneMeetingValue] = useState(false)
+    const [exporting, setExporting] = useState(false)
+    const [isExporting, setIsExporting] = useState(false)
+    const {success, error} = useToasts()
 
     const toggleAddOneMeeting = (addOneMeeting) => {
         setData((data) => ({
@@ -62,6 +66,22 @@ export default function Edit({auth, meeting}) {
     const resetEditMode = () => {
         setEditMode(false)
         clearForm()
+    }
+
+    const onMeetingReportExport = () => {
+        setExporting(true)
+        Inertia.post(route('meetings.export',meeting.uuid),{},{
+            preserveScroll: true,
+            onSuccess: () => {
+                setExporting(false)
+                setIsExporting(true)
+                success('El reporte se está exportando, por favor espere')
+            },
+            onError: () => {
+                setExporting(false)
+                error('Ha ocurrido un error al exportar el reporte')
+            }
+        })
     }
 
 
@@ -171,6 +191,24 @@ export default function Edit({auth, meeting}) {
                     <div className="col-md-12">
                         <div className="box-content">
                             <h4 className="box-title">Registros</h4>
+                            <div className="row">
+                                {isExporting && (
+                                    <div className="col-md-12">
+                                        <div className="alert alert-success">
+                                            <strong>Aviso:</strong> El Reporte se esta exportando, por favor espere
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="col-md-12">
+                                    <button
+                                        disabled={exporting || isExporting}
+                                        onClick={() => onMeetingReportExport()}
+                                        className="btn btn-primary btn-block">
+                                        Exportar a Excel
+                                        <i className="margin-left-5 fa fa-file-excel-o"></i>
+                                    </button>
+                                </div>
+                            </div>
                             <div className="table-responsive">
                                 <table className="table table-striped">
                                     <thead>

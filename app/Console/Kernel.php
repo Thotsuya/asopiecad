@@ -39,6 +39,11 @@ class Kernel extends ConsoleKernel
             ->dailyAt('00:00')
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/purge.log'));
+
+        $schedule->command('asopiecad:update-beneficiaries-report-table')
+            ->everyThirtyMinutes()
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/update-beneficiaries-report-table.log'));
     }
 
     /**

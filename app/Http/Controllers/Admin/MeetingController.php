@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MeetingRequest;
 use App\Http\Resources\MeetingResource;
+use App\Jobs\ExportProjectMeetingsToExcel;
 use App\Models\Meeting;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -104,5 +105,12 @@ class MeetingController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function export(Meeting $meeting){
+
+        ExportProjectMeetingsToExcel::dispatch($meeting->load(['form','participants','project']));
+
+        return redirect()->route('meetings.edit',$meeting)->with('success','Exporting meeting to excel');
     }
 }

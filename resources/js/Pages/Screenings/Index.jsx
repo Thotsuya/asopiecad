@@ -5,9 +5,11 @@ import Pagination from '@/Components/Pagination'
 import {useState, useEffect} from "react";
 import {Inertia} from "@inertiajs/inertia";
 import Select from "react-select";
+import useToasts from "@/Hooks/Toasts";
 
 export default function Index({ auth, screenings, type }) {
     const { can } = useUsers()
+    const {prompt, success, error} = useToasts()
 
     const [search, setSearch] = useState('')
 
@@ -28,6 +30,22 @@ export default function Index({ auth, screenings, type }) {
 
     const onScreeningTypeChange = (e) => {
         Inertia.get(route('screenings.index', {type: e.value}))
+    }
+
+    const onScreeningDelete = (id) => {
+        prompt('¿Estás seguro de eliminar este tamizaje?', 'Esta acción no se puede deshacer')
+            .then((result) => {
+                if (result.isConfirmed) {
+                    Inertia.delete(route('screenings.destroy', {screening: id}),{
+                        onSuccess: () => {
+                            success('Tamizaje eliminado correctamente')
+                        },
+                        onError: () => {
+                            error('No se pudo eliminar el tamizaje')
+                        }
+                    })
+                }
+            })
     }
 
     return (
@@ -141,6 +159,13 @@ export default function Index({ auth, screenings, type }) {
                                                     >
                                                         <i className="fa fa-edit" />
                                                     </Link>
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-xs btn-danger"
+                                                        onClick={() => onScreeningDelete(screening.uuid)}
+                                                    >
+                                                        <i className="fa fa-trash" />
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))}

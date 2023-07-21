@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/screenings/report', App\Http\Controllers\Admin\ScreeningsReportsController::class)->name('screenings.report');
 
     Route::post('beneficiaries/export', [App\Http\Controllers\Admin\BeneficiariesController::class, 'export'])->name('beneficiaries.export');
+    Route::post('meetings/{meeting}/export', [App\Http\Controllers\Admin\MeetingController::class, 'export'])->name('meetings.export');
 
     Route::resource('forms', App\Http\Controllers\Admin\FormController::class);
     Route::resource('projects', App\Http\Controllers\Admin\ProjectController::class)->except('create');
@@ -36,7 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
     Route::resource('appointments', App\Http\Controllers\Admin\AppointmentController::class);
     Route::resource('beneficiaries', App\Http\Controllers\Admin\BeneficiariesController::class);
-    Route::resource('screenings', App\Http\Controllers\Admin\ScreeningController::class)->except('show','destroy');
+    Route::resource('screenings', App\Http\Controllers\Admin\ScreeningController::class)->except('show');
 
 
     Route::get('beneficiaries/{beneficiary}/visits', \App\Http\Controllers\Admin\BeneficiaryVisitsController::class)->name('beneficiaries.visits');

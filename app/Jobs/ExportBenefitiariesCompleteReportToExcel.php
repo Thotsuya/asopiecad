@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Benefitiary;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -11,7 +12,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\LazyCollection;
 use Illuminate\Support\Str;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 use OpenSpout\Common\Entity\Style\Color;
@@ -34,9 +37,8 @@ class ExportBenefitiariesCompleteReportToExcel implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(Collection $beneficiaries)
+    public function __construct()
     {
-        $this->beneficiaries = $beneficiaries;
         $this->filename = 'Reporte de Participantes '.now()->format('Y-m-d').time().'.xlsx';
         $this->reportResult = User::first()->excelReports()->create([
             'file_name' => $this->filename,
@@ -53,8 +55,14 @@ class ExportBenefitiariesCompleteReportToExcel implements ShouldQueue
     {
 
 
-        $beneficiaries = \Cache::remember('beneficiaries-export',60 * 15, function () {
-            return $this->beneficiaries->map(function ($beneficiary) {
+        $beneficiaries = Benefitiary::query()
+            ->withTrashed()
+            ->viewableBy(User::find(1))
+            ->withCount('projects')
+            ->with(['answers.pivot.field', 'answers.pivot','projects'])
+            ->latest('id')
+            ->cursor()
+            ->map(function ($beneficiary) {
                 return [
                     'id'              => $beneficiary->id,
                     'uuid'            => $beneficiary->uuid,
@@ -72,11 +80,9 @@ class ExportBenefitiariesCompleteReportToExcel implements ShouldQueue
                     })->values()->toArray(),
                 ];
             });
-        });
+
 
         $headers = $beneficiaries->pluck('answers')->flatten(1)->pluck('field')->unique()->toArray();
-
-
 
         $writer = SimpleExcelWriter::create(Storage::path('public/reports/' . $this->filename));
 
@@ -97,9 +103,8 @@ class ExportBenefitiariesCompleteReportToExcel implements ShouldQueue
 
         //Chunking the collection to avoid memory issues
 
-        $beneficiaries->chunk(1000)->each(function ($chunk) use ($writer, $style,$headers) {
+        $beneficiaries->each(function ($beneficiary) use ($writer, $style,$headers) {
 
-            $chunk->each(function ($beneficiary) use ($writer, $style,$headers) {
                 $writer->addRow([
                     $beneficiary['id'],
                     $beneficiary['uuid'],
@@ -110,7 +115,6 @@ class ExportBenefitiariesCompleteReportToExcel implements ShouldQueue
                         return Arr::get(collect($beneficiary['answers'])->where('field', $header)->first(), 'answer', null);
                     })->toArray()),
                 ], $style);
-            });
 
             //Flush the writer to avoid memory issues
             flush();

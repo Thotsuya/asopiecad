@@ -110,8 +110,10 @@ class ScreeningController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Screening $screening)
     {
-        //
+        $screening->delete();
+
+        return redirect()->route('screenings.index');
     }
 }

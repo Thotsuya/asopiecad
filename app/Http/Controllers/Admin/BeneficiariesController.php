@@ -14,6 +14,7 @@ use App\Models\Form;
 use App\Models\Program;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\LazyCollection;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -252,18 +253,7 @@ class BeneficiariesController extends Controller
 
     public function export(Request $request){
 
-        $beneficiaries = Benefitiary::query()
-            ->withTrashed()
-            ->filter($request)
-            ->viewableBy(auth()->user())
-            ->beneficiaryStatus($request)
-            ->withCount('projects')
-            ->with(['answers.pivot.field', 'answers.pivot','projects'])
-            ->latest('id')
-            ->get();
-
-
-        ExportBenefitiariesCompleteReportToExcel::dispatch($beneficiaries);
+        ExportBenefitiariesCompleteReportToExcel::dispatch();
 
         return redirect()->route('beneficiaries.index');
     }
