@@ -4,13 +4,18 @@ import useToasts from '@/Hooks/Toasts'
 import Select, {createFilter} from 'react-select'
 import AsyncSelect from "react-select/async";
 import BeneficiaryList from "@/Components/Beneficiaries/BeneficiaryList";
-import {useMemo} from "react";
+import CreatableSelect from 'react-select/creatable';
+import {useState} from "react";
+
 
 export default function RegisterBeneficiaryModal({
     projects,
     forms,
     beneficiaries,
 }) {
+
+    const [beneficiariesOptions, setBeneficiariesOptions] = useState(beneficiaries)
+
     const { data, setData, post, get, processing, errors, reset } = useForm({
         beneficiary_id: beneficiaries[0] ? beneficiaries[0].id : '',
         beneficiary_name: '',
@@ -54,10 +59,24 @@ export default function RegisterBeneficiaryModal({
     }
 
 
-    const loadOptions = (inputValue, callback) => {
-        setTimeout(() => {
-            callback(beneficiaries);
-        }, 1000);
+    const handleCreate = (inputValue) => {
+
+        // Add new beneficiary to options
+        setBeneficiariesOptions((prev) => ([
+            ...prev,
+            {
+                value: 'new ' + inputValue.toLowerCase().replace(/\W/g, ''),
+                label: inputValue,
+            }
+        ]))
+        // Set is new beneficiary to true
+        setData((data) => ({
+            ...data,
+            is_new_beneficiary: true,
+            beneficiary_id: 'new ' + inputValue.toLowerCase().replace(/\W/g, ''),
+            beneficiary_name: inputValue,
+        }))
+
     };
 
     return (
@@ -96,90 +115,56 @@ export default function RegisterBeneficiaryModal({
                                     }`}
                                 >
                                     <label htmlFor="name">
-                                        Beneficiarios Existentes
+                                        Participante
+                                        <br />
+                                        <small className="text-primary">
+                                            Puedes buscar un participante existente ( Por nombre o cédula ) o crear uno nuevo
+                                        </small>
                                     </label>
-                                    <AsyncSelect
+                                    <CreatableSelect
                                         components={{
                                             MenuList: BeneficiaryList,
                                         }}
                                         cacheOptions
                                         defaultOptions
-                                        loadOptions={loadOptions}
+                                        options={beneficiariesOptions}
                                         filterOption={createFilter({ ignoreAccents: false })}
                                         onChange={(beneficiary) => {
-                                            setData((data) => ({
-                                                ...data,
-                                                beneficiary_id:
-                                                    beneficiary.value,
-                                            }))
+                                            setData((data) => {
+                                                if(beneficiary) {
+                                                    return {
+                                                        ...data,
+                                                        beneficiary_id: beneficiary.value,
+                                                        beneficiary_name: beneficiary.label,
+                                                        is_new_beneficiary: false,
+                                                    }
+                                                }
+
+                                                return {
+                                                    ...data,
+                                                    beneficiary_id: '',
+                                                    beneficiary_name: '',
+                                                    is_new_beneficiary: false,
+                                                }
+
+                                            })
                                         }}
-                                        isDisabled={data.is_new_beneficiary}
                                         noOptionsMessage={() => 'No hay datos'}
-                                        placeholder="Selecciona un beneficiario"
+                                        placeholder="Selecciona , busca o crea un participante"
+                                        onCreateOption={handleCreate}
+                                        formatCreateLabel={(inputValue) => `Crear Participante: ${inputValue}`}
+                                        isClearable
+                                        value={beneficiariesOptions.find(
+                                            (beneficiary) =>
+                                                beneficiary.value === data.beneficiary_id
+                                        )}
                                         />
                                     {errors.beneficiary_id && (
                                         <span className="help-block">
                                             {errors.beneficiary_id}
                                         </span>
                                     )}
-                                    <div className="checkbox">
-                                        <input
-                                            type="checkbox"
-                                            id="is_new_beneficiary"
-                                            name="is_new_beneficiary"
-                                            checked={data.is_new_beneficiary}
-                                            onChange={() => {
-                                                setData((data) => ({
-                                                    ...data,
-                                                    is_new_beneficiary:
-                                                        !data.is_new_beneficiary,
-                                                    beneficiary_id:
-                                                        data.is_new_beneficiary
-                                                            ? beneficiaries[0]
-                                                                ? beneficiaries[0]
-                                                                      .id
-                                                                : ''
-                                                            : '',
-                                                }))
-                                            }}
-                                        />
-                                        <label htmlFor="is_new_beneficiary">
-                                            Registrar nuevo beneficiario
-                                        </label>
-                                    </div>
                                 </div>
-                                {data.is_new_beneficiary && (
-                                    <div
-                                        className={`form-group ${
-                                            errors.beneficiary_name
-                                                ? 'has-error'
-                                                : ''
-                                        }`}
-                                    >
-                                        <label htmlFor="name">
-                                            Nombre del Beneficiario
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="beneficiary_name"
-                                            name="beneficiary_name"
-                                            value={data.beneficiary_name}
-                                            onChange={(e) =>
-                                                setData(
-                                                    'beneficiary_name',
-                                                    e.target.value
-                                                )
-                                            }
-                                            disabled={!data.is_new_beneficiary}
-                                        />
-                                        {errors.beneficiary_name && (
-                                            <span className="help-block">
-                                                {errors.beneficiary_name}
-                                            </span>
-                                        )}
-                                    </div>
-                                )}
                             </div>
                             <div className="col-xs-12">
                                 <div
