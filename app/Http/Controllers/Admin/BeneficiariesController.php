@@ -253,7 +253,7 @@ class BeneficiariesController extends Controller
 
     public function export(Request $request){
 
-        ExportBenefitiariesCompleteReportToExcel::dispatch();
+        ExportBenefitiariesCompleteReportToExcel::dispatch($request->all());
 
         return redirect()->route('beneficiaries.index');
     }

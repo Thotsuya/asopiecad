@@ -150,6 +150,13 @@ export default function Screened({
                                                     e.target.value
                                                 )
                                             }}
+                                            onTouchEnd={(e) => {
+                                                setData(
+                                                    'communication_level_' +
+                                                        (index + 1),
+                                                    e.target.value
+                                                )
+                                            }}
                                         />
                                     </div>
                                 </div>
@@ -215,6 +222,13 @@ export default function Screened({
                                                     e.target.value
                                                 )
                                             }}
+                                            onTouchEnd={(e) => {
+                                                setData(
+                                                    'wide_movements_level_' +
+                                                        (index + 1),
+                                                    e.target.value
+                                                )
+                                            }}
                                         />
                                     </div>
                                 </div>
@@ -274,6 +288,13 @@ export default function Screened({
                                                 ]
                                             }
                                             onMouseUp={(e) => {
+                                                setData(
+                                                    'fine_movements_level_' +
+                                                        (index + 1),
+                                                    e.target.value
+                                                )
+                                            }}
+                                            onTouchEnd={(e) => {
                                                 setData(
                                                     'fine_movements_level_' +
                                                         (index + 1),
@@ -348,6 +369,13 @@ export default function Screened({
                                                     e.target.value
                                                 )
                                             }}
+                                            onTouchEnd={(e) => {
+                                                setData(
+                                                    'problem_solving_level_' +
+                                                        (index + 1),
+                                                    e.target.value
+                                                )
+                                            }}
                                         />
                                     </div>
                                 </div>
@@ -410,6 +438,13 @@ export default function Screened({
                                                 ]
                                             }
                                             onMouseUp={(e) => {
+                                                setData(
+                                                    'social_individual_level_' +
+                                                        (index + 1),
+                                                    e.target.value
+                                                )
+                                            }}
+                                            onTouchEnd={(e) => {
                                                 setData(
                                                     'social_individual_level_' +
                                                         (index + 1),

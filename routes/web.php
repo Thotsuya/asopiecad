@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/screenings/report', App\Http\Controllers\Admin\ScreeningsReportsController::class)->name('screenings.report');
+    Route::post('/screenings/export', [App\Http\Controllers\Admin\ScreeningController::class, 'export'])->name('screenings.export');
 
     Route::post('beneficiaries/export', [App\Http\Controllers\Admin\BeneficiariesController::class, 'export'])->name('beneficiaries.export');
     Route::post('meetings/{meeting}/export', [App\Http\Controllers\Admin\MeetingController::class, 'export'])->name('meetings.export');

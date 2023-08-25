@@ -8,6 +8,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Http\Request;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
@@ -31,19 +32,21 @@ class ExportBenefitiariesCompleteReportToExcel implements ShouldQueue
     public Collection $beneficiaries;
     public $filename;
     public $reportResult;
+    public $request;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($request)
     {
         $this->filename = 'Reporte de Participantes '.now()->format('Y-m-d').time().'.xlsx';
         $this->reportResult = User::first()->excelReports()->create([
             'file_name' => $this->filename,
             'file_path' => 'public/reports/' . $this->filename
         ]);
+        $this->request = $request;
     }
 
     /**
@@ -54,8 +57,9 @@ class ExportBenefitiariesCompleteReportToExcel implements ShouldQueue
     public function handle()
     {
 
-
+        $request = new Request($this->request);
         $beneficiaries = Benefitiary::query()
+            ->filter($request)
             ->withTrashed()
             ->viewableBy(User::find(1))
             ->withCount('projects')

@@ -12,6 +12,8 @@ export default function Index({ auth, screenings, type }) {
     const {prompt, success, error} = useToasts()
 
     const [search, setSearch] = useState('')
+    const [exporting, setExporting] = useState(false)
+    const [isExporting, setIsExporting] = useState(false)
 
     const projects = [
         {value: 'P-4211', label: 'P-4211'},
@@ -46,6 +48,25 @@ export default function Index({ auth, screenings, type }) {
                     })
                 }
             })
+    }
+
+    const onExport = () => {
+        setExporting(true)
+        Inertia.post(route('screenings.export'), {
+            type: type,
+        },{
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                success('El Reporte se está generando, por favor espere')
+                setExporting(false)
+                setIsExporting(true)
+            },
+            onError: () => {
+                error('No se pudo generar el reporte')
+                setExporting(false)
+            }
+        })
     }
 
     return (
@@ -92,6 +113,28 @@ export default function Index({ auth, screenings, type }) {
                                     No hay tamizajes registrados
                                 </div>
                             )}
+
+                            <div className="row">
+                                {isExporting && (
+                                    <div className="col-md-12">
+                                        <div className="alert alert-success">
+                                            <i className="fa fa-info-circle" />{' '}
+                                            <strong>Aviso:</strong> El Reporte de Tamizajes se está generando, por favor espere
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="col-md-12">
+                                    <button
+                                        type="button"
+                                        className="btn btn-submit-prj btn-sm waves-effect waves-light btn-info"
+                                        disabled={exporting || isExporting}
+                                        onClick={() => onExport()}
+                                    >
+                                        <i className="fa fa-file-excel-o" /> Exportar
+                                        Excel
+                                    </button>
+                                </div>
+                            </div>
 
                             {screenings.total > 0 && (
                                 <div className="table-responsive">

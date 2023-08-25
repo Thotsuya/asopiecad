@@ -21,6 +21,7 @@ trait ReportResults
                 'id'               => $goal->id,
                 'goal_description' => $goal->goal_description,
                 'goal_target'      => $goal->goal_target,
+                'visible'          => $goal->visible,
                 'is_grouped'       => $goal->group_every > 1,
                 'group_every'      => $goal->group_every,
                 'type'             => 'goal',
@@ -87,6 +88,7 @@ trait ReportResults
                 return [
                     'id'               => $meeting->id,
                     'goal_description' => $meeting->title,
+                    'visible'       => 1,
                     'goal_target'      => $meeting->meeting_target,
                     'current_progress' => $meeting->count,
                     'completed_percentage' => round(
@@ -204,5 +206,51 @@ trait ReportResults
             'total' => $screenings->count(),
             'pending' => 7200 - $screenings->count(),
         ];
+    }
+
+    public function getHeadersForScreenings($type){
+        return match ($type){
+            'P-4211' =>
+                    [
+                        'Nombre de quien lo aplica' => 'registrant_name',
+                        'Departamento' => 'department',
+                        'Municipio' => 'municipality',
+                        'Fecha de Aplicación' => 'date_of_screening',
+                        'Nombre y Apellido' => 'name',
+                        'Edad' => 'age',
+                        'Sexo' => 'gender',
+                        'Comunicación' => ['communication_level_1', 'communication_level_2', 'communication_level_3', 'communication_level_4', 'communication_level_5','communication_level_6'],
+                        'Movimiento Amplio' => ['wide_movements_level_1', 'wide_movements_level_2', 'wide_movements_level_3', 'wide_movements_level_4', 'wide_movements_level_5','wide_movements_level_6'],
+                        'Movimientos Finos' => ['fine_movements_level_1', 'fine_movements_level_2', 'fine_movements_level_3', 'fine_movements_level_4', 'fine_movements_level_5','fine_movements_level_6'],
+                        'Resolución de Problemas' => ['problem_solving_level_1', 'problem_solving_level_2', 'problem_solving_level_3', 'problem_solving_level_4', 'problem_solving_level_5','problem_solving_level_6'],
+                        'Socio Individual' => ['social_individual_level_1', 'social_individual_level_2', 'social_individual_level_3', 'social_individual_level_4', 'social_individual_level_5','social_individual_level_6'],
+                    ],
+            'P-4353' =>
+                    [
+                        'Nombre de quien lo aplica' => 'registrant_name',
+                        'Departamento' => 'department',
+                        'Municipio' => 'municipality',
+                        'Fecha de Aplicación' => 'date_of_screening',
+                        '1er Nombre' => 'first_name',
+                        '2do Nombre' => 'second_name',
+                        '1er Apellido' => 'first_surname',
+                        '2do Apellido' => 'second_surname',
+                        'Sexo' => 'gender',
+                        'Edad' => 'age',
+                        'Discapacidad Si / No' => 'disability_yes_no',
+                        'Tipo de discapacidad o alteración en el desarrollo' => 'disability_type',
+                        'Fecha de Nacimiento' => 'date_of_birth',
+                        'Cédula de Identidad' => 'document',
+                        'Dirección' => 'address',
+                        'Departamento del Tamizado' => 'screened_deparment',
+                        'Municipio del Tamizado' => 'screened_municipality',
+                        'Teléfono' => 'screened_phone_number',
+                        'Agudeza Visual' => 'screened_visual_acuity',
+                        'Referidos' => 'screened_refered',
+                        'Observaciones' => 'screened_observations',
+                        'Agudeza Visual Ojo Derecho' => 'screened_visual_acuity_right',
+                        'Agudeza Visual Ojo Izquierdo' => 'screened_visual_acuity_left',
+                    ]
+        };
     }
 }

@@ -336,7 +336,8 @@ export default function Show({
                                                         {result.title}
                                                     </td>
                                                 </tr>
-                                                {result.goals.map((goal, index) => {
+                                                {result.goals
+                                                    .map((goal, index) => {
                                                     let result = JSON.parse(goal.pivot.value);
 
                                                     return <ResultRow key={`goal-${index}`} headers={headers} result={result} showGoalDescription={false} />
@@ -419,7 +420,9 @@ export default function Show({
 
                                         <tbody>
                                         {results &&
-                                            results.map((result, index) => {
+                                            results
+                                                .filter((result) => result.visible === 1)
+                                                .map((result, index) => {
 
                                                 if (index === 2 && project.id === 1) return <ScreeningsRow
                                                     screenings={screenings}/>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ScreeningRequest;
 use App\Http\Resources\ScreeningResource;
+use App\Jobs\ExportScreeningsToExcel;
 use App\Models\Screening;
 use Illuminate\Http\Request;
 
@@ -113,6 +114,13 @@ class ScreeningController extends Controller
     public function destroy(Screening $screening)
     {
         $screening->delete();
+
+        return redirect()->route('screenings.index');
+    }
+
+    public function export(Request $request)
+    {
+        ExportScreeningsToExcel::dispatch($request->type);
 
         return redirect()->route('screenings.index');
     }
