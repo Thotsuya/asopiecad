@@ -75,7 +75,6 @@ export default function useBenefitiaries(
 
     const handleSubmitForDataOnly = (approve = false) => {
 
-        console.log(previous_route)
         data.approve = approve;
 
         if (isNew) {

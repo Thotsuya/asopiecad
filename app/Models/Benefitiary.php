@@ -21,6 +21,7 @@ class Benefitiary extends Model
     protected $fillable = [
         'internal_id',
         'name',
+        'document_id',
         'internal_status',
         'approved_at',
         'deletion_reason',

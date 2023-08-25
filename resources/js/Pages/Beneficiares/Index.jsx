@@ -8,6 +8,9 @@ import useUsers from '@/Hooks/Users'
 import Filters from '@/Pages/Beneficiares/Partials/Filters'
 import useToasts from '@/Hooks/Toasts'
 import {Inertia} from '@inertiajs/inertia'
+import BeneficiaryList from "@/Components/Beneficiaries/BeneficiaryList";
+import {createFilter} from "react-select";
+import AsyncSelect from "react-select/async";
 
 export default function Index({
                                   beneficiaries_paginated,
@@ -69,6 +72,7 @@ export default function Index({
                 <Filters projects={projects} forms={forms}/>
 
                 <div className="row">
+
 
                     <div className="col-xs-12">
                         <div className="box-content">

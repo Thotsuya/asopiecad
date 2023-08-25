@@ -1,7 +1,10 @@
 import { useForm } from '@inertiajs/inertia-react'
 import useSelect from '@/Hooks/Select'
 import useToasts from '@/Hooks/Toasts'
-import Select from 'react-select'
+import Select, {createFilter} from 'react-select'
+import AsyncSelect from "react-select/async";
+import BeneficiaryList from "@/Components/Beneficiaries/BeneficiaryList";
+import {useMemo} from "react";
 
 export default function RegisterBeneficiaryModal({
     projects,
@@ -31,6 +34,8 @@ export default function RegisterBeneficiaryModal({
         )
     }
 
+
+
     const handleSubmit = (e) => {
         e.preventDefault()
         get(route('beneficiaries.create'), {
@@ -47,6 +52,13 @@ export default function RegisterBeneficiaryModal({
             preserveState: true,
         })
     }
+
+
+    const loadOptions = (inputValue, callback) => {
+        setTimeout(() => {
+            callback(beneficiaries);
+        }, 1000);
+    };
 
     return (
         <div
@@ -86,14 +98,14 @@ export default function RegisterBeneficiaryModal({
                                     <label htmlFor="name">
                                         Beneficiarios Existentes
                                     </label>
-                                    <Select
-                                        name="beneficiary_id"
-                                        options={beneficiaries.map(
-                                            (beneficiary) => ({
-                                                value: beneficiary.id,
-                                                label: beneficiary.name,
-                                            })
-                                        )}
+                                    <AsyncSelect
+                                        components={{
+                                            MenuList: BeneficiaryList,
+                                        }}
+                                        cacheOptions
+                                        defaultOptions
+                                        loadOptions={loadOptions}
+                                        filterOption={createFilter({ ignoreAccents: false })}
                                         onChange={(beneficiary) => {
                                             setData((data) => ({
                                                 ...data,
@@ -104,7 +116,7 @@ export default function RegisterBeneficiaryModal({
                                         isDisabled={data.is_new_beneficiary}
                                         noOptionsMessage={() => 'No hay datos'}
                                         placeholder="Selecciona un beneficiario"
-                                    />
+                                        />
                                     {errors.beneficiary_id && (
                                         <span className="help-block">
                                             {errors.beneficiary_id}

@@ -34,7 +34,7 @@ class BeneficiaryDataOnlyRequest extends FormRequest
             ->merge([
                 'name' => ['required', 'string', 'max:255'],
                 'forms' => ['sometimes', 'array'],
-                'approve' => ['sometimes', 'boolean'],
+                'approve' => ['nullable', 'boolean'],
                 'previous_route' => ['nullable', 'string']
             ])->toArray();
     }

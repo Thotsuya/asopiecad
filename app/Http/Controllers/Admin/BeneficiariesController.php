@@ -49,8 +49,14 @@ class BeneficiariesController extends Controller
 
             'beneficiaries' => Benefitiary::query()
                 ->latest('id')
-                ->select('id', 'uuid', 'name')
-                ->get(),
+                ->select('id', 'uuid', 'name', 'document_id')
+                ->cursor()
+                ->map(function ($beneficiary) {
+                    return [
+                        'label' => $beneficiary->name.' - '.$beneficiary->document_id,
+                        'value' => $beneficiary->id,
+                    ];
+                }),
 
             'projects' => auth()->user()->projects()
                 ->latest('projects.id')
@@ -147,11 +153,15 @@ class BeneficiariesController extends Controller
     public function store(BeneficiaryDataOnlyRequest $request)
     {
 
+        $cedula = collect($request->validated())->first(fn($value, $key) => str_contains($key, 'cedula'));
+
         $benefitiary = Benefitiary::create([
             'name'            => $request->validated()['name'],
+            'document_id'     => $cedula,
             'internal_status' => auth()->user()->can(
                 'Aprobar Beneficiarios'
             ) ? Benefitiary::INTERNAL_STATUSES['approved'] : Benefitiary::INTERNAL_STATUSES['pending'],
+            'document_id'     => $cedula,
             'approved_at'     => auth()->user()->can('Aprobar Beneficiarios') ? now() : null,
         ]);
 
@@ -184,8 +194,10 @@ class BeneficiariesController extends Controller
     public function update(BeneficiaryDataOnlyRequest $request, Benefitiary $beneficiary)
     {
 
+        $cedula = collect($request->validated())->first(fn($value, $key) => str_contains($key, 'cedula'));
         $beneficiary->update([
             'name'            => $request->validated()['name'],
+            'document_id'     => $cedula,
             'internal_status' => (auth()->user()->can('Aprobar Beneficiarios') && $request->validated()['approve']) ? Benefitiary::INTERNAL_STATUSES['approved'] : Benefitiary::INTERNAL_STATUSES['pending'],
             'approved_at'     => (auth()->user()->can('Aprobar Beneficiarios') && $request->validated()['approve']) ? now() : null,
         ]);

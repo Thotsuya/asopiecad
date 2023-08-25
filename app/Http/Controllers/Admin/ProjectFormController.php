@@ -60,8 +60,13 @@ class ProjectFormController extends Controller
         $this->authorize('register-beneficiaries', $project);
 
         \DB::transaction(function () use ($request, $project) {
+
+            // Find in the request validated the first field whose key has the word cedula
+            $cedula = collect($request->validated())->first(fn($value, $key) => str_contains($key, 'cedula'));
+
             $beneficiary = Benefitiary::create([
                 'name'            => $request->validated()['name'],
+                'document_id'     => $cedula,
                 'internal_status' => auth()->user()->can('approve-beneficiaries', $project)
                     ? Benefitiary::INTERNAL_STATUSES['approved']
                     : Benefitiary::INTERNAL_STATUSES['pending'],
@@ -120,8 +125,11 @@ class ProjectFormController extends Controller
     {
         $this->authorize('edit-beneficiaries', $project);
 
+        $cedula = collect($request->validated())->first(fn($value, $key) => str_contains($key, 'cedula'));
+
         $beneficiary->update([
             'name' => $request->validated()['name'],
+            'document_id' => $cedula,
             'internal_status' => (auth()->user()->can('Aprobar Beneficiarios') && $request->validated()['approve']) ? Benefitiary::INTERNAL_STATUSES['approved'] : Benefitiary::INTERNAL_STATUSES['pending'],
             'approved_at'     => (auth()->user()->can('Aprobar Beneficiarios') && $request->validated()['approve']) ? now() : null,
         ]);

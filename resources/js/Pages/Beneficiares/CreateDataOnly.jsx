@@ -33,7 +33,7 @@ export default function CreateDataOnly({
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        handleSubmitForDataOnly(forms)
+        handleSubmitForDataOnly()
     }
 
     return (
