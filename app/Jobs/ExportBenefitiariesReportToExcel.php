@@ -69,7 +69,12 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
 
 
 
-        $results = collect($this->project->report->fields)->unique('goal_description')->values();
+        // The ones marked as not visible will be shown first, sort the list so that they are at the top
+        $results = collect($this->project->report->fields)
+                            ->unique('goal_description')
+                            ->sortBy('visible')
+                            ->values();
+
         $global = $this->project->report->global_fields;
         $headers = $this->getHeaders(collect($results));
         $screenings = $this->getScreeningsReport('P-4211');

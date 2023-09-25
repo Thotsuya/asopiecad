@@ -97,7 +97,7 @@ export default function useBenefitiaries(
 
     function fieldType(field) {
         if (field.type === 'checkbox' || field.type === 'radio') return false
-        if (field.type === 'select') return field.options[0].value
+        if (field.type === 'select') return ''
         if (field.type === 'select multiple') return []
         if (field.type === 'text' || field.type === 'textarea') return ''
         if (field.type === 'number') return 0

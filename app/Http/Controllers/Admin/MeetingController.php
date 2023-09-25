@@ -87,10 +87,13 @@ class MeetingController extends Controller
     {
         $request->validate([
             'title' => 'required',
+            'conditions' => ['required','array'],
         ]);
+
 
         $meeting->update([
             'title' => $request->title,
+            'conditions' => $request->conditions ?? $meeting->conditions,
         ]);
 
         return redirect()->route('meetings.edit',$meeting)->with('success','Meeting updated successfully');

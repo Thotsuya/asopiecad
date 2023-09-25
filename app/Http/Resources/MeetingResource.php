@@ -29,6 +29,7 @@ class MeetingResource extends JsonResource
             'participants' => $this->whenLoaded('participants', function () {
                     return MeetingParticipantsResource::collection($this->participants);
             }),
+            'conditions' => $this->conditions,
         ];
     }
 }

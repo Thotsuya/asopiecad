@@ -36,7 +36,10 @@ class BeneficiaryFormsResource extends JsonResource
                         ];
                     })->toArray()
                 ];
-            })->toArray()
+            })->toArray(),
+            'fields' => $this->whenLoaded('fields', function () {
+                return $this->fields;
+            }),
         ];
 
     }

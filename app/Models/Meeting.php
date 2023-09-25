@@ -16,6 +16,11 @@ class Meeting extends Model
         'count',
         'meeting_target',
         'form_id',
+        'conditions',
+    ];
+
+    protected $casts = [
+        'conditions' => 'array',
     ];
 
     public function getRouteKeyName()
@@ -56,4 +61,5 @@ class Meeting extends Model
     {
         return $this->morphMany(ExcelReports::class, 'reportable');
     }
+
 }

@@ -71,6 +71,9 @@ export default function Edit({ screening, auth, type }) {
         screened_observations: screening.screened_observations,
         screened_visual_acuity_right: screening.screened_visual_acuity_right,
         screened_visual_acuity_left: screening.screened_visual_acuity_left,
+
+        institution: screening.institution,
+        application_month: screening.application_month,
         type: screening.type,
     })
 
@@ -95,7 +98,9 @@ export default function Edit({ screening, auth, type }) {
 
             <h1 className="page-title">Editar Tamizaje - {type}</h1>
 
-            <Registrant data={data} setData={setData} auth={auth} />
+            <Registrant
+                type={type}
+                data={data} setData={setData} auth={auth} />
 
             {type === 'P-4211' && (
                 <Screened

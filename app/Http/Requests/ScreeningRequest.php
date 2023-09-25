@@ -80,6 +80,8 @@ class ScreeningRequest extends FormRequest
             'screened_observations' => ['nullable', 'string'],
             'screened_visual_acuity_right' => ['nullable', 'string', 'max:255'],
             'screened_visual_acuity_left' => ['nullable', 'string', 'max:255'],
+            'institution' => ['nullable', 'string', 'max:255'],
+            'application_month' => ['nullable', 'string', 'max:255'],
 
         ];
     }

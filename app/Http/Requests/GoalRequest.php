@@ -26,7 +26,7 @@ class GoalRequest extends FormRequest
         return [
             'goal_description' => ['required', 'string', 'max:255'],
             'goal_target' => ['required', 'numeric', 'min:1'],
-            'group_every' => ['required', 'numeric', 'min:0'],
+            'group_every' => ['nullable', 'numeric', 'min:0'],
             'program_id' => ['required', 'numeric', 'min:1', 'exists:programs,id'],
             'conditions' => ['sometimes', 'array'],
             'conditions.*.label' => ['sometimes', 'string', 'max:255'],

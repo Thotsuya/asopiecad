@@ -2,7 +2,7 @@ import Select from 'react-select'
 import {Departamentos, Municipios} from '@/Constants/Departamentos'
 import {find} from 'lodash'
 
-export default function Registrant({auth, data, setData}) {
+export default function Registrant({auth, data, type, setData}) {
     const getMunicipalities = () => {
         return Municipios[
             Departamentos.findIndex(
@@ -10,6 +10,33 @@ export default function Registrant({auth, data, setData}) {
             )
             ]
     }
+
+    const institutions = [
+        {
+            label: 'ASOPIECAD',
+            value: 'ASOPIECAD'
+        },
+        {
+            label: 'MINSA',
+            value: 'MINSA'
+        }
+    ];
+
+    const months =
+        [
+            {label: 'Enero', value: 'enero'},
+            {label: 'Febrero', value: 'febrero'},
+            {label: 'Marzo', value: 'marzo'},
+            {label: 'Abril', value: 'abril'},
+            {label: 'Mayo', value: 'mayo'},
+            {label: 'Junio', value: 'junio'},
+            {label: 'Julio', value: 'julio'},
+            {label: 'Agosto', value: 'agosto'},
+            {label: 'Septiembre', value: 'septiembre'},
+            {label: 'Octubre', value: 'octubre'},
+            {label: 'Noviembre', value: 'noviembre'},
+            {label: 'Diciembre', value: 'diciembre'}
+        ]
 
     const getSelectedMunicipality = () => {
     }
@@ -26,7 +53,7 @@ export default function Registrant({auth, data, setData}) {
                         <div className="col-xs-12 col-md-3">
                             <div className="form-group">
                                 <label htmlFor="name">
-                                    Nombre de quien lo aplica
+                                    Nombre de quien lo registra
                                 </label>
                                 <input
                                     type="text"
@@ -120,6 +147,45 @@ export default function Registrant({auth, data, setData}) {
                                 />
                             </div>
                         </div>
+
+                        {type === 'P-4353' && (
+                            <>
+                                <div className="col-xs-12 col-md-3">
+                                    <div className="form-group">
+                                        <label htmlFor="date">Institución u organización</label>
+                                        <Select
+                                            id="Institución"
+                                            options={institutions}
+                                            defaultValue={institutions.find(
+                                                (option) =>
+                                                    option.value === data.institution
+                                            )}
+                                            onChange={(option) => {
+                                                setData('institution', option.value)
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="col-xs-12 col-md-3">
+                                    <div className="form-group">
+                                        <label htmlFor="date">Mes de Aplicación</label>
+                                        <Select
+                                            id="Mes"
+                                            options={months}
+                                            defaultValue={months.find(
+                                                (option) =>
+                                                    option.value === data.application_month
+                                            )}
+                                            onChange={(option) => {
+                                                setData('application_month', option.value)
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
                     </div>
                 </div>
             </div>

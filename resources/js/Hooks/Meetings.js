@@ -74,6 +74,7 @@ export default function useMeetings(
             preserveScroll: true,
             onSuccess: () => {
                 success('Reunion guardada correctamente.')
+                reset()
             },
             onError: () => {
                 error('No se pudo guardar la reunion.')

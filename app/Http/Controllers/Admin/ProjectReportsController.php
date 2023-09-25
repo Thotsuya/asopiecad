@@ -43,44 +43,11 @@ class ProjectReportsController extends Controller
         });
 
 
-        $beneficiaries = Cache::remember('beneficiaries', 60 * 15, function () use ($project, $request) {
-            return $project
-                ->beneficiaries()
-                ->approved()
-                ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
-                    $query->whereBetween('benefitiary_project.created_at', [$request->start_date, $request->end_date]);
-                })
-                ->get();
-        });
-
-
-        $labels = $beneficiaries->groupBy(function ($beneficiary) {
-            return $beneficiary->created_at->format('m');
-        })->keys()->map(function ($key) {
-            return ucfirst(Carbon::createFromDate(null, $key)->translatedFormat('F'));
-        });
-
-        $datasets = $beneficiaries->groupBy(function ($beneficiary) {
-            return $beneficiary->created_at->format('Y');
-        })->map(function($beneficiaries, $key) use($colors) {
-
-            $color = $colors[rand(0, count($colors) - 1)];
-            return [
-                'label' => $key,
-                'data' => $beneficiaries->groupBy(function ($beneficiary) {
-                    return $beneficiary->created_at->format('m');
-                })->map(function ($beneficiaries) {
-                    return $beneficiaries->count();
-                })->values()->toArray(),
-                'backgroundColor' => $color,
-                'borderColor' =>  $color,
-            ];
-        })->values()->toArray();
-
-
-
         $results = $project->report->fields;
+        dd($results);
+
         $headers = $this->getHeaders(collect($results));
+
         $globalResults = $project->report->global_fields;
 
 
@@ -88,12 +55,12 @@ class ProjectReportsController extends Controller
             'project' => $project,
             'global' => $globalResults,
             'results' => $results,
-            'labels' => $labels,
-            'datasets' => $datasets,
             'headers' => $headers,
             'start_date' => $request->date('start_date') ? $request->date('start_date')->translatedFormat('l d F Y') : null,
             'end_date' => $request->date('end_date') ? $request->date('end_date')->translatedFormat('l d F Y') : null,
-            'screenings' => $this->getScreeningsReport(),
+            'screenings' => Cache::remember('screenings-' . $project->id, 60 * 15, function () use ($project) {
+                return $this->getScreeningsReport();
+            }),
             'meeting_goals' => MeetingResource::collection($project->meetings)
         ]);
     }

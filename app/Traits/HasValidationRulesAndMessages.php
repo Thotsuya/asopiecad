@@ -1,6 +1,10 @@
 <?php
 namespace App\Traits;
 
+use App\Rules\ValidateDocumentRule;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
+
 trait HasValidationRulesAndMessages {
 
     public function getFormValidationRules()
@@ -10,6 +14,12 @@ trait HasValidationRulesAndMessages {
             collect($this->fields)->each(function ($field) use (&$rules) {
 
                 $rule = [];
+
+                if ($field['required']) {
+                    $rule[] = ['required'];
+                }else{
+                    $rule[] = ['nullable'];
+                }
 
                 match ($field['type']) {
                     'email' => $rule[] = ['email'],
@@ -22,6 +32,12 @@ trait HasValidationRulesAndMessages {
                     default => $rule[] = ['string'],
                 };
 
+                // If th field slug contains the word cedula, then we need to validate it as a cedula
+                // with the format XXX-XXXXXX-XXXXX where X is a number or letter
+                if (Str::contains(strtolower($field['slug']), ['cedula'])) {
+                    //XXX-XXXXXX-XXXXX where X is a number or letter
+                    $rule[] = 'regex:/^[0-9,A-Z,a-z]{3}-[0-9,A-Z,a-z]{6}-[0-9,A-Z,a-z]{5}$/';
+                }
 
                 $rules[$field['slug'] . '-' . $this->form_slug . '-' . $this->id] = $rule;
             });
@@ -37,30 +53,20 @@ trait HasValidationRulesAndMessages {
                     $messages[$field['slug'] . '-' . $this->form_slug . '-' . $this->id . '.required'] = 'El campo ' . $field['name'] . ' es requerido';
                 }
 
-                if ($field['type'] == 'email') {
-                    $messages[$field['slug'] . '-' . $this->form_slug . '-' . $this->id . '.email'] = 'El campo ' . $field['name'] . ' debe ser un correo electrónico válido';
+                match ($field['type']) {
+                    'email' => $messages[$field['slug'] . '-' . $this->form_slug . '-' . $this->id . '.email'] = 'El campo ' . $field['name'] . ' debe ser un correo electrónico válido',
+                    'number' => $messages[$field['slug'] . '-' . $this->form_slug . '-' . $this->id . '.numeric'] = 'El campo ' . $field['name'] . ' debe ser un número',
+                    'date' => $messages[$field['slug'] . '-' . $this->form_slug . '-' . $this->id . '.date'] = 'El campo ' . $field['name'] . ' debe ser una fecha válida',
+                    'file' => $messages[$field['slug'] . '-' . $this->form_slug . '-' . $this->id . '.file'] = 'El campo ' . $field['name'] . ' debe ser un archivo válido',
+                    'image' => $messages[$field['slug'] . '-' . $this->form_slug . '-' . $this->id . '.image'] = 'El campo ' . $field['name'] . ' debe ser una imagen válida',
+                    'select multiple' => $messages[$field['slug'] . '-' . $this->form_slug . '-' . $this->id . '.array'] = 'El campo ' . $field['name'] . ' debe ser un arreglo',
+                    default => $messages[$field['slug'] . '-' . $this->form_slug . '-' . $this->id . '.string'] = 'El campo ' . $field['name'] . ' debe ser un texto válido',
+                };
+
+                if (Str::contains(strtolower($field['slug']), ['cedula'])) {
+                    $messages[$field['slug'] . '-' . $this->form_slug . '-' . $this->id . '.regex'] = 'El campo ' . $field['name'] . ' debe ser una cédula válida';
                 }
 
-                if ($field['type'] == 'number') {
-                    $messages[$field['slug'] . '-' . $this->form_slug . '-' . $this->id . '.numeric'] = 'El campo ' . $field['name'] . ' debe ser un número';
-                }
-
-                if ($field['type'] == 'date') {
-                    $messages[$field['slug'] . '-' . $this->form_slug . '-' . $this->id . '.date'] = 'El campo ' . $field['name'] . ' debe ser una fecha válida';
-                }
-
-                if ($field['type'] == 'file') {
-                    $messages[$field['slug'] . '-' . $this->form_slug . '-' . $this->id . '.file'] = 'El campo ' . $field['name'] . ' debe ser un archivo válido';
-                }
-
-                if ($field['type'] == 'image') {
-                    $messages[$field['slug'] . '-' . $this->form_slug . '-' . $this->id . '.image'] = 'El campo ' . $field['name'] . ' debe ser una imagen válida';
-                }
-
-                if ($field['type'] == 'text') {
-                    $messages[$field['slug'] . '-' . $this->form_slug . '-' . $this->id . '.string'] = 'El campo ' . $field['name'] . ' debe ser un texto válido';
-                    $messages[$field['slug'] . '-' . $this->form_slug . '-' . $this->id . '.max'] = 'El campo ' . $field['name'] . ' debe tener un máximo de 255 caracteres';
-                }
             });
 
         return $messages;

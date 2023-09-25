@@ -35,6 +35,10 @@ trait DynamicComparisons{
 
     private function equal($value_a, $value_b){
 
+        if(is_array($value_b) && is_array($value_a)){
+            return Arr::is($value_a, $value_b);
+        }
+
         if(is_array($value_b)){
             return in_array($value_a, $value_b);
         }

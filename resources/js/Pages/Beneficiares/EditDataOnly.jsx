@@ -188,13 +188,13 @@ export default function EditDataOnly({
                                                                         false
                                                                     }
                                                                     onChange={(
-                                                                        e
+                                                                        value
                                                                     ) => {
+
+
                                                                         setData(
                                                                             `${field.slug}-${form.form_slug}-${form.id}`,
-                                                                            e
-                                                                                .target
-                                                                                .value
+                                                                            value
                                                                         )
                                                                     }}
                                                                     value={

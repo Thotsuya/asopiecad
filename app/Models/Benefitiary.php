@@ -68,7 +68,7 @@ class Benefitiary extends Model
 
     public function programs()
     {
-        return $this->belongsToMany(Program::class)->withTimestamps();
+        return $this->belongsToMany(Program::class)->withTrashed()->withTimestamps();
     }
 
     public function appointments()
@@ -113,7 +113,7 @@ class Benefitiary extends Model
             'program_id' => $query->whereHas('programs', function ($query) use ($request) {
                 $query->where('programs.id', '=', $request->value);
             }),
-            default => $query,
+            default => $query->where('name', 'like', "%{$request->value}%"),
         };
     }
 

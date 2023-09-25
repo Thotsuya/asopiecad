@@ -338,14 +338,16 @@ export default function Show({
                                                 </tr>
                                                 {result.goals
                                                     .map((goal, index) => {
-                                                    let result = JSON.parse(goal.pivot.value);
+                                                        let result = JSON.parse(goal.pivot.value);
 
-                                                    return <ResultRow key={`goal-${index}`} headers={headers} result={result} showGoalDescription={false} />
-                                                })}
+                                                        return <ResultRow key={`goal-${index}`} headers={headers}
+                                                                          result={result} showGoalDescription={false}/>
+                                                    })}
                                                 {result.meetings.map((meeting, index) => {
                                                     let result = JSON.parse(meeting.pivot.value);
 
-                                                    return <ResultRow key={`meeting-${index}`} headers={headers} result={result} showGoalDescription={false}/>
+                                                    return <ResultRow key={`meeting-${index}`} headers={headers}
+                                                                      result={result} showGoalDescription={false}/>
                                                 })}
 
                                             </>
@@ -424,11 +426,16 @@ export default function Show({
                                                 .filter((result) => result.visible === 1)
                                                 .map((result, index) => {
 
-                                                if (index === 2 && project.id === 1) return <ScreeningsRow
-                                                    screenings={screenings}/>
+                                                    if (index === 2 && project.id === 1) return <ScreeningsRow
+                                                        screenings={screenings}/>
 
-                                                return <ResultRow key={`goal-result-${index}`} headers={headers} result={result} />
-                                            })}
+                                                    return <ResultRow
+                                                        key={`goal-result-${index}`}
+                                                        headers={headers}
+                                                        result={result}
+                                                        highlightIfNotActive
+                                                    />
+                                                })}
                                         </tbody>
                                     </table>
                                 </div>
@@ -607,20 +614,6 @@ export default function Show({
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-
-                {datasets && (
-                    <div className="col-xs-12 col-md-12">
-                        <div className="box-content">
-                            <div className="row">
-                                <div className="col-xs-12">
-                                    <Line options={options} data={data}/>
-                                </div>
-
                             </div>
                         </div>
                     </div>

@@ -16,7 +16,13 @@ trait ReportResults
 
     public function getProjectResults(Collection $goals, Collection $meetings)
     {
+
         return $goals->map(function ($goal) {
+
+            if($goal->goal_description == 'R1.A8 Acompañamiento de miembros de redes comunitarias relacionadas a información básica pre y post quirúrgica.'){
+                dd($goal->conditions);
+            }
+
             return [
                 'id'               => $goal->id,
                 'goal_description' => $goal->goal_description,
@@ -27,6 +33,7 @@ trait ReportResults
                 'type'             => 'goal',
                 'goal_target_year' => $goal->goal_target / $goal->program->project->project_duration,
                 'order'            => $goal->program->order,
+                'active'           => $goal->program->deleted_at === null,
                 'program'          => [
                     'id'                   => $goal->program->id,
                     'program_name'         => $goal->program->program_name,
@@ -49,6 +56,7 @@ trait ReportResults
                 ],
                 'conditions'       => collect($goal->conditions)->map(
                     function ($condition) use ($goal) {
+
                         return [
                             'label' => $condition['label'],
                             'value' => $goal->program->beneficiaries
@@ -71,6 +79,14 @@ trait ReportResults
                                             $condition['field_value']
                                         );
 
+
+                                        if($goal->goal_description == 'R1.A8 Acompañamiento de miembros de redes comunitarias relacionadas a información básica pre y post quirúrgica.'){
+                                            info('Beneficiary', [$beneficiary->name]);
+                                            info('field', [$field]);
+                                            info('condition', [$condition]);
+                                            info('meetsCondition', [$meetsCondition]);
+                                        }
+
                                         if (!$meetsCondition) {
                                             return false;
                                         }
@@ -81,23 +97,67 @@ trait ReportResults
 
                         ];
                     }
-                )->toArray(),
+                    // Group the conditions by label and map them to a new collection with the label and the sum of the values
+                )
+
             ];
         })->merge(
             $meetings->map(function ($meeting) {
                 return [
-                    'id'               => $meeting->id,
-                    'goal_description' => $meeting->title,
-                    'visible'       => 1,
-                    'goal_target'      => $meeting->meeting_target,
-                    'current_progress' => $meeting->count,
+                    'id'                   => $meeting->id,
+                    'goal_description'     => $meeting->title,
+                    'visible'              => 1,
+                    'goal_target'          => $meeting->meeting_target,
+                    'current_progress'     => $meeting->count,
                     'completed_percentage' => round(
                         $meeting->count / $meeting->meeting_target * 100,
                         2
                     ),
-                    'pending'          => max($meeting->meeting_target - $meeting->count, 0),
-                    'type'             => 'meeting',
-                    'order'            => $meeting->order
+                    'pending'              => max($meeting->meeting_target - $meeting->count, 0),
+                    'type'                 => 'meeting',
+                    'order'                => $meeting->order,
+                    'conditions'           => collect($meeting->conditions)->map(
+                        function ($condition) use ($meeting) {
+                            return [
+                                'label'  => $condition['label'],
+                                'target' => $condition['target'],
+                                'count'  => $meeting->participants->filter(function ($participant) use ($condition) {
+                                    $meetsCondition = true;
+
+
+                                    // Find the first whose key is the $condition['field_slug'] and whose value is the $condition['field_value']
+
+                                    $field = collect($participant->form_data)->filter(
+                                        function ($value, $key) use ($condition) {
+                                            return $key === $condition['field_slug'];
+                                        }
+                                    )->first();
+
+                                    if (!$field) {
+                                        return false;
+                                    }
+
+                                    $meetsCondition = $this->is(
+                                        Str::startsWith($field, '["') && Str::endsWith($field, '"]') ? json_decode(
+                                            $field
+                                        ) : $field,
+                                        $condition['operand'],
+                                        $condition['field_value']
+                                    );
+
+
+                                    if (!$meetsCondition) {
+                                        return false;
+                                    }
+
+
+                                    return $meetsCondition;
+                                })->count(),
+                            ];
+                        }
+
+                    // Iterate the new collection and if there are any conditions with the same label, sum the count and target
+                    )
                 ];
             })
         )->sortBy('order')->values();
@@ -169,18 +229,18 @@ trait ReportResults
         $screenings = Screening::where('type', $type)->get();
 
         return [
-            'title'                                 => 'Realización de tamizaje de 7,200 niños y niñas de 0 a 06 años a través de visitas domiciliares en la comunidad, centros de desarrollo infantil y preescolares comunitarios a través de redes comunitarias',
-            'goal' => 7200,
-            'total_screenings'                      => $screenings->count(),
-            'completed_percentage'                  => round(
+            'title'                              => 'Realización de tamizaje de 7,200 niños y niñas de 0 a 06 años a través de visitas domiciliares en la comunidad, centros de desarrollo infantil y preescolares comunitarios a través de redes comunitarias',
+            'goal'                               => 7200,
+            'total_screenings'                   => $screenings->count(),
+            'completed_percentage'               => round(
                 $screenings->count() / 7200 * 100,
                 2
             ),
-            'anual_goal' => 'N/A',
-            'males_below_18_with_disabilities' => 0,
+            'anual_goal'                         => 'N/A',
+            'males_below_18_with_disabilities'   => 0,
             'females_below_18_with_disabilities' => 0,
-            'males_over_18_with_disabilities' => 0,
-            'females_over_18_with_disabilities' => 0,
+            'males_over_18_with_disabilities'    => 0,
+            'females_over_18_with_disabilities'  => 0,
 
             'males_below_18_without_disabilities'   => $screenings->filter(function ($screening) {
                 return floatval(
@@ -202,55 +262,91 @@ trait ReportResults
                         trim(str_replace('meses', '', $screening->age))
                     ) / 12 > 18 && $screening->gender == 'femenino';
             })->count(),
-            'visits' => 'N/A',
-            'total' => $screenings->count(),
-            'pending' => 7200 - $screenings->count(),
+            'visits'                                => 'N/A',
+            'total'                                 => $screenings->count(),
+            'pending'                               => 7200 - $screenings->count(),
         ];
     }
 
-    public function getHeadersForScreenings($type){
-        return match ($type){
+    public function getHeadersForScreenings($type)
+    {
+        return match ($type) {
             'P-4211' =>
-                    [
-                        'Nombre de quien lo aplica' => 'registrant_name',
-                        'Departamento' => 'department',
-                        'Municipio' => 'municipality',
-                        'Fecha de Aplicación' => 'date_of_screening',
-                        'Nombre y Apellido' => 'name',
-                        'Edad' => 'age',
-                        'Sexo' => 'gender',
-                        'Comunicación' => ['communication_level_1', 'communication_level_2', 'communication_level_3', 'communication_level_4', 'communication_level_5','communication_level_6'],
-                        'Movimiento Amplio' => ['wide_movements_level_1', 'wide_movements_level_2', 'wide_movements_level_3', 'wide_movements_level_4', 'wide_movements_level_5','wide_movements_level_6'],
-                        'Movimientos Finos' => ['fine_movements_level_1', 'fine_movements_level_2', 'fine_movements_level_3', 'fine_movements_level_4', 'fine_movements_level_5','fine_movements_level_6'],
-                        'Resolución de Problemas' => ['problem_solving_level_1', 'problem_solving_level_2', 'problem_solving_level_3', 'problem_solving_level_4', 'problem_solving_level_5','problem_solving_level_6'],
-                        'Socio Individual' => ['social_individual_level_1', 'social_individual_level_2', 'social_individual_level_3', 'social_individual_level_4', 'social_individual_level_5','social_individual_level_6'],
-                    ],
+            [
+                'Nombre de quien lo aplica' => 'registrant_name',
+                'Departamento'              => 'department',
+                'Municipio'                 => 'municipality',
+                'Fecha de Aplicación'       => 'date_of_screening',
+                'Nombre y Apellido'         => 'name',
+                'Edad'                      => 'age',
+                'Sexo'                      => 'gender',
+                'Comunicación'              => [
+                    'communication_level_1',
+                    'communication_level_2',
+                    'communication_level_3',
+                    'communication_level_4',
+                    'communication_level_5',
+                    'communication_level_6'
+                ],
+                'Movimiento Amplio'         => [
+                    'wide_movements_level_1',
+                    'wide_movements_level_2',
+                    'wide_movements_level_3',
+                    'wide_movements_level_4',
+                    'wide_movements_level_5',
+                    'wide_movements_level_6'
+                ],
+                'Movimientos Finos'         => [
+                    'fine_movements_level_1',
+                    'fine_movements_level_2',
+                    'fine_movements_level_3',
+                    'fine_movements_level_4',
+                    'fine_movements_level_5',
+                    'fine_movements_level_6'
+                ],
+                'Resolución de Problemas'   => [
+                    'problem_solving_level_1',
+                    'problem_solving_level_2',
+                    'problem_solving_level_3',
+                    'problem_solving_level_4',
+                    'problem_solving_level_5',
+                    'problem_solving_level_6'
+                ],
+                'Socio Individual'          => [
+                    'social_individual_level_1',
+                    'social_individual_level_2',
+                    'social_individual_level_3',
+                    'social_individual_level_4',
+                    'social_individual_level_5',
+                    'social_individual_level_6'
+                ],
+            ],
             'P-4353' =>
-                    [
-                        'Nombre de quien lo aplica' => 'registrant_name',
-                        'Departamento' => 'department',
-                        'Municipio' => 'municipality',
-                        'Fecha de Aplicación' => 'date_of_screening',
-                        '1er Nombre' => 'first_name',
-                        '2do Nombre' => 'second_name',
-                        '1er Apellido' => 'first_surname',
-                        '2do Apellido' => 'second_surname',
-                        'Sexo' => 'gender',
-                        'Edad' => 'age',
-                        'Discapacidad Si / No' => 'disability_yes_no',
-                        'Tipo de discapacidad o alteración en el desarrollo' => 'disability_type',
-                        'Fecha de Nacimiento' => 'date_of_birth',
-                        'Cédula de Identidad' => 'document',
-                        'Dirección' => 'address',
-                        'Departamento del Tamizado' => 'screened_deparment',
-                        'Municipio del Tamizado' => 'screened_municipality',
-                        'Teléfono' => 'screened_phone_number',
-                        'Agudeza Visual' => 'screened_visual_acuity',
-                        'Referidos' => 'screened_refered',
-                        'Observaciones' => 'screened_observations',
-                        'Agudeza Visual Ojo Derecho' => 'screened_visual_acuity_right',
-                        'Agudeza Visual Ojo Izquierdo' => 'screened_visual_acuity_left',
-                    ]
+            [
+                'Nombre de quien lo aplica'                          => 'registrant_name',
+                'Departamento'                                       => 'department',
+                'Municipio'                                          => 'municipality',
+                'Fecha de Aplicación'                                => 'date_of_screening',
+                '1er Nombre'                                         => 'first_name',
+                '2do Nombre'                                         => 'second_name',
+                '1er Apellido'                                       => 'first_surname',
+                '2do Apellido'                                       => 'second_surname',
+                'Sexo'                                               => 'gender',
+                'Edad'                                               => 'age',
+                'Discapacidad Si / No'                               => 'disability_yes_no',
+                'Tipo de discapacidad o alteración en el desarrollo' => 'disability_type',
+                'Fecha de Nacimiento'                                => 'date_of_birth',
+                'Cédula de Identidad'                                => 'document',
+                'Dirección'                                          => 'address',
+                'Departamento del Tamizado'                          => 'screened_deparment',
+                'Municipio del Tamizado'                             => 'screened_municipality',
+                'Teléfono'                                           => 'screened_phone_number',
+                'Agudeza Visual'                                     => 'screened_visual_acuity',
+                'Referidos'                                          => 'screened_refered',
+                'Observaciones'                                      => 'screened_observations',
+                'Agudeza Visual Ojo Derecho'                         => 'screened_visual_acuity_right',
+                'Agudeza Visual Ojo Izquierdo'                       => 'screened_visual_acuity_left',
+            ]
         };
     }
 }

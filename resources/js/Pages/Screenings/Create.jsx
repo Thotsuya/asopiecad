@@ -1,16 +1,16 @@
-import { Head, useForm } from '@inertiajs/inertia-react'
+import {Head, useForm} from '@inertiajs/inertia-react'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import Registrant from '@/Pages/Screenings/Partials/Registrant'
 import Screened from '@/Pages/Screenings/Partials/Screened'
 import useToasts from '@/Hooks/Toasts'
 import ScreenedP4353 from "@/Pages/Screenings/Partials/ScreenedP4353";
 
-export default function Create({ auth, type }) {
-    const { data, setData, post, processing, errors, reset } = useForm({
+export default function Create({auth, type}) {
+    const {data, setData, post, processing, errors, reset} = useForm({
         department: 'managua',
         municipality: null,
         date_of_screening: new Date().toISOString().split('T')[0],
-        registrant_name: '',
+        registrant_name: auth.user.name,
         name: '',
         age: '',
         gender: '',
@@ -73,7 +73,7 @@ export default function Create({ auth, type }) {
         screened_visual_acuity_left: '',
     })
 
-    const { success, error } = useToasts()
+    const {success, error} = useToasts()
 
     const handleFormSubmit = () => {
         post(route('screenings.store'), {
@@ -91,11 +91,15 @@ export default function Create({ auth, type }) {
 
     return (
         <AuthenticatedLayout auth={auth}>
-            <Head title="Registrar Tamizaje" />
+            <Head title="Registrar Tamizaje"/>
 
             <h1 className="page-title">Registrar Tamizaje - {type}</h1>
 
-            <Registrant data={data} setData={setData} auth={auth} />
+            <Registrant
+                type={type}
+                data={data}
+                setData={setData}
+                auth={auth}/>
 
             {type === 'P-4211' && (
                 <Screened

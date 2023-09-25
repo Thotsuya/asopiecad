@@ -49,6 +49,7 @@ export const OPERANDS = [
         label: 'Igual a',
         form_type: [
             'text',
+            'textarea',
             'number',
             'date',
             'select',
@@ -62,6 +63,7 @@ export const OPERANDS = [
         label: 'Diferente a',
         form_type: [
             'text',
+            'textarea',
             'number',
             'date',
             'select',
@@ -85,22 +87,22 @@ export const OPERANDS = [
     {
         value: 'contains',
         label: 'Contiene',
-        form_type: ['text', 'select', 'select multiple', 'checkbox', 'radio'],
+        form_type: ['text','textarea', 'select', 'select multiple', 'checkbox', 'radio'],
     },
     {
         value: 'not contains',
         label: 'No contiene',
-        form_type: ['text', 'select', 'select multiple', 'checkbox', 'radio'],
+        form_type: ['text','textarea', 'select', 'select multiple', 'checkbox', 'radio'],
     },
     {
         value: 'starts with',
         label: 'Empieza con',
-        form_type: ['text', 'select', 'select multiple', 'checkbox', 'radio'],
+        form_type: ['text','textarea', 'select', 'select multiple', 'checkbox', 'radio'],
     },
     {
         value: 'ends with',
         label: 'Termina con',
-        form_type: ['text', 'select', 'select multiple', 'checkbox', 'radio'],
+        form_type: ['text','textarea', 'select', 'select multiple', 'checkbox', 'radio'],
     },
 ]
 
