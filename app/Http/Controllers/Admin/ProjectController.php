@@ -164,6 +164,9 @@ class ProjectController extends Controller
                 ->through(function ($meeting) {
                     return MeetingResource::make($meeting);
                 }),
+            'inventory' => $project->inventory()
+                ->with('inventoryItems')
+                ->get()
         ]);
     }
 

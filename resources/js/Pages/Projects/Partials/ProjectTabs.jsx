@@ -108,6 +108,20 @@ export default function ProjectTabs({ project }) {
 
                 </a>
             </li>
+            <li role="presentation">
+                <a
+                    href="#inventory"
+                    role="tab"
+                    id="inventory-tab"
+                    data-toggle="tab"
+                    aria-controls="inventory"
+                >
+                    Inventario{' '}
+                    {/*An icon related to inventory*/}
+                    <i className="fa fa-clipboard" aria-hidden="true" />
+
+                </a>
+            </li>
         </ul>
     )
 }

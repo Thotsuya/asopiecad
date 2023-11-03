@@ -48,6 +48,26 @@ export default function Index({
         })
     }
 
+    const handleDelete = (beneficiary) => {
+        prompt(
+            '¿Estás seguro de eliminar este beneficiario?',
+            'Esta acción no se puede deshacer.'
+        ).then((result) => {
+            if (result.value) {
+                Inertia.delete(
+                    route('beneficiaries.destroy', beneficiary.uuid),
+                    {
+                        preserveScroll: true,
+                        preserveState: true,
+                        onSuccess: () => {
+                            success('El participante ha sido eliminado.')
+                        },
+                    }
+                )
+            }
+        })
+    }
+
 
     return (
         <>
@@ -212,6 +232,26 @@ export default function Index({
                                                                     >
                                                                         <i className="fa fa-edit"></i>
                                                                     </Link>
+                                                                )}
+
+                                                                {can(
+                                                                    'Eliminar Beneficiarios',
+                                                                    auth
+                                                                        .user
+                                                                        .abilities
+                                                                ) && (
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-danger btn-sm"
+                                                                        onClick={() => {
+                                                                            handleDelete(
+                                                                                beneficiary
+                                                                            )
+                                                                        }}
+                                                                        title="Eliminar"
+                                                                    >
+                                                                        <i className="fa fa-trash"></i>
+                                                                    </button>
                                                                 )}
                                                             </>
                                                         )}

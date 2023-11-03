@@ -7,7 +7,7 @@ import {Inertia} from "@inertiajs/inertia";
 import Select from "react-select";
 import useToasts from "@/Hooks/Toasts";
 
-export default function Index({ auth, screenings, type }) {
+export default function Index({ auth, screenings, type, can : userCan }) {
     const { can } = useUsers()
     const {prompt, success, error} = useToasts()
 
@@ -242,24 +242,28 @@ export default function Index({ auth, screenings, type }) {
                         </div>
                         <div class="modal-body">
                             <div className="row">
-                                <div className="col-xs-12">
-                                    <button
-                                        type="button"
-                                        onClick={() => onScreeningCreate('P-4211')}
-                                        data-dismiss="modal"
-                                        className="btn btn-submit-prj btn-block waves-effect waves-light btn-info">
-                                        <i className="fa fa-plus" /> Tamizaje P-4211
-                                    </button>
-                                </div>
-                                <div className="col-xs-12 margin-top-15">
-                                    <button
-                                        type="button"
-                                        onClick={() => onScreeningCreate('P-4353')}
-                                        data-dismiss="modal"
-                                        className="btn btn-submit-prj btn-block waves-effect waves-light btn-info">
-                                        <i className="fa fa-plus" /> Tamizaje P-4353
-                                    </button>
-                                </div>
+                                {userCan['P4211'] && (
+                                    <div className="col-xs-12">
+                                        <button
+                                            type="button"
+                                            onClick={() => onScreeningCreate('P-4211')}
+                                            data-dismiss="modal"
+                                            className="btn btn-submit-prj btn-block waves-effect waves-light btn-info">
+                                            <i className="fa fa-plus" /> Tamizaje P-4211
+                                        </button>
+                                    </div>
+                                )}
+                                {userCan['P4353'] && (
+                                    <div className="col-xs-12 margin-top-15">
+                                        <button
+                                            type="button"
+                                            onClick={() => onScreeningCreate('P-4353')}
+                                            data-dismiss="modal"
+                                            className="btn btn-submit-prj btn-block waves-effect waves-light btn-info">
+                                            <i className="fa fa-plus" /> Tamizaje P-4353
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <div class="modal-footer">

@@ -26,6 +26,7 @@ import GeneralInformation from '@/Pages/Projects/Partials/GeneralInformation'
 import ProgramBeneficiaryModal from '@/Pages/Projects/Partials/ProgramBeneficiaryModal'
 import MeetingsTab from "@/Pages/Projects/Partials/MeetingsTab";
 import ResultsTab from "@/Pages/Projects/Partials/Results";
+import InventoryTab from "@/Pages/Projects/Partials/InventoryTab";
 
 export default function Show({
     auth,
@@ -39,7 +40,8 @@ export default function Show({
     meetings,
     paginated_appointments,
     beneficiaries_not_in_project,
-    unpaginated_goals
+    unpaginated_goals,
+    inventory,
 }) {
     const [selectedBeneficiary, setSelectedBeneficiary] = useState(null)
     const [selectedAppointment, setSelectedAppointment] = useState(null)
@@ -120,6 +122,12 @@ export default function Show({
                                     project={project}
                                     goals={unpaginated_goals}
                                     meetings={project.meetings}
+                                    />
+
+                                <InventoryTab
+                                    project={project}
+                                    forms={forms}
+                                    inventory={inventory}
                                     />
                             </div>
                         </div>

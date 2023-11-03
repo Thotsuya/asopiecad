@@ -26,12 +26,16 @@ class BeneficiaryResource extends JsonResource
             'beneficiary_data' => $this->whenLoaded('answers',function(){
                 return $this->answers->map(function($answer){
                     return [$answer->pivot->field->getFieldFormattedSlug() =>
-                        Str::startsWith($answer->pivot->value, '["') && Str::endsWith($answer->pivot->value, '"]')
-                            ? json_decode($answer->pivot->value) : $answer->pivot->value
+                        // If the answer is an array, then decode it, otherwise return the value, arrays starts with [" and ends with "], or
+                        (Str::startsWith($answer->pivot->value, '["') && Str::endsWith($answer->pivot->value, '"]'))
+                        || $answer->pivot->value === '[]'
+
+                            ? json_decode($answer->pivot->value)
+                            : $answer->pivot->value
                     ];
                 })->collapse()->toArray();
             }),
-            'badge' => match ($this->internal_status) {
+            'badge' => $this->deleted_at ? 'danger' : match ($this->internal_status) {
                 'Pendiente de aprobación' => 'warning',
                 'Aprobado' => 'success',
                 'Rechazado', 'Eliminado' => 'danger',

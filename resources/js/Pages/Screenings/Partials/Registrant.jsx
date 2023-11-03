@@ -46,14 +46,14 @@ export default function Registrant({auth, data, type, setData}) {
             <div className="col-xs-12">
                 <div className="box-content">
                     <h4 className="box-title">
-                        <i className="fa fa-user"/> Datos del registrante
+                        <i className="fa fa-user"/> {type === 'P-4353' ? 'Datos del registrante': 'Datos de quien lo aplica'}
                     </h4>
 
                     <div className="row">
                         <div className="col-xs-12 col-md-3">
                             <div className="form-group">
                                 <label htmlFor="name">
-                                    Nombre de quien lo registra
+                                    {type === 'P-4353'? ' Nombre de quien lo registra' : 'Nombre de quien lo aplica'}
                                 </label>
                                 <input
                                     type="text"

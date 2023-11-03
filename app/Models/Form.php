@@ -54,4 +54,9 @@ class Form extends Model
     {
         return $this->hasMany(Meeting::class);
     }
+
+    public function inventories()
+    {
+        return $this->hasMany(Inventory::class);
+    }
 }

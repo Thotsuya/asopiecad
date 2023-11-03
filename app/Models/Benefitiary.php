@@ -171,4 +171,9 @@ class Benefitiary extends Model
             default => $value,
         };
     }
+
+    public function getInternalStatusAttribute($value)
+    {
+       return $this->deleted_at ? 'Eliminado': $value;
+    }
 }

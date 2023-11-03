@@ -36,7 +36,7 @@ class ProjectReportsController extends Controller
                     'beneficiaries',
                     'meetings.participants',
                     'groupedResults.goals',
-                    'groupedResults.meetings',
+                    'groupedResults.meetings'
                 ])
 
                 ->loadCount(['beneficiaries','meetings']);
@@ -44,7 +44,6 @@ class ProjectReportsController extends Controller
 
 
         $results = $project->report->fields;
-        dd($results);
 
         $headers = $this->getHeaders(collect($results));
 
@@ -59,7 +58,7 @@ class ProjectReportsController extends Controller
             'start_date' => $request->date('start_date') ? $request->date('start_date')->translatedFormat('l d F Y') : null,
             'end_date' => $request->date('end_date') ? $request->date('end_date')->translatedFormat('l d F Y') : null,
             'screenings' => Cache::remember('screenings-' . $project->id, 60 * 15, function () use ($project) {
-                return $this->getScreeningsReport();
+                return $this->getScreeningsReport($project->id === 1 ? 'P-4211' : 'P-4353');
             }),
             'meeting_goals' => MeetingResource::collection($project->meetings)
         ]);

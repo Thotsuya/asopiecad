@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Screening extends Model
 {
@@ -109,6 +110,12 @@ class Screening extends Model
     public function scopeFilterByType($query,$type = 'P-4211'){
         return $query->when($type, function($query) use($type){
             $query->where('type', $type);
+        });
+    }
+
+    public function scopeWhereUserCanAccess($query,$user){
+        return $query->when($user->hasRole('user'), function($query) use($user){
+            $query->where('user_id', $user->id);
         });
     }
 }

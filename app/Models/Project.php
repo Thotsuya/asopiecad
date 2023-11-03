@@ -73,4 +73,9 @@ class Project extends Model implements HasMedia
     {
         return $this->hasMany(GroupedResult::class);
     }
+
+    public function inventory()
+    {
+        return $this->hasMany(Inventory::class);
+    }
 }

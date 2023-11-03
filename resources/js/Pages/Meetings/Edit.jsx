@@ -549,14 +549,18 @@ export default function Edit({auth, meeting}) {
                                     {meeting.participants.length > 0 ? (
                                         meeting.participants.map((participant, index) => (
                                             <tr key={`participant-${index}`}>
-                                                {Object.values(participant.form_data).map((value, index) => (
-                                                    <td key={`value-${index}`}>
-                                                        {
-                                                            // If the value is an array, print the values separated by comma
-                                                            Array.isArray(value) ? value.join(', ') : value.length > 20 ? value.substring(0, 20) + '...' : value
-                                                        }
-                                                    </td>
-                                                ))}
+                                                {Object.values(participant.form_data).map((value, index) => {
+                                                    return value ? (
+                                                        <td key={`value-${index}`}>
+                                                            {
+                                                                // If the value is an array, print the values separated by comma
+                                                                Array.isArray(value) ? value.join(', ') : value.length > 20 ? value.substring(0, 20) + '...' : value
+                                                            }
+                                                        </td>
+                                                    ) : (
+                                                        <td key={`value-${index}`}>-</td>
+                                                    )
+                                                })}
                                                 <td className="text-center">
                                                     <button
                                                         onClick={() => toggleEditMode(participant)}

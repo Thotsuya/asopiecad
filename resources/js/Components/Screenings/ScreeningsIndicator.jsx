@@ -12,7 +12,7 @@ export default function ScreeningsRow({screenings}){
                 }}
             >
                 <strong>
-                    7200
+                    {screenings.goal}
                 </strong>
             </td>
             <td className="text-center bg-info text-sm padding-10">

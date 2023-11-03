@@ -9,6 +9,7 @@ import SelectInput from '@/Pages/Forms/Fields/SelectInput'
 import RadioInput from '@/Pages/Forms/Fields/RadioInput'
 import SmallInput from '@/Pages/Forms/Fields/SmallInput'
 import { useEffect } from 'react'
+import useUsers from "@/Hooks/Users";
 
 export default function EditDataOnly({
     auth,
@@ -26,6 +27,8 @@ export default function EditDataOnly({
         processing,
         isDirty,
     } = useBenefitiaries(forms, is_new, _, beneficiary,previous_route)
+
+    const { can } = useUsers()
 
     useEffect(() => {
         if (!is_new) {
@@ -345,22 +348,24 @@ export default function EditDataOnly({
                         )}
                     </button>
                 </div>
-                <div className="col-xs-6">
-                    <button
-                        className="btn btn-success btn-block"
-                        onClick={handleSubmitAndApprove}
-                        disabled={processing}
-                    >
-                        {processing ? (
-                            <span>
+                {can('Aprobar Beneficiarios',auth.user.abilities) &&(
+                    <div className="col-xs-6">
+                        <button
+                            className="btn btn-success btn-block"
+                            onClick={handleSubmitAndApprove}
+                            disabled={processing}
+                        >
+                            {processing ? (
+                                <span>
                                 <i className="fa fa-spinner fa-spin" />{' '}
-                                Guardando Participante
+                                    Guardando Participante
                             </span>
-                        ) : (
-                            <span>Guardar y Aprobar Participante</span>
-                        )}
-                    </button>
-                </div>
+                            ) : (
+                                <span>Guardar y Aprobar Participante</span>
+                            )}
+                        </button>
+                    </div>
+                )}
             </div>
         </AuthenticatedLayout>
     )

@@ -61,8 +61,10 @@ class UpdateProjectReportsFile extends Command
                 ->get();
 
             $meetings = $project->meetings()->orderBy('order')->get();
+            $inventory = $project->inventory()->with('inventoryItems')->get();
 
-            $results = $this->getProjectResults($goals,$meetings);
+            $results = $this->getProjectResults($goals,$meetings,$inventory);
+
             $globalResults = $this->getGlobalResults($project,$results);
 
             $project->report()->updateOrCreate(

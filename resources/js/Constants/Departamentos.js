@@ -14,8 +14,8 @@ export const Departamentos = [
     { label: 'Boaco', value: 'boaco' },
     { label: 'Chontales', value: 'chontales' },
     { label: 'Rio San Juan', value: 'rio-san-juan' },
-    { label: 'Atlantico Norte', value: 'atlantico-norte' },
-    { label: 'Atlantico Sur', value: 'atlantico-sur' },
+    { label: 'Costa Caribe del Atlántico Norte', value: 'atlantico-norte' },
+    { label: 'Costa Caribe del Atlántico Sur', value: 'atlantico-sur' },
 ]
 
 export const Municipios = [

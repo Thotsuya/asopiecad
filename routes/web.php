@@ -94,6 +94,12 @@ Route::middleware('auth')->group(function () {
     Route::get('excel-reports', [App\Http\Controllers\Admin\ExcelReportsController::class, 'index'])->name('excel-reports.index');
 
     Route::post('/grouped-results', [App\Http\Controllers\Admin\GroupedResultsController::class, 'store'])->name('grouped-results.store');
+
+    Route::post('/invetory', [App\Http\Controllers\Admin\InventoryController::class, 'store'])->name('inventory.store');
+    Route::get('/invetory/{inventory}', [App\Http\Controllers\Admin\InventoryController::class, 'show'])->name('inventory.show');
+
+    Route::post('/inventory-items', [App\Http\Controllers\Admin\InventoryItemController::class, 'store'])->name('inventory-items.store');
+    Route::put('/inventory-items/{inventoryItem}', [App\Http\Controllers\Admin\InventoryItemController::class, 'update'])->name('inventory-items.update');
 });
 
 require __DIR__.'/auth.php';

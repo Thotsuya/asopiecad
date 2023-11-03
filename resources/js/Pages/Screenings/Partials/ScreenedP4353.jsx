@@ -490,7 +490,7 @@ export default function ScreenedP4353({
                                 </label>
                                 {/*[{"id":1,"name":"OD","value":"OD-1","order":1,"editMode":false},{"id":2,"name":"OI","value":"0I-2","order":2,"editMode":false}]*/}
                                 <Select
-                                    options={visualAcuity}
+                                    options={disabilityOptions}
                                     placeholder="Agudeza Visual"
                                     defaultValue={visualAcuity.find((option) => option.value === data.screened_visual_acuity)}
                                     onChange={(option) => {

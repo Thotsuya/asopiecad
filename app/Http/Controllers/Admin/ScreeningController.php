@@ -26,6 +26,7 @@ class ScreeningController extends Controller
      */
     public function index(Request $request)
     {
+
         return \inertia('Screenings/Index', [
             'screenings' => Screening::query()
                 ->search($request)
@@ -37,7 +38,11 @@ class ScreeningController extends Controller
                     return ScreeningResource::make($screening);
                 })
                 ->withQueryString(),
-            'type' => $request->type ?? 'P-4211'
+            'type' => $request->type ?? 'P-4211',
+            'can' => [
+                'P4353' => auth()->user()->projects->contains(2),
+                'P4211' => auth()->user()->projects->contains(1),
+            ]
         ]);
     }
 

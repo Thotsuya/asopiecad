@@ -14,14 +14,62 @@ trait ReportResults
 {
 
 
-    public function getProjectResults(Collection $goals, Collection $meetings)
+    public function getProjectResults(Collection $goals, Collection $meetings, Collection $inventory)
     {
+        return $goals->map(function ($goal) use ($meetings, $inventory) {
 
-        return $goals->map(function ($goal) {
+            $conditionsTotal = collect($goal->conditions)->map(
+                function ($condition) use ($goal) {
+                    return [
+                        'label' => $condition['label'],
+                        'value' => $goal->program->beneficiaries
+                            ->filter(function (Benefitiary $beneficiary) use ($condition, $goal) {
 
-            if($goal->goal_description == 'R1.A8 Acompañamiento de miembros de redes comunitarias relacionadas a información básica pre y post quirúrgica.'){
-                dd($goal->conditions);
-            }
+                                $meetsCondition = true;
+
+                                foreach ($condition['conditions'] as $condition) {
+                                    $field = $beneficiary->answers->firstWhere(
+                                        'pivot.field_id',
+                                        $condition['field_id']
+                                    );
+
+
+                                    $meetsCondition = $this->is(
+                                        Str::startsWith($field->pivot->value, '["') && Str::endsWith(
+                                            $field->pivot->value,
+                                            '"]'
+                                        ) ? json_decode($field->pivot->value) : $field->pivot->value,
+                                        $condition['operand'],
+                                        $condition['field_value']
+                                    );
+
+                                    if($goal->goal_description == 'R1.A7 Coordinar el traslado de personas de mayor vulnerabilidad que necesitan atención en salud ocular hacia los centros de atención que corresponde.'){
+                                        info('condition', [
+                                            'field' => $field->pivot->value,
+                                            'operand' => $condition['operand'],
+                                            'value' => $condition['field_value'],
+                                            'meetsCondition' => $meetsCondition
+                                        ]);
+                                    }
+
+                                    if (!$meetsCondition) {
+                                        return false;
+                                    }
+                                }
+
+                                return $meetsCondition;
+                            })->count(),
+
+                    ];
+                }
+            // Group the conditions by label and map them to a new collection with the label and the sum of the values
+            )->groupBy('label')->map(function ($conditions, $label) {
+                return [
+                    'label' => $label,
+                    'value' => $conditions->sum('value'),
+                ];
+            });
+
 
             return [
                 'id'               => $goal->id,
@@ -32,8 +80,9 @@ trait ReportResults
                 'group_every'      => $goal->group_every,
                 'type'             => 'goal',
                 'goal_target_year' => $goal->goal_target / $goal->program->project->project_duration,
-                'order'            => $goal->program->order,
+                'order'            => $goal->order ?? $goal->program->order,
                 'active'           => $goal->program->deleted_at === null,
+                'goal_total'       => $conditionsTotal->sum('value'),
                 'program'          => [
                     'id'                   => $goal->program->id,
                     'program_name'         => $goal->program->program_name,
@@ -54,113 +103,102 @@ trait ReportResults
                         return $beneficiary->appointments->count();
                     })->sum(),
                 ],
-                'conditions'       => collect($goal->conditions)->map(
-                    function ($condition) use ($goal) {
-
-                        return [
-                            'label' => $condition['label'],
-                            'value' => $goal->program->beneficiaries
-                                ->filter(function (Benefitiary $beneficiary) use ($condition, $goal) {
-                                    $meetsCondition = true;
-
-                                    foreach ($condition['conditions'] as $condition) {
-                                        $field = $beneficiary->answers->firstWhere(
-                                            'pivot.field_id',
-                                            $condition['field_id']
-                                        );
-
-
-                                        $meetsCondition = $this->is(
-                                            Str::startsWith($field->pivot->value, '["') && Str::endsWith(
-                                                $field->pivot->value,
-                                                '"]'
-                                            ) ? json_decode($field->pivot->value) : $field->pivot->value,
-                                            $condition['operand'],
-                                            $condition['field_value']
-                                        );
-
-
-                                        if($goal->goal_description == 'R1.A8 Acompañamiento de miembros de redes comunitarias relacionadas a información básica pre y post quirúrgica.'){
-                                            info('Beneficiary', [$beneficiary->name]);
-                                            info('field', [$field]);
-                                            info('condition', [$condition]);
-                                            info('meetsCondition', [$meetsCondition]);
-                                        }
-
-                                        if (!$meetsCondition) {
-                                            return false;
-                                        }
-                                    }
-
-                                    return $meetsCondition;
-                                })->count(),
-
-                        ];
-                    }
-                    // Group the conditions by label and map them to a new collection with the label and the sum of the values
-                )
+                'conditions'       => $conditionsTotal->values()->toArray(),
 
             ];
         })->merge(
-            $meetings->map(function ($meeting) {
-                return [
-                    'id'                   => $meeting->id,
-                    'goal_description'     => $meeting->title,
-                    'visible'              => 1,
-                    'goal_target'          => $meeting->meeting_target,
-                    'current_progress'     => $meeting->count,
-                    'completed_percentage' => round(
-                        $meeting->count / $meeting->meeting_target * 100,
-                        2
-                    ),
-                    'pending'              => max($meeting->meeting_target - $meeting->count, 0),
-                    'type'                 => 'meeting',
-                    'order'                => $meeting->order,
-                    'conditions'           => collect($meeting->conditions)->map(
+            $meetings->flatMap(function ($meeting) {
+
+                if($meeting->conditions){
+                    return collect($meeting->conditions)->map(
                         function ($condition) use ($meeting) {
+
+                            $total = $meeting->participants->filter(function ($participant) use ($condition) {
+                                $meetsCondition = true;
+
+
+                                // Find the first whose key is the $condition['field_slug'] and whose value is the $condition['field_value']
+
+                                $field = collect($participant->form_data)->filter(
+                                    function ($value, $key) use ($condition) {
+                                        return $key === $condition['field_slug'];
+                                    }
+                                )->first();
+
+                                if (!$field) {
+                                    return false;
+                                }
+
+                                $meetsCondition = $this->is(
+                                    Str::startsWith($field, '["') && Str::endsWith($field, '"]') ? json_decode(
+                                        $field
+                                    ) : $field,
+                                    $condition['operand'],
+                                    $condition['field_value']
+                                );
+
+
+                                if (!$meetsCondition) {
+                                    return false;
+                                }
+
+
+                                return $meetsCondition;
+                            })->count();
+
                             return [
-                                'label'  => $condition['label'],
-                                'target' => $condition['target'],
-                                'count'  => $meeting->participants->filter(function ($participant) use ($condition) {
-                                    $meetsCondition = true;
+                                'id'                   => $meeting->id,
+                                'goal_description' => $condition['label'],
+                                'visible'              => 1,
+                                'goal_target'          => $condition['target'],
+                                'current_progress' =>  $total,
+                                'completed_percentage' => round(
+                                    $total / $condition['target'] * 100,
+                                    2
+                                ),
+                                'pending'              => max($condition['target'] - $total, 0),
+                                'type'                 => 'meeting',
+                                'order'                => $condition['order'],
 
-
-                                    // Find the first whose key is the $condition['field_slug'] and whose value is the $condition['field_value']
-
-                                    $field = collect($participant->form_data)->filter(
-                                        function ($value, $key) use ($condition) {
-                                            return $key === $condition['field_slug'];
-                                        }
-                                    )->first();
-
-                                    if (!$field) {
-                                        return false;
-                                    }
-
-                                    $meetsCondition = $this->is(
-                                        Str::startsWith($field, '["') && Str::endsWith($field, '"]') ? json_decode(
-                                            $field
-                                        ) : $field,
-                                        $condition['operand'],
-                                        $condition['field_value']
-                                    );
-
-
-                                    if (!$meetsCondition) {
-                                        return false;
-                                    }
-
-
-                                    return $meetsCondition;
-                                })->count(),
                             ];
                         }
-
-                    // Iterate the new collection and if there are any conditions with the same label, sum the count and target
-                    )
+                    )->values()->toArray();
+                } else {
+                    return [[
+                        'id'                   => $meeting->id,
+                        'goal_description'     => $meeting->title,
+                        'visible'              => 1,
+                        'goal_target'          => $meeting->meeting_target,
+                        'current_progress'     => $meeting->count,
+                        'completed_percentage' => round(
+                            $meeting->count / $meeting->meeting_target * 100,
+                            2
+                        ),
+                        'pending'              => max($meeting->meeting_target - $meeting->count, 0),
+                        'type'                 => 'meeting',
+                        'order'                => $meeting->order
+                    ]];
+                }
+            })
+        )->merge(
+            $inventory->map(function ($item) {
+                return [
+                    'id'                   => $item->uuid,
+                    'goal_description'     => $item->title,
+                    'visible'              => 1,
+                    'goal_target'          => $item->goal,
+                    'current_progress'     => $item->inventoryItems->count(),
+                    'completed_percentage' => round(
+                        $item->inventoryItems->count() / $item->goal * 100,
+                        2
+                    ),
+                    'pending'              => max($item->goal - $item->inventoryItems->count(), 0),
+                    'type'                 => 'inventory',
+                    'order'                => $item->order,
                 ];
             })
-        )->sortBy('order')->values();
+        )
+            ->sortBy('order')->values();
     }
 
     public function getGlobalResults($project, $results)
@@ -229,8 +267,8 @@ trait ReportResults
         $screenings = Screening::where('type', $type)->get();
 
         return [
-            'title'                              => 'Realización de tamizaje de 7,200 niños y niñas de 0 a 06 años a través de visitas domiciliares en la comunidad, centros de desarrollo infantil y preescolares comunitarios a través de redes comunitarias',
-            'goal'                               => 7200,
+            'title'                              => $this->getScreeningLabel($type),
+            'goal'                               => $type === 'P-4211' ? 7200 : 30000,
             'total_screenings'                   => $screenings->count(),
             'completed_percentage'               => round(
                 $screenings->count() / 7200 * 100,
@@ -266,6 +304,14 @@ trait ReportResults
             'total'                                 => $screenings->count(),
             'pending'                               => 7200 - $screenings->count(),
         ];
+    }
+
+    private function getScreeningLabel($type){
+        return match ($type){
+            'P-4353' => 'R1.A6: Se realizará 30,000 tamizajes en salud ocular a nivel comunitario, durante la ejecución del proyecto en el area de cobertura del proyecto',
+            'P-4211' => 'Realización de tamizaje de 7,200 niños y niñas de 0 a 06 años a través de visitas domiciliares en la comunidad, centros de desarrollo infantil y preescolares comunitarios a través de redes comunitarias',
+            default => 'N/A'
+        };
     }
 
     public function getHeadersForScreenings($type)

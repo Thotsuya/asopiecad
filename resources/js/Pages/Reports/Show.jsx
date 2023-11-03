@@ -412,7 +412,7 @@ export default function Show({
                                                 indicador
                                             </th>
                                             <th className="text-center  text-sm padding-10 bg-primary">
-                                                Número total de personas
+                                                Número total de registros
                                             </th>
                                             <th className="text-center text-sm padding-10  bg-primary">
                                                 Pendientes
@@ -427,6 +427,9 @@ export default function Show({
                                                 .map((result, index) => {
 
                                                     if (index === 2 && project.id === 1) return <ScreeningsRow
+                                                        screenings={screenings}/>
+
+                                                    if (index === 5 && project.id === 2) return <ScreeningsRow
                                                         screenings={screenings}/>
 
                                                     return <ResultRow
