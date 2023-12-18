@@ -17,7 +17,8 @@ export default function Index({
                                   beneficiaries,
                                   projects,
                                   forms,
-                                  auth
+                                  auth,
+                                  users
                               }) {
 
 
@@ -89,7 +90,10 @@ export default function Index({
                     </div>
                 </div>
 
-                <Filters projects={projects} forms={forms}/>
+                <Filters
+                    users={users}
+                    projects={projects}
+                    forms={forms}/>
 
                 <div className="row">
 
@@ -109,6 +113,7 @@ export default function Index({
                                         <tr>
                                             <th>Código</th>
                                             <th>Nombre</th>
+                                            <th>Creado Por</th>
                                             <th>Proyectos</th>
                                             <th>Programas</th>
                                             <th>Estado</th>
@@ -126,6 +131,9 @@ export default function Index({
                                                     </td>
                                                     <td>
                                                         {beneficiary.name}
+                                                    </td>
+                                                    <td>
+                                                        {beneficiary.created_by?.name}
                                                     </td>
 
                                                     <td

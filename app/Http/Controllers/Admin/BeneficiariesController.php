@@ -13,6 +13,7 @@ use App\Models\Benefitiary;
 use App\Models\Form;
 use App\Models\Program;
 use App\Models\Project;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\LazyCollection;
 use Illuminate\Support\Str;
@@ -39,7 +40,7 @@ class BeneficiariesController extends Controller
                 ->viewableBy(auth()->user())
                 ->beneficiaryStatus($request)
                 ->withCount('projects')
-                ->with(['projects','programs'])
+                ->with(['projects','programs','creator'])
                 ->latest('id')
                 ->paginate(20)
                 ->through(function ($beneficiary) {
@@ -80,6 +81,7 @@ class BeneficiariesController extends Controller
                 ->map(function (Form $form) {
                     return $form->getFormFieldsWithValues();
                 })->flatten(1),
+            'users' => User::select('id', 'name')->get(),
         ]);
     }
 
@@ -134,7 +136,7 @@ class BeneficiariesController extends Controller
     {
         // Get the previous visited route
         return Inertia::render('Beneficiares/EditDataOnly', [
-            'beneficiary' => BeneficiaryResource::make($beneficiary->load('answers.pivot.field.tab')),
+            'beneficiary' => BeneficiaryResource::make($beneficiary->load('answers.pivot.field.tab','creator')),
             'forms'       => BeneficiaryFormsResource::collection($beneficiary->forms()->get()),
             'previous_route' => url()->previous(),
         ]);
@@ -161,8 +163,8 @@ class BeneficiariesController extends Controller
             'internal_status' => auth()->user()->can(
                 'Aprobar Beneficiarios'
             ) ? Benefitiary::INTERNAL_STATUSES['approved'] : Benefitiary::INTERNAL_STATUSES['pending'],
-            'document_id'     => $cedula,
             'approved_at'     => auth()->user()->can('Aprobar Beneficiarios') ? now() : null,
+            'created_by'      => auth()->id(),
         ]);
 
         $forms = Form::query()
@@ -200,6 +202,7 @@ class BeneficiariesController extends Controller
             'document_id'     => $cedula,
             'internal_status' => (auth()->user()->can('Aprobar Beneficiarios') && $request->validated()['approve']) ? Benefitiary::INTERNAL_STATUSES['approved'] : Benefitiary::INTERNAL_STATUSES['pending'],
             'approved_at'     => (auth()->user()->can('Aprobar Beneficiarios') && $request->validated()['approve']) ? now() : null,
+            'created_by'      => auth()->id(),
         ]);
 
         $forms = Form::query()

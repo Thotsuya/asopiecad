@@ -27,6 +27,7 @@ export default function Show({
                                  start_date = null,
                                  end_date = null,
                                  screenings = [],
+                                 consultations_count,
                                  meeting_goals = [],
                              }) {
     ChartJS.register(
@@ -337,17 +338,29 @@ export default function Show({
                                                     </td>
                                                 </tr>
                                                 {result.goals
-                                                    .map((goal, index) => {
+                                                    .map((goal, Goalindex) => {
                                                         let result = JSON.parse(goal.pivot.value);
 
-                                                        return <ResultRow key={`goal-${index}`} headers={headers}
-                                                                          result={result} showGoalDescription={false}/>
+                                                        return <ResultRow
+                                                            key={`goal-${goal.id}`}
+                                                            headers={headers}
+                                                            result={result}
+                                                            isGrouped
+                                                            index={Goalindex}
+                                                            consultations_count={consultations_count}
+                                                            showGoalDescription={false}/>
                                                     })}
-                                                {result.meetings.map((meeting, index) => {
+                                                {result.meetings.map((meeting, meetingIndex) => {
                                                     let result = JSON.parse(meeting.pivot.value);
 
-                                                    return <ResultRow key={`meeting-${index}`} headers={headers}
-                                                                      result={result} showGoalDescription={false}/>
+                                                    return <ResultRow
+                                                        key={`meeting-${meeting.id}`}
+                                                        headers={headers}
+                                                        result={result}
+                                                        isGrouped
+                                                        index={meetingIndex}
+                                                        consultations_count={consultations_count}
+                                                        showGoalDescription={false}/>
                                                 })}
 
                                             </>
@@ -391,6 +404,12 @@ export default function Show({
                                             >
                                                 Progreso
                                             </th>
+                                            <th
+                                                rowSpan={2}
+                                                className="text-center text-sm padding-10 bg-primary"
+                                            >
+                                                Total Registros
+                                            </th>
                                             <th className="text-center text-sm padding-10 bg-primary">
                                                 Porcentaje completado
                                             </th>
@@ -429,8 +448,19 @@ export default function Show({
                                                     if (index === 2 && project.id === 1) return <ScreeningsRow
                                                         screenings={screenings}/>
 
-                                                    if (index === 5 && project.id === 2) return <ScreeningsRow
-                                                        screenings={screenings}/>
+                                                    if (index === 5 && project.id === 2) return (
+                                                        <>
+                                                            <ScreeningsRow
+                                                                screenings={screenings}/>
+
+                                                            <ResultRow
+                                                                key={`goal-result-${index}`}
+                                                                headers={headers}
+                                                                result={result}
+                                                                highlightIfNotActive
+                                                            />
+                                                        </>
+                                                    )
 
                                                     return <ResultRow
                                                         key={`goal-result-${index}`}

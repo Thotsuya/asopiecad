@@ -61,6 +61,9 @@ class BeneficiaryResource extends JsonResource
             'updated_at' => $this->updated_at,
             'is_trashed' => $this->trashed(),
             'is_approved' => (bool)$this->approved_at,
+            'created_by' => $this->whenLoaded('creator'),
+            'last_consultation' => $this->last_consultation,
+            'consultations_count' => $this->consultations_count,
         ];
     }
 

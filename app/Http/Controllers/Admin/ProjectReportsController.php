@@ -30,17 +30,17 @@ class ProjectReportsController extends Controller
             'rgba(153, 102, 255, 1)',
         ];
 
-        $project = Cache::remember('project-' . $project->id, 60 * 15, function () use ($project) {
-            return $project
-                ->load([
-                    'beneficiaries',
-                    'meetings.participants',
-                    'groupedResults.goals',
-                    'groupedResults.meetings'
-                ])
+        $project = $project
+            ->load([
+                'beneficiaries',
+                'meetings.participants',
+                'groupedResults.goals',
+                'groupedResults.meetings'
+            ])
 
-                ->loadCount(['beneficiaries','meetings']);
-        });
+            ->loadCount(['beneficiaries','meetings']);
+
+        $consultations_count = $project->beneficiaries->sum('consultations_count');
 
 
         $results = $project->report->fields;
@@ -60,7 +60,8 @@ class ProjectReportsController extends Controller
             'screenings' => Cache::remember('screenings-' . $project->id, 60 * 15, function () use ($project) {
                 return $this->getScreeningsReport($project->id === 1 ? 'P-4211' : 'P-4353');
             }),
-            'meeting_goals' => MeetingResource::collection($project->meetings)
+            'meeting_goals' => MeetingResource::collection($project->meetings),
+            'consultations_count' => $consultations_count,
         ]);
     }
 

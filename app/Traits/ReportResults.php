@@ -33,6 +33,14 @@ trait ReportResults
                                         $condition['field_id']
                                     );
 
+                                    if (!$field) {
+                                        info('field not found', [
+                                            'field_id' => $condition['field_id'],
+                                            'beneficiary_id' => $beneficiary->id,
+                                            'goal' => $goal->goal_description
+                                        ]);
+                                        return false;
+                                    }
 
                                     $meetsCondition = $this->is(
                                         Str::startsWith($field->pivot->value, '["') && Str::endsWith(
@@ -136,6 +144,13 @@ trait ReportResults
                                     $condition['operand'],
                                     $condition['field_value']
                                 );
+
+                                info('condition', [
+                                    'field' => $field,
+                                    'operand' => $condition['operand'],
+                                    'value' => $condition['field_value'],
+                                    'meetsCondition' => $meetsCondition
+                                ]);
 
 
                                 if (!$meetsCondition) {
@@ -271,7 +286,7 @@ trait ReportResults
             'goal'                               => $type === 'P-4211' ? 7200 : 30000,
             'total_screenings'                   => $screenings->count(),
             'completed_percentage'               => round(
-                $screenings->count() / 7200 * 100,
+                $screenings->count() / ($type === 'P-4211' ? 7200 : 30000) * 100,
                 2
             ),
             'anual_goal'                         => 'N/A',

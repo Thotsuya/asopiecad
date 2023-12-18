@@ -1,4 +1,5 @@
-export default function ScreeningsRow({screenings}){
+export default function ScreeningsRow({screenings}) {
+
     return (
         <tr>
             <td className="text-justify text-sm padding-10">
@@ -24,6 +25,9 @@ export default function ScreeningsRow({screenings}){
                                                 <span className="text-white">
                                                     {screenings.total_screenings}
                                                 </span>
+            </td>
+            <td className="text-center text-sm padding-10">
+                N/A
             </td>
             <td className="text-sm padding-10">
                 <div className="progress">
@@ -55,7 +59,7 @@ export default function ScreeningsRow({screenings}){
                 0
             </td>
             <td className="text-center text-sm padding-10">
-               0
+                0
             </td>
             <td className="text-center text-sm padding-10">
                 0

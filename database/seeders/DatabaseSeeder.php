@@ -6,6 +6,7 @@ namespace Database\Seeders;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,13 +17,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call([
-//            FormSeeder::class,
-//            RolePermissionSeeder::class,
-//            ProjectSeeder::class,
-            //NewFormsSeeder::class,
-            GoalSeeder::class
-        ]);
+        //Execute the file asopieca_asopiecad.sql in the database
+        DB::unprepared(file_get_contents(__DIR__ . '/asopieca_asopiecad.sql'));
+
+
+
+//        $this->call([
+////            FormSeeder::class,
+////            RolePermissionSeeder::class,
+////            ProjectSeeder::class,
+//            //NewFormsSeeder::class,
+//            //GoalSeeder::class
+//        ]);
 
 //        $users = [
 //            [

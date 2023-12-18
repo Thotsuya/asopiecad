@@ -17,7 +17,7 @@ class BeneficiaryObserver
      */
     public function created(Benefitiary $beneficiary)
     {
-
+        $beneficiary->created_by = auth()->user()->id;
     }
 
     /**
@@ -28,7 +28,7 @@ class BeneficiaryObserver
      */
     public function updated(Benefitiary $beneficiary)
     {
-        //
+        //$beneficiary->created_by = auth()->user()->id;
     }
 
     /**

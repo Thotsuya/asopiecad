@@ -53,6 +53,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('register-goals',[ProjectPolicy::class,'registerGoals']);
         Gate::define('register-goal-progress',[ProjectPolicy::class,'registerGoalProgress']);
 
+        Benefitiary::observe(BeneficiaryObserver::class);
         Project::observe(ProjectObserver::class);
 
         Inertia::share('permissions', function(){

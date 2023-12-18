@@ -26,6 +26,9 @@ class Benefitiary extends Model
         'approved_at',
         'deletion_reason',
         'approved_by',
+        'last_consultation',
+        'consultations_count',
+        'created_by'
     ];
 
     public const INTERNAL_STATUSES = [
@@ -90,6 +93,13 @@ class Benefitiary extends Model
         return $this->belongsToMany(Field::class, 'answers')->using(Answer::class)->withPivot(['value'])->withTimestamps();
     }
 
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by')->withDefault([
+            'name' => 'N/A'
+        ]);
+    }
+
     public function scopeFilter($query, Request $request)
     {
         return match ($request->filter) {
@@ -112,6 +122,9 @@ class Benefitiary extends Model
             'created_at' => $query->whereBetween('created_at', [Carbon::parse($request->from)->startOfDay(), Carbon::parse($request->to)->endOfDay()]),
             'program_id' => $query->whereHas('programs', function ($query) use ($request) {
                 $query->where('programs.id', '=', $request->value);
+            }),
+            'created_by' => $query->whereHas('creator', function ($query) use ($request) {
+                $query->where('users.id', '=', $request->value);
             }),
             default => $query->where('name', 'like', "%{$request->value}%"),
         };

@@ -3,8 +3,18 @@ import Select from 'react-select'
 import {OPERATORS, OPERANDS} from "@/Constants/Operators";
 import {useEffect, useMemo} from "react";
 
-export default function Filters({projects, forms}) {
-    const {filters, statusFilters, data, setData, processing, handleSearch, exportToExcel,exporting,loading} = useFilters()
+export default function Filters({projects, forms, users}) {
+    const {
+        filters,
+        statusFilters,
+        data,
+        setData,
+        processing,
+        handleSearch,
+        exportToExcel,
+        exporting,
+        loading
+    } = useFilters()
 
 
     return (
@@ -73,7 +83,7 @@ export default function Filters({projects, forms}) {
                             </>
                         )}
 
-                        {!data.filter.includes('form_id') && !data.filter.includes('created_at') && (
+                        {!data.filter.includes('form_id') && !data.filter.includes('created_at') && !data.filter.includes('created_by') && (
                             <>
                                 <div className="col-md-4">
                                     <div className="form-group">
@@ -139,6 +149,31 @@ export default function Filters({projects, forms}) {
                                         </div>
                                     </div>
                                 )}
+                            </>
+                        )}
+
+                        {data.filter === 'created_by' && (
+                            <>
+                                <div className="col-md-4">
+                                    <div className="form-group">
+                                        <label htmlFor="user">Usuario:</label>
+                                        <Select
+                                            id="user"
+                                            name="user"
+                                            options={users.map((user) => ({
+                                                value: user.id,
+                                                label: user.name,
+                                            }))}
+                                            placeholder="Seleccione un usuario"
+                                            onChange={(option) => {
+                                                setData({
+                                                    ...data,
+                                                    value: option.value,
+                                                })
+                                            }}
+                                        />
+                                    </div>
+                                </div>
                             </>
                         )}
 
@@ -293,17 +328,21 @@ export default function Filters({projects, forms}) {
                 </div>
             </div>
 
-            {exporting && (
-                <div className="col-xs-12">
-                    <div className="alert alert-success">
-                        <p>
-                            <i className="fa fa-check"></i> Tu archivo esta siendo generado, espera un momento...
-                            puedes seguir navegando en la plataforma. Cuando el archivo este listo, lo podrás descargar en la sección de
-                            Reportes Excel.
-                        </p>
+            {
+                exporting && (
+                    <div className="col-xs-12">
+                        <div className="alert alert-success">
+                            <p>
+                                <i className="fa fa-check"></i> Tu archivo esta siendo generado, espera un momento...
+                                puedes seguir navegando en la plataforma. Cuando el archivo este listo, lo podrás descargar
+                                en la
+                                sección de
+                                Reportes Excel.
+                            </p>
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             <div className="col-xs-12">
                 <div className="box-content">

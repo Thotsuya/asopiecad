@@ -33,6 +33,11 @@ export default function useFilters() {
             id: 5,
             label: 'Fecha de Creación',
             value: 'created_at'
+        },
+        {
+            id: 6,
+            label: 'Creador',
+            value: 'created_by'
         }
 
     ]

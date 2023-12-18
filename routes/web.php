@@ -41,6 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('screenings', App\Http\Controllers\Admin\ScreeningController::class)->except('show');
 
 
+    Route::post('/beneficiaries/{beneficiary}/consultations', App\Http\Controllers\Admin\BeneficiaryConsultationController::class)->name('beneficiaries.consultations.store');
     Route::get('beneficiaries/{beneficiary}/visits', \App\Http\Controllers\Admin\BeneficiaryVisitsController::class)->name('beneficiaries.visits');
     Route::patch('beneficiaries/{beneficiary}/approve', [App\Http\Controllers\Admin\BeneficiariesController::class, 'approve'])->name('beneficiaries.approve');
     Route::patch('beneficiaries/{beneficiary}/reject', [App\Http\Controllers\Admin\BeneficiariesController::class, 'reject'])->name('beneficiaries.reject');

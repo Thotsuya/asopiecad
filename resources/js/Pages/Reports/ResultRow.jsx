@@ -1,4 +1,25 @@
-export default function ResultRow({result, headers, showGoalDescription = true, highlightIfNotActive = false}) {
+export default function ResultRow({
+                                      result,
+                                      headers,
+                                      showGoalDescription = true,
+                                      highlightIfNotActive = false,
+                                      index = null,
+                                      isGrouped = false,
+                                      consultations_count = 0,
+                                  }) {
+
+
+    const renderResult = () => {
+
+
+        if(isGrouped && result.id === 19) return consultations_count
+
+        return result.is_grouped
+            ? result.program.total_grouped
+            : result
+                .goal_total
+    }
+
 
     if (result.type === 'goal') {
         return <tr className={!result.active && highlightIfNotActive ? 'bg-danger' : ''}>
@@ -41,12 +62,7 @@ export default function ResultRow({result, headers, showGoalDescription = true, 
                 className="text-center bg-success text-sm padding-10"
             >
                                                             <span className="text-white">
-                                                                {
-                                                                    result.is_grouped
-                                                                        ? result.program.total_grouped
-                                                                        : result
-                                                                            .goal_total
-                                                                }
+                                                                {renderResult()}
                                                                 {result.is_grouped && (
                                                                     <>
                                                                         {' '}
@@ -54,6 +70,9 @@ export default function ResultRow({result, headers, showGoalDescription = true, 
                                                                     </>
                                                                 )}
                                                             </span>
+            </td>
+            <td className="text-sm text-center padding-10">
+                {result.program.total_ungrouped}
             </td>
             <td className="text-sm padding-10">
                 <div className="progress">
@@ -65,18 +84,11 @@ export default function ResultRow({result, headers, showGoalDescription = true, 
                         aria-valuemax="100"
                         style={{
                             width:
-                                result
-                                    .program
-                                    .completed_percentage +
-                                '%',
+                                renderResult().toString() / result.goal_target * 100 + '%',
                         }}
                     >
                                                                     <span>
-                                                                        {parseInt(
-                                                                            result
-                                                                                .program
-                                                                                .completed_percentage
-                                                                        )}
+                                                                        {renderResult().toString() / result.goal_target * 100}
                                                                         %
                                                                     </span>
                     </div>
@@ -184,6 +196,12 @@ export default function ResultRow({result, headers, showGoalDescription = true, 
                 result.current_progress
             }
         </span>
+        </td>
+        <td className="text-sm text-center padding-10">
+            {
+                result
+                    .current_progress
+            }
         </td>
         <td className="text-sm padding-10">
             <div className="progress">

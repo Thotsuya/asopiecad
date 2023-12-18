@@ -18,13 +18,13 @@ export default function Show({auth, inventory}) {
         updateInventory
     } = useInventory(inventory, inventory.form)
 
-    const {success,prompt} = useToasts()
+    const {success, prompt} = useToasts()
 
     const onSubmit = (e) => {
         prompt('¿Desea agregar una reunión?', 'Asegurese de que el formulario esté completo antes de agregar una reunión')
             .then((result) => {
                 if (result.isConfirmed) {
-                   storeInventory()
+                    storeInventory()
                 }
             })
     }
@@ -129,14 +129,17 @@ export default function Show({auth, inventory}) {
                                     {inventory.inventory_items.length > 0 ? (
                                         inventory.inventory_items.map((inven, index) => (
                                             <tr key={`participant-${index}`}>
-                                                {Object.values(inven.form_data).map((value, index) => (
-                                                    <td key={`value-${index}`}>
-                                                        {
-                                                            // If the value is an array, print the values separated by comma
-                                                            Array.isArray(value) ? value.join(', ') : value.length > 20 ? value.substring(0, 20) + '...' : value
-                                                        }
-                                                    </td>
-                                                ))}
+                                                {Object.values(inven.form_data).map((value, index) => {
+                                                    if(value === null) return (<td key={`value-${index}`}>-</td>)
+
+                                                    return (
+                                                        <td key={`value-${index}`}>
+                                                            {
+                                                                Array.isArray(value) ? value.join(', ') : value.length > 20 ? value.substring(0, 20) + '...' : value
+                                                            }
+                                                        </td>
+                                                    )
+                                                })}
                                                 <td className="text-center">
                                                     <button
                                                         onClick={() => toggleEditMode(inven)}

@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
-import { Head } from '@inertiajs/inertia-react'
+import {Head} from '@inertiajs/inertia-react'
 import useBenefitiaries from '@/Hooks/Benefitiaries'
 import FormTabs from '@/Pages/Beneficiares/Partials/FormTabs'
 import FormTabContent from '@/Pages/Beneficiares/Partials/FormTabContent'
@@ -8,17 +8,19 @@ import CheckboxInput from '@/Pages/Forms/Fields/CheckboxInput'
 import SelectInput from '@/Pages/Forms/Fields/SelectInput'
 import RadioInput from '@/Pages/Forms/Fields/RadioInput'
 import SmallInput from '@/Pages/Forms/Fields/SmallInput'
-import { useEffect } from 'react'
+import {useEffect} from 'react'
 import useUsers from "@/Hooks/Users";
+import {Inertia} from "@inertiajs/inertia";
+import useToasts from '@/Hooks/Toasts'
 
 export default function EditDataOnly({
-    auth,
-    forms,
-    is_new = false,
-    data_only = true,
-    beneficiary = null,
-    previous_route
-}) {
+                                         auth,
+                                         forms,
+                                         is_new = false,
+                                         data_only = true,
+                                         beneficiary = null,
+                                         previous_route
+                                     }) {
     const {
         data,
         setData,
@@ -26,9 +28,11 @@ export default function EditDataOnly({
         handleSubmitForDataOnly,
         processing,
         isDirty,
-    } = useBenefitiaries(forms, is_new, _, beneficiary,previous_route)
+    } = useBenefitiaries(forms, is_new, _, beneficiary, previous_route)
 
-    const { can } = useUsers()
+    const {success} = useToasts()
+
+    const {can} = useUsers()
 
     useEffect(() => {
         if (!is_new) {
@@ -56,9 +60,21 @@ export default function EditDataOnly({
         handleSubmitForDataOnly(true)
     }
 
+    const handleAddConsultation = (e) => {
+        e.preventDefault()
+        Inertia.post(route('beneficiaries.consultations.store', beneficiary.uuid),{
+            previous_route: previous_route
+        },{
+            preserveScroll: true,
+            onSuccess: () => {
+                success('Consulta agregada exitosamente')
+            }
+        })
+    }
+
     return (
         <AuthenticatedLayout auth={auth}>
-            <Head title="Editar Participante" />
+            <Head title="Editar Participante"/>
 
             <div className="row">
                 <div className="col-xs-12">
@@ -66,6 +82,23 @@ export default function EditDataOnly({
                         {is_new ? 'Nuevo Participante' : 'Participante'}:{' '}
                         <b>{data.name}</b>
                     </h3>
+                </div>
+            </div>
+
+            <div className="row">
+                <div className="col-xs-12">
+                    <div className="box-content">
+                        <h3 className="page-title">
+                            Cantidad de Consultas:{' '}
+                            <b>{beneficiary.consultations_count}</b>
+                        </h3>
+                        <button
+                            className="btn btn-success btn-sm pull-right"
+                            onClick={handleAddConsultation}
+                        >
+                            <i className="fa fa-plus"></i> Agregar Consulta
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -88,7 +121,7 @@ export default function EditDataOnly({
                     <div className="col-xs-12">
                         <div className="box-content">
                             <h4 className="box-title">{form.form_name}</h4>
-                            <FormTabs form={form} />
+                            <FormTabs form={form}/>
                             <div
                                 className="tab-content"
                                 id="beneficiary-form-tabs"
@@ -131,12 +164,12 @@ export default function EditDataOnly({
                                                                     value={
                                                                         data[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                     error={
                                                                         errors[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                 />
                                                             )
@@ -160,18 +193,18 @@ export default function EditDataOnly({
                                                                             `${field.slug}-${form.form_slug}-${form.id}`,
                                                                             !data[
                                                                                 `${field.slug}-${form.form_slug}-${form.id}`
-                                                                            ]
+                                                                                ]
                                                                         )
                                                                     }}
                                                                     checked={
                                                                         data[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                     error={
                                                                         errors[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                 />
                                                             )
@@ -203,12 +236,12 @@ export default function EditDataOnly({
                                                                     value={
                                                                         data[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                     error={
                                                                         errors[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                 />
                                                             )
@@ -249,12 +282,12 @@ export default function EditDataOnly({
                                                                     value={
                                                                         data[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                     error={
                                                                         errors[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                 />
                                                             )
@@ -278,18 +311,18 @@ export default function EditDataOnly({
                                                                             `${field.slug}-${form.form_slug}-${form.id}`,
                                                                             !data[
                                                                                 `${field.slug}-${form.form_slug}-${form.id}`
-                                                                            ]
+                                                                                ]
                                                                         )
                                                                     }}
                                                                     checked={
                                                                         data[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                     error={
                                                                         errors[
                                                                             `${field.slug}-${form.form_slug}-${form.id}`
-                                                                        ]
+                                                                            ]
                                                                     }
                                                                 />
                                                             )
@@ -312,12 +345,12 @@ export default function EditDataOnly({
                                                                 value={
                                                                     data[
                                                                         `${field.slug}-${form.form_slug}-${form.id}`
-                                                                    ]
+                                                                        ]
                                                                 }
                                                                 error={
                                                                     errors[
                                                                         `${field.slug}-${form.form_slug}-${form.id}`
-                                                                    ]
+                                                                        ]
                                                                 }
                                                             />
                                                         )
@@ -340,7 +373,7 @@ export default function EditDataOnly({
                     >
                         {processing ? (
                             <span>
-                                <i className="fa fa-spinner fa-spin" />{' '}
+                                <i className="fa fa-spinner fa-spin"/>{' '}
                                 Guardando Participante
                             </span>
                         ) : (
@@ -348,7 +381,7 @@ export default function EditDataOnly({
                         )}
                     </button>
                 </div>
-                {can('Aprobar Beneficiarios',auth.user.abilities) &&(
+                {can('Aprobar Beneficiarios', auth.user.abilities) && (
                     <div className="col-xs-6">
                         <button
                             className="btn btn-success btn-block"
@@ -357,7 +390,7 @@ export default function EditDataOnly({
                         >
                             {processing ? (
                                 <span>
-                                <i className="fa fa-spinner fa-spin" />{' '}
+                                <i className="fa fa-spinner fa-spin"/>{' '}
                                     Guardando Participante
                             </span>
                             ) : (
