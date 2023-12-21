@@ -2,10 +2,13 @@
 
 namespace App\Console\Commands;
 
+use App\Traits\DynamicComparisons;
+use App\Traits\ReportResults;
 use Illuminate\Console\Command;
 
 class UpdateProjectReportTableFile extends Command
 {
+    use ReportResults, DynamicComparisons;
     /**
      * The name and signature of the console command.
      *
@@ -27,23 +30,28 @@ class UpdateProjectReportTableFile extends Command
      */
     public function handle()
     {
-        $project = $this->option('project');
+        $projectId = $this->option('project');
 
         $project = \App\Models\Project::query()
-            ->where('projects.id', $project)
+            ->where('projects.id', $projectId)
             ->with([
                 'goals' => function ($query) {
-                    $query->select('goals.id', 'project_id', 'program_id', /* other necessary fields */)
+                    $query
                         ->with([
                             'program' => function ($query) {
                                 $query->select('programs.id', 'program_name', /* other necessary fields */)
+                                    //Sum the total appointments
                                     ->with(['forms' => function ($query) {
                                         $query->select('forms.id', 'program_id', /* other necessary fields */);
                                     }])
                                     ->with(['project' => function ($query) {
                                         $query->select('projects.id', /* other necessary fields */);
+                                    }])
+                                    ->withCount(['beneficiaries' => function ($query) {
+                                        $query->whereNotNull('approved_at')
+                                            ->withCount('appointments');
                                     }]);
-                            }
+                            },
                         ])
                         ->orderBy('order');
                 }
@@ -51,18 +59,22 @@ class UpdateProjectReportTableFile extends Command
             ->first();
 
          //If needed, load beneficiaries separately in a more controlled manner
-        $beneficiaries = $project->goals->flatMap(function ($goal) {
-            return $goal->program->beneficiaries()
-                ->whereNotNull('approved_at')
-                ->with(['answers.pivot.field', 'appointments'])
-                ->cursor();
-        });
+
+        $beneficiaries = $project->beneficiaries()
+            ->whereNotNull('approved_at')
+            ->with(['answers.pivot.field'])
+            ->withCount('appointments')
+            ->cursor();
+
 
         $this->info('=============================================================================================================================');
 
         $meetings = $project->meetings()->orderBy('order')->cursor();
         $inventory = $project->inventory()->with('inventoryItems')->cursor();
 
+        $results = $this->getProjectResultsOptimizedForLowMemUsage($project,$meetings,$inventory,$beneficiaries);
+
+        dd($results);
         //dump the memory usage
         dd(memory_get_usage());
 

@@ -205,6 +205,87 @@ trait ReportResults
             ->sortBy('order')->values();
     }
 
+    public function getProjectResultsOptimizedForLowMemUsage(Project $project, LazyCollection $meetings, LazyCollection $inventory, LazyCollection $beneficiaries)
+    {
+
+        return $project->goals->map(function ($goal) use ($meetings, $inventory, $beneficiaries) {
+
+            return [
+                'id' => $goal->id,
+                'goal_description' => $goal->goal_description,
+                'goal_target' => $goal->goal_target,
+                'visible' => $goal->visible,
+                'is_grouped' => $goal->group_every > 1,
+                'group_every' => $goal->group_every,
+                'type' => 'goal',
+                'goal_target_year' => $goal->goal_target / ($project->project_duration ?? 1),
+                'completed_percentage' => min(round(
+                    $goal->program->beneficiaries_count / $goal->goal_target * 100,
+                    2
+                ), 100),
+                'order' => $goal->order ?? $goal->program->order,
+                'active' => $goal->program->deleted_at === null,
+                'goal_total' => $this->getGoalProgress($goal),
+                'program' => [
+                    'id' => $goal->program->id,
+                    'program_name' => $goal->program->program_name,
+                    'beneficiaries_count' => $this->getGoalProgress($goal),
+                    'total_ungrouped' => $goal->program->beneficiaries_count,
+                    'total_grouped' => $goal->group_every > 1 ? round(
+                        $goal->program->beneficiaries_count / $goal->group_every
+                    ) : 0,
+                    'pending' => $goal->group_every > 1 ? round(
+                        $goal->program->beneficiaries_count % $goal->group_every
+                    ) : $goal->goal_target - $goal->program->beneficiaries_count,
+                    'visits' => $goal->program->beneficiaries->sum('appointments_count'),
+                ],
+                'conditions' => collect($goal->conditions)->map(function ($condition) use ($goal, $beneficiaries) {
+                    return [
+                        'label' => $condition['label'],
+                        'value' => $beneficiaries->filter(function (Benefitiary $beneficiary) use ($condition, $goal) {
+
+                            $meetsCondition = true;
+
+                            foreach ($condition['conditions'] as $condition) {
+                                $field = $beneficiary->answers->firstWhere(
+                                    'pivot.field_id',
+                                    $condition['field_id']
+                                );
+
+                                if (!$field) {
+                                    return false;
+                                }
+
+                                $meetsCondition = $this->is(
+                                    Str::startsWith($field->pivot->value, '["') && Str::endsWith(
+                                        $field->pivot->value,
+                                        '"]'
+                                    ) ? json_decode($field->pivot->value) : $field->pivot->value,
+                                    $condition['operand'],
+                                    $condition['field_value']
+                                );
+
+                                if (!$meetsCondition) {
+                                    return false;
+                                }
+
+                            }
+
+                            return $meetsCondition;
+
+                        })->count(),
+                    ];
+                })->groupBy('label')->map(function ($conditions, $label) {
+                    return [
+                        'label' => $label,
+                        'value' => $conditions->sum('value'),
+                    ];
+                })
+            ];
+        });
+
+    }
+
     public function getGlobalResults($project, $results)
     {
         $res = $results
@@ -262,8 +343,8 @@ trait ReportResults
         // For example, if the goal is 1000, and the group every is 100, for every 100 beneficiaries
         // the goal will be completed by 1
         return $goal->group_every > 1
-            ? round($goal->program->beneficiaries->count() / $goal->goal_target * $goal->group_every)
-            : $goal->program->beneficiaries->count();
+            ? round($goal->program->beneficiaries_count / $goal->goal_target * $goal->group_every)
+            : $goal->program->beneficiaries_count;
     }
 
     public function getScreeningsReport($type = 'P-4211')
