@@ -79,32 +79,12 @@ class UpdateProjectReportsFile extends Command
 
             $this->info('Report for Project ' . $project->project_name . ' updated!');
 
-
-            $this->info('Caching results');
-
-            Cache::forget('project-results-' . $project->id);
-            Cache::forget('headers-' . $project->id);
-            Cache::forget('screenings-' . $project->id);
-
-            Cache::remember('project-results-' . $project->id, 60 * 15, function () use ($project) {
-                return $project->report->fields;
-            });
-
-            Cache::remember('headers-' . $project->id, 60 * 15, function () use ($results) {
-                return $this->getHeaders(collect($results));
-            });
-
-            Cache::remember('screenings-' . $project->id, 60 * 15, function () use ($project) {
-                return $this->getScreeningsReport('P-4353');
-            });
-
             unset($results, $globalResults, $newGroupedResults, $newGroupedMeetingResults, $goals, $meetings, $inventory,$project);
 
 
             // Consider garbage collection if memory usage is still high
             gc_collect_cycles();
 
-            $this->info('Results cached!');
 
         });
 
