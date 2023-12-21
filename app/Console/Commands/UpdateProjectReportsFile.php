@@ -80,32 +80,6 @@ class UpdateProjectReportsFile extends Command
             $this->info('Report for Project ' . $project->project_name . ' updated!');
 
 
-            $this->comment('Updating Grouped Results for project:  ' . $project->project_name . '...');
-
-            $project->groupedResults->each(function ($groupedResult) use ($project,$results) {
-                $newGroupedResults = $groupedResult->goals->mapWithKeys(function ($goal) use ($project,$results) {
-                    return [
-                        $goal->id => [
-                            'value' => json_encode(collect($results)->where('id', $goal->id)->where('type', 'goal')->first())
-                        ]
-                    ];
-                });
-
-                $groupedResult->goals()->syncWithoutDetaching($newGroupedResults);
-
-                $newGroupedMeetingResults = $groupedResult->meetings->mapWithKeys(function ($meeting) use ($project,$results) {
-                    return [
-                        $meeting->id => [
-                            'value' => json_encode(collect($results)->where('id', $meeting->id)->where('type', 'meeting')->first())
-                        ]
-                    ];
-                });
-
-                $groupedResult->meetings()->syncWithoutDetaching($newGroupedMeetingResults);
-            });
-
-            $this->info('Grouped Results for project:  ' . $project->project_name . ' updated!');
-
             $this->info('Caching results');
 
             Cache::forget('project-results-' . $project->id);
