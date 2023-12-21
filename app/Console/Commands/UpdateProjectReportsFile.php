@@ -67,14 +67,12 @@ class UpdateProjectReportsFile extends Command
 
             $results = $this->getProjectResults($goals,$meetings,$inventory);
 
-            $globalResults = $this->getGlobalResults($project,$results);
-
             $project->report()->updateOrCreate(
                 ['project_id' => $project->id],
                 [
                     'title' => $project->project_name,
                     'fields' => $results,
-                    'global_fields' => $globalResults,
+                    'global_fields' => [],
                     'generated_at' => now()
                 ]
             );
