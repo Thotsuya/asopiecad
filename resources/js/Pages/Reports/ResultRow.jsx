@@ -75,6 +75,7 @@ export default function ResultRow({
                                                             </span>
             </td>
             <td className="text-sm text-center padding-10">
+                {console.log(result.program)}
                 {result.program.total_ungrouped}
             </td>
             <td className="text-sm padding-10">

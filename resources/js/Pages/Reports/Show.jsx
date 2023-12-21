@@ -30,33 +30,6 @@ export default function Show({
                                  consultations_count,
                                  meeting_goals = [],
                              }) {
-    ChartJS.register(
-        CategoryScale,
-        LinearScale,
-        PointElement,
-        LineElement,
-        Title,
-        Tooltip,
-        Legend
-    )
-
-    const options = {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top',
-            },
-            title: {
-                display: true,
-                text: 'Participantes en el proyecto: ' + project.project_name,
-            },
-        },
-    }
-
-    const data = {
-        labels,
-        datasets,
-    }
 
     const exportToExcel = () => {
         const startDate = startDateRef.current.value
@@ -450,7 +423,10 @@ export default function Show({
                                                 .filter((result) => result.visible === 1)
                                                 .map((result, index) => {
 
-                                                    {console.log(result)}
+                                                    {console.log({
+                                                        id: result.id,
+                                                        title: result.goal_description,
+                                                    })}
                                                     if (index === 2 && project.id === 1) return <ScreeningsRow
                                                         screenings={screenings}/>
 
