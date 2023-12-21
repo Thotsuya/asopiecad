@@ -70,13 +70,23 @@ class UpdateProjectReportTableFile extends Command
          //If needed, load beneficiaries separately in a more controlled manner
 
         $this->info('=============================================================================================================================');
-
+        $this->comment('Updating Report for Project ' . $project->project_name . '...');
         $meetings = $project->meetings()->orderBy('order')->cursor();
         $inventory = $project->inventory()->with('inventoryItems')->cursor();
 
         $results = $this->getProjectResultsOptimizedForLowMemUsage($project,$meetings,$inventory);
 
-        dd($results);
+        $project->report()->updateOrCreate(
+            ['project_id' => $project->id],
+            [
+                'title' => $project->project_name,
+                'fields' => $results,
+                'global_fields' => [],
+                'generated_at' => now()
+            ]
+        );
+
+        $this->info('=============================================================================================================================');
         //dump the memory usage
         dd(memory_get_usage());
 
