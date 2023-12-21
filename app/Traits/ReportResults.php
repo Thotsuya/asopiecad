@@ -68,14 +68,6 @@ trait ReportResults
                 });
 
 
-            //Clear memory
-            $goal->program->unsetRelation('beneficiaries');
-            $goal->program->unsetRelation('forms');
-            $goal->unsetRelation('program');
-
-            //Garbage collection
-            gc_collect_cycles();
-
             return [
                 'id' => $goal->id,
                 'goal_description' => $goal->goal_description,

@@ -126,6 +126,7 @@ class UpdateProjectReportsFile extends Command
 
             unset($results, $globalResults, $newGroupedResults, $newGroupedMeetingResults, $goals, $meetings, $inventory,$project);
 
+
             // Consider garbage collection if memory usage is still high
             gc_collect_cycles();
 
