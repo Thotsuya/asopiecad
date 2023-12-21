@@ -270,6 +270,10 @@ export default function Show({
                                                 Progreso
                                             </th>
                                             <th
+                                                className="text-center text-sm padding-10 bg-primary">
+                                                Cantidad de Consultas
+                                            </th>
+                                            <th
                                                 className="text-center text-sm padding-10 bg-primary"
                                             >
                                                 Total de Registros

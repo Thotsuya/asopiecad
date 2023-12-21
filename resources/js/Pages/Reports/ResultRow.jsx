@@ -11,10 +11,6 @@ export default function ResultRow({
 
     const renderResult = () => {
 
-        if(result.id === 19) {
-            console.log('result', result)
-        }
-
         if(isGrouped && result.id === 19) return consultations_count
 
         return result.is_grouped
@@ -74,8 +70,14 @@ export default function ResultRow({
                                                                 )}
                                                             </span>
             </td>
+            {isGrouped && (
+                <td className="text-sm padding-10 text-center">
+                    {result.id === 64 ? (
+                        <strong>{consultations_count}</strong>
+                    ) : 'N/A'}
+                </td>
+            )}
             <td className="text-sm text-center padding-10">
-                {console.log(result.program)}
                 {result.program.total_ungrouped}
             </td>
             <td className="text-sm padding-10">
@@ -98,6 +100,7 @@ export default function ResultRow({
                     </div>
                 </div>
             </td>
+
             {headers &&
                 headers.map(
                     (
