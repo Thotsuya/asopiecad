@@ -60,6 +60,9 @@ class UpdateProjectReportTableFile extends Command
 
         $this->info('=============================================================================================================================');
 
+        $meetings = $project->meetings()->orderBy('order')->cursor();
+        $inventory = $project->inventory()->with('inventoryItems')->cursor();
+
         //dump the memory usage
         dd(memory_get_usage());
 
