@@ -60,10 +60,10 @@ class UpdateProjectReportsFile extends Command
                         ->orderBy('order', 'desc')
                         ->limit(1);
                 })
-                ->get();
+                ->cursor();
 
-            $meetings = $project->meetings()->orderBy('order')->get();
-            $inventory = $project->inventory()->with('inventoryItems')->get();
+            $meetings = $project->meetings()->orderBy('order')->cursor();
+            $inventory = $project->inventory()->with('inventoryItems')->cursor();
 
             $results = $this->getProjectResults($goals,$meetings,$inventory);
 
