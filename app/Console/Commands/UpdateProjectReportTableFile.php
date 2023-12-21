@@ -33,28 +33,30 @@ class UpdateProjectReportTableFile extends Command
             ->where('id', $project)
             ->with([
                 'goals' => function ($query) {
-                    $query->with([
-                        'program' => [
-                            'forms',
-                            'beneficiaries' => function ($query) {
-                                $query->with([
-                                    'answers.pivot.field',
-                                    'appointments'
-                                ])
-                                    ->whereNotNull('approved_at');
-                            },
-                            'project'
-                        ]
-                    ])
-                        ->orderBy(function ($query) {
-                            $query->select('order')
-                                ->from('programs')
-                                ->whereColumn('programs.id', 'goals.program_id')
-                                ->orderBy('order', 'desc');
-                        });
+                    $query->select('id', 'project_id', 'program_id', /* other necessary fields */)
+                        ->with([
+                            'program' => function ($query) {
+                                $query->select('id', 'name', /* other necessary fields */)
+                                    ->with(['forms' => function ($query) {
+                                        $query->select('id', 'program_id', /* other necessary fields */);
+                                    }])
+                                    ->with(['project' => function ($query) {
+                                        $query->select('id', /* other necessary fields */);
+                                    }]);
+                            }
+                        ])
+                        ->orderBy('order');
                 }
             ])
-            ->first();
+            ->first(['id', /* other necessary fields of Project */]);
+
+        // If needed, load beneficiaries separately in a more controlled manner
+        $beneficiaries = $project->goals->flatMap(function ($goal) {
+            return $goal->program->beneficiaries()
+                ->whereNotNull('approved_at')
+                ->with(['answers.pivot.field', 'appointments'])
+                ->get(['id', 'program_id', /* other necessary fields */]);
+        });
 
         $this->info('=============================================================================================================================');
         dd($project);
