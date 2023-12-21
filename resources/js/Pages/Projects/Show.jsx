@@ -90,7 +90,7 @@ export default function Show({
                                 <GeneralInformation project={project} />
                                 <Programs
                                     programs={paginated_programs}
-                                    beneficiaries={beneficiaries_not_in_project}
+                                    beneficiaries={beneficiaries}
                                     setSelectedProgram={setSelectedProgram}
                                 />
                                 <ProjectBeneficiaries
@@ -141,7 +141,7 @@ export default function Show({
 
             <BeneficiaryCreateModal
                 project={project}
-                beneficiaries={beneficiaries_not_in_project}
+                beneficiaries={beneficiaries}
             />
             <AppointmentCreateModal
                 project={project}

@@ -450,6 +450,7 @@ export default function Show({
                                                 .filter((result) => result.visible === 1)
                                                 .map((result, index) => {
 
+                                                    {console.log(result)}
                                                     if (index === 2 && project.id === 1) return <ScreeningsRow
                                                         screenings={screenings}/>
 

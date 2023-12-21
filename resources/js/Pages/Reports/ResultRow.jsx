@@ -11,6 +11,9 @@ export default function ResultRow({
 
     const renderResult = () => {
 
+        if(result.id === 19) {
+            console.log('result', result)
+        }
 
         if(isGrouped && result.id === 19) return consultations_count
 

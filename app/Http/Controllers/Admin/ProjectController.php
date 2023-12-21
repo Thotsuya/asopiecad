@@ -99,9 +99,12 @@ class ProjectController extends Controller
                 })
                 ->withQueryString(),
             'paginated_programs' => $project->programs()
-                ->with(['beneficiaries' => function ($query) use ($request) {
-                    $query->whereNotNull('approved_at');
-                }])
+                ->select('id', 'program_name', 'project_id')
+//                ->with(['beneficiaries' => function ($query) use ($request) {
+//                    $query
+//                        ->select('benefitiaries.id', 'name', 'approved_at','benefitiaries.uuid')
+//                        ->whereNotNull('approved_at');
+//                }])
                 ->withCount([
                     'beneficiaries' => function ($query) use ($request) {
                         $query->whereNotNull('approved_at');
@@ -112,20 +115,24 @@ class ProjectController extends Controller
                 ->through(function ($program) {
                     return PaginatedProgramsResource::make($program);
                 }),
-            'programs' => ProgramsResource::collection(
-                $project->programs()
-                ->with([
-                    'forms.tabs',
-                    'forms.fields',
-                ])
-                ->orderBy('order')
-                ->get()),
-            'appointments' => AppointmentResource::collection($project
-                ->appointments()
-                ->with(['benefitiary', 'user'])
-                ->latest('id')
-                ->get()
-            ),
+            'programs' => Cache::remember('programs',60 * 60 * 24, function () use ($project) {
+                return ProgramsResource::collection(
+                    $project->programs()
+                        ->with([
+                            'forms.tabs',
+                            'forms.fields',
+                        ])
+                        ->orderBy('order')
+                        ->get());
+            }),
+            'appointments' => Cache::remember('appointments-' . $project->id, 60 * 60, function () use ($project) {
+                return AppointmentResource::collection($project
+                    ->appointments()
+                    ->with(['benefitiary', 'user'])
+                    ->latest('id')
+                    ->get()
+                );
+            }),
             'paginated_appointments' => $project->appointments()
                 ->with(['benefitiary', 'user'])
                 ->latest('id')
@@ -133,12 +140,12 @@ class ProjectController extends Controller
                 ->through(function ($appointment) {
                     return AppointmentResource::make($appointment);
                 }),
-            'beneficiaries_not_in_project' => Benefitiary::query()
-                ->select('id', 'uuid', 'name')
-                ->get(),
+//            'beneficiaries_not_in_project' => Benefitiary::query()
+//                ->select('id', 'uuid', 'name')
+//                ->get(),
             'project' => new ProjectResource(
                 $project
-                    ->load('users','programs','groupedResults','meetings')
+                    ->loadMissing('users','programs','groupedResults','meetings')
                     ->loadCount('beneficiaries', 'users', 'programs')),
             'goals' => $project->goals()
                 ->oldest()
@@ -157,8 +164,7 @@ class ProjectController extends Controller
                 ->get(),
 
             'meetings' => $project->meetings()
-                ->with('participants')
-                ->withCount('participants')
+                ->select('id', 'uuid', 'title', 'project_id', 'order', 'count')
                 ->latest()
                 ->paginate(20)
                 ->through(function ($meeting) {
