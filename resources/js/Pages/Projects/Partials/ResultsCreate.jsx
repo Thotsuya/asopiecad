@@ -31,7 +31,7 @@ export default function ResultsCreate({project, goals, meetings}){
 
     return (
         <div className="col-md-5">
-            {console.log(meetings)}
+
             <div className="box-content">
                 <h4 className="box-title">Resultados Agrupados</h4>
 

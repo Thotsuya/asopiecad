@@ -7,6 +7,9 @@ export default function ProgramBeneficiaryModa({ beneficiaries, program }) {
     const [selectedBeneficiary, setSelectedBeneficiary] = useState(null)
 
     useEffect(() => {
+
+        console.log(beneficiaries)
+
         setOptions(
             beneficiaries.map((beneficiary) => ({
                 value: beneficiary.id,

@@ -55,16 +55,6 @@ export default function Show({
 
                 <ProjectTitleHeaderAndForm project={project} editable={false}>
                     <div className="btn-group">
-                        {project.can['register-beneficiary'] && (
-                            <button
-                                title="Registrar Participante"
-                                className="btn btn-xs btn-primary waves-effect waves-light"
-                                data-toggle="modal"
-                                data-target="#modal-register-beneficiary"
-                            >
-                                <i className="fa fa-user" />
-                            </button>
-                        )}
                         {project.can['register-goals'] && (
                             <button
                                 title="Registrar Meta"
@@ -139,10 +129,6 @@ export default function Show({
                 </div>
             </AuthenticatedLayout>
 
-            <BeneficiaryCreateModal
-                project={project}
-                beneficiaries={beneficiaries}
-            />
             <AppointmentCreateModal
                 project={project}
                 beneficiary={selectedBeneficiary}
@@ -156,10 +142,10 @@ export default function Show({
 
             <GoalsCreateModal project={project} programs={programs} />
 
-            <ProgramBeneficiaryModal
-                beneficiaries={beneficiaries_not_in_project}
-                program={selectedProgram}
-            />
+            {/*<ProgramBeneficiaryModal*/}
+            {/*    beneficiaries={beneficiaries}*/}
+            {/*    program={selectedProgram}*/}
+            {/*/>*/}
 
             <ProgramShowModal program={selectedProgram} />
 
