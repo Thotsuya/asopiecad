@@ -84,20 +84,19 @@ trait ReportResults
                     'id' => $goal->program->id,
                     'program_name' => $goal->program->program_name,
                     'beneficiaries_count' => $this->getGoalProgress($goal),
-                    'total_ungrouped' => $goal->program->beneficiaries->count(),
+                    'total_ungrouped' => $goal->program->beneficiaries_count,
                     'total_grouped' => $goal->group_every > 1 ? round(
-                        $goal->program->beneficiaries->count() / $goal->group_every
+                        $goal->program->beneficiaries_count / $goal->group_every
                     ) : 0,
-                    'completed_percentage' => round(
-                        $goal->program->beneficiaries->count() / $goal->goal_target * 100,
+                    'completed_percentage' => min(round(
+                        $goal->program->beneficiaries_count / $goal->goal_target * 100,
                         2
-                    )
-                    > 100 ? 100 : round($goal->program->beneficiaries->count() / $goal->goal_target * 100, 2),
+                    ), 100),
                     'pending' => $goal->group_every > 1 ? round(
-                        $goal->program->beneficiaries->count() % $goal->group_every
-                    ) : $goal->goal_target - $goal->program->beneficiaries->count(),
+                        $goal->program->beneficiaries_count % $goal->group_every
+                    ) : $goal->goal_target - $goal->program->beneficiaries_count,
                     'visits' => $goal->program->beneficiaries->map(function ($beneficiary) {
-                        return $beneficiary->appointments->count();
+                        return $beneficiary->appointments_count;
                     })->sum(),
                 ],
                 'conditions' => $conditionsTotal->values()->toArray(),
