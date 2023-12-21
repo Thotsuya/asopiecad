@@ -208,7 +208,7 @@ trait ReportResults
     public function getProjectResultsOptimizedForLowMemUsage(Project $project, LazyCollection $meetings, LazyCollection $inventory)
     {
 
-        return $project->goals->map(function ($goal) use ($meetings, $inventory, $beneficiaries) {
+        return $project->goals->map(function ($goal) use ($meetings, $inventory) {
 
             return [
                 'id' => $goal->id,
