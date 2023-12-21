@@ -79,9 +79,6 @@ class UpdateProjectReportsFile extends Command
 
             $this->info('Report for Project ' . $project->project_name . ' updated!');
 
-            unset($results, $globalResults, $newGroupedResults, $newGroupedMeetingResults, $goals, $meetings, $inventory,$project);
-
-
             // Consider garbage collection if memory usage is still high
             gc_collect_cycles();
 

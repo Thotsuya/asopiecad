@@ -205,7 +205,7 @@ trait ReportResults
             ->sortBy('order')->values();
     }
 
-    public function getProjectResultsOptimizedForLowMemUsage(Project $project, LazyCollection $meetings, LazyCollection $inventory, LazyCollection $beneficiaries)
+    public function getProjectResultsOptimizedForLowMemUsage(Project $project, LazyCollection $meetings, LazyCollection $inventory)
     {
 
         return $project->goals->map(function ($goal) use ($meetings, $inventory, $beneficiaries) {
@@ -239,10 +239,10 @@ trait ReportResults
                     ) : $goal->goal_target - $goal->program->beneficiaries_count,
                     'visits' => $goal->program->beneficiaries->sum('appointments_count'),
                 ],
-                'conditions' => collect($goal->conditions)->map(function ($condition) use ($goal, $beneficiaries) {
+                'conditions' => collect($goal->conditions)->map(function ($condition) use ($goal) {
                     return [
                         'label' => $condition['label'],
-                        'value' => $beneficiaries->filter(function (Benefitiary $beneficiary) use ($condition, $goal) {
+                        'value' => $goal->program->beneficiaries->filter(function (Benefitiary $beneficiary) use ($condition, $goal) {
 
                             $meetsCondition = true;
 

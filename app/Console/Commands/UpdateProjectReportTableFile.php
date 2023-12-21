@@ -47,8 +47,11 @@ class UpdateProjectReportTableFile extends Command
                                     ->with(['project' => function ($query) {
                                         $query->select('projects.id', /* other necessary fields */);
                                     }])
-                                    ->withCount(['beneficiaries' => function ($query) {
-                                        $query->whereNotNull('approved_at')
+                                    ->with(['beneficiaries' => function ($query) {
+                                        $query
+                                            ->select('benefitiaries.id', 'name','consultations_count' /* other necessary fields */)
+                                            ->whereNotNull('approved_at')
+                                            ->with(['answers.pivot.field' /* other necessary fields */])
                                             ->withCount('appointments');
                                     }]);
                             },
@@ -60,19 +63,12 @@ class UpdateProjectReportTableFile extends Command
 
          //If needed, load beneficiaries separately in a more controlled manner
 
-        $beneficiaries = $project->beneficiaries()
-            ->whereNotNull('approved_at')
-            ->with(['answers.pivot.field'])
-            ->withCount('appointments')
-            ->cursor();
-
-
         $this->info('=============================================================================================================================');
 
         $meetings = $project->meetings()->orderBy('order')->cursor();
         $inventory = $project->inventory()->with('inventoryItems')->cursor();
 
-        $results = $this->getProjectResultsOptimizedForLowMemUsage($project,$meetings,$inventory,$beneficiaries);
+        $results = $this->getProjectResultsOptimizedForLowMemUsage($project,$meetings,$inventory);
 
         dd($results);
         //dump the memory usage
