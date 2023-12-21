@@ -40,7 +40,6 @@ class ProjectReportsController extends Controller
             ->where('benefitiary_project.project_id', $project->id)
             ->sum('benefitiaries.consultations_count');
 
-// Use caching effectively
         $results = Cache::remember('project-results-' . $project->id, 60 * 15, function () use ($project) {
             return $project->report->fields;
         });
@@ -49,6 +48,9 @@ class ProjectReportsController extends Controller
             return $this->getHeaders(collect($results));
         });
 
+        $screenings = Cache::remember('screenings-' . $project->id, 60 * 15, function () use ($project) {
+            return $this->getScreeningsReport('P-4353');
+        });
 
         return inertia('Reports/Show', [
             'project' => $project,
@@ -56,6 +58,7 @@ class ProjectReportsController extends Controller
             'headers' => $headers,
             // Additional data as necessary
             'consultations_count' => $consultations_count,
+            'screenings' => $screenings,
             // Other required fields...
         ]);
     }

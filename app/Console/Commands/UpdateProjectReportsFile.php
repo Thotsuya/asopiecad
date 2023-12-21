@@ -6,6 +6,8 @@ use App\Models\Project;
 use Illuminate\Console\Command;
 use App\Traits\ReportResults;
 use App\Traits\DynamicComparisons;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class UpdateProjectReportsFile extends Command
 {
@@ -105,6 +107,24 @@ class UpdateProjectReportsFile extends Command
             });
 
             $this->info('Grouped Results for project:  ' . $project->project_name . ' updated!');
+
+            $this->info('Caching results');
+
+            Cache::forget('project-results-' . $project->id);
+            Cache::forget('headers-' . $project->id);
+            Cache::forget('screenings-' . $project->id);
+
+            Cache::remember('project-results-' . $project->id, 60 * 15, function () use ($project) {
+                return $project->report->fields;
+            });
+
+            Cache::remember('headers-' . $project->id, 60 * 15, function () use ($results) {
+                return $this->getHeaders(collect($results));
+            });
+
+            Cache::remember('screenings-' . $project->id, 60 * 15, function () use ($project) {
+                return $this->getScreeningsReport('P-4353');
+            });
 
         });
 
