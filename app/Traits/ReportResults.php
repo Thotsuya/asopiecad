@@ -134,13 +134,6 @@ trait ReportResults
                                     $condition['field_value']
                                 );
 
-                                info('condition', [
-                                    'field' => $field,
-                                    'operand' => $condition['operand'],
-                                    'value' => $condition['field_value'],
-                                    'meetsCondition' => $meetsCondition
-                                ]);
-
 
                                 if (!$meetsCondition) {
                                     return false;
@@ -282,7 +275,98 @@ trait ReportResults
                     ];
                 })
             ];
-        });
+        })->merge(
+            $meetings->flatMap(function ($meeting) {
+
+                if ($meeting->conditions) {
+                    return collect($meeting->conditions)->map(
+                        function ($condition) use ($meeting) {
+
+                            $total = $meeting->participants->filter(function ($participant) use ($condition) {
+                                $meetsCondition = true;
+
+
+                                // Find the first whose key is the $condition['field_slug'] and whose value is the $condition['field_value']
+
+                                $field = collect($participant->form_data)->filter(
+                                    function ($value, $key) use ($condition) {
+                                        return $key === $condition['field_slug'];
+                                    }
+                                )->first();
+
+                                if (!$field) {
+                                    return false;
+                                }
+
+                                $meetsCondition = $this->is(
+                                    Str::startsWith($field, '["') && Str::endsWith($field, '"]') ? json_decode(
+                                        $field
+                                    ) : $field,
+                                    $condition['operand'],
+                                    $condition['field_value']
+                                );
+
+                                if (!$meetsCondition) {
+                                    return false;
+                                }
+
+
+                                return $meetsCondition;
+                            })->count();
+
+                            return [
+                                'id' => $meeting->id,
+                                'goal_description' => $condition['label'],
+                                'visible' => 1,
+                                'goal_target' => $condition['target'],
+                                'current_progress' => $total,
+                                'completed_percentage' => round(
+                                    $total / $condition['target'] * 100,
+                                    2
+                                ),
+                                'pending' => max($condition['target'] - $total, 0),
+                                'type' => 'meeting',
+                                'order' => $condition['order'],
+
+                            ];
+                        }
+                    )->values()->toArray();
+                } else {
+                    return [[
+                        'id' => $meeting->id,
+                        'goal_description' => $meeting->title,
+                        'visible' => 1,
+                        'goal_target' => $meeting->meeting_target,
+                        'current_progress' => $meeting->count,
+                        'completed_percentage' => round(
+                            $meeting->count / $meeting->meeting_target * 100,
+                            2
+                        ),
+                        'pending' => max($meeting->meeting_target - $meeting->count, 0),
+                        'type' => 'meeting',
+                        'order' => $meeting->order
+                    ]];
+                }
+            })
+        )->merge(
+            $inventory->map(function ($item) {
+                return [
+                    'id' => $item->uuid,
+                    'goal_description' => $item->title,
+                    'visible' => 1,
+                    'goal_target' => $item->goal,
+                    'current_progress' => $item->inventoryItems->count(),
+                    'completed_percentage' => round(
+                        $item->inventoryItems->count() / $item->goal * 100,
+                        2
+                    ),
+                    'pending' => max($item->goal - $item->inventoryItems->count(), 0),
+                    'type' => 'inventory',
+                    'order' => $item->order,
+                ];
+            })
+        )
+            ->sortBy('order')->values();
 
     }
 
