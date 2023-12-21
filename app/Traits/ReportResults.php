@@ -7,6 +7,7 @@ use App\Models\Benefitiary;
 use App\Models\Project;
 use App\Models\Screening;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\LazyCollection;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -14,7 +15,7 @@ trait ReportResults
 {
 
 
-    public function getProjectResults(Collection $goals, Collection $meetings, Collection $inventory)
+    public function getProjectResults(LazyCollection $goals, LazyCollection $meetings, LazyCollection $inventory)
     {
         return $goals->map(function ($goal) use ($meetings, $inventory) {
 
