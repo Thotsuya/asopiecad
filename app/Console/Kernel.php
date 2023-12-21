@@ -19,9 +19,16 @@ class Kernel extends ConsoleKernel
         $schedule->command(
             'asopiecad:update-project-reports-table'
         )
-            ->everyFifteenMinutes()
+            ->everyThirtyMinutes()
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/update-project-reports-table.log'));
+
+        $schedule->command(
+            'asopiecad:update-project-reports-grouped-results'
+        )
+            ->hourly()
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/update-project-reports-grouped-results.log'));
 
         $schedule->command('inspire')->hourly();
         // Max execution time 10 minutes
