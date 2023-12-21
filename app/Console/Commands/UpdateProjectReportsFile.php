@@ -35,7 +35,7 @@ class UpdateProjectReportsFile extends Command
     {
         $this->comment('Fetching projects...');
 
-        $projects = Project::all()->each(function ($project) {
+        $projects = Project::query()->cursor()->each(function ($project) {
             $this->info('=============================================================================================================================');
             $this->comment('Updating Report for Project ' . $project->project_name . '...');
             $goals = $project
