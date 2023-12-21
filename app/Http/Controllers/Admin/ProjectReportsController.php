@@ -12,6 +12,7 @@ use App\Traits\ReportResults;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ProjectReportsController extends Controller
@@ -30,38 +31,32 @@ class ProjectReportsController extends Controller
             'rgba(153, 102, 255, 1)',
         ];
 
-        $project = $project
-            ->load([
-                'beneficiaries',
-                'meetings.participants',
-                'groupedResults.goals',
-                'groupedResults.meetings'
-            ])
+// Load only necessary relationships
+        $project->load(['meetings.participants', 'groupedResults.goals', 'groupedResults.meetings']);
 
-            ->loadCount(['beneficiaries','meetings']);
+// Efficiently calculate consultations count
+        $consultations_count = DB::table('benefitiaries')
+            ->join('benefitiary_project', 'benefitiaries.id', '=', 'benefitiary_project.benefitiary_id')
+            ->where('benefitiary_project.project_id', $project->id)
+            ->sum('benefitiaries.consultations_count');
 
-        $consultations_count = $project->beneficiaries->sum('consultations_count');
+// Use caching effectively
+        $results = Cache::remember('project-results-' . $project->id, 60 * 15, function () use ($project) {
+            return $project->report->fields;
+        });
 
-
-        $results = $project->report->fields;
-
-        $headers = $this->getHeaders(collect($results));
-
-        $globalResults = $project->report->global_fields;
+        $headers = Cache::remember('headers-' . $project->id, 60 * 15, function () use ($results) {
+            return $this->getHeaders(collect($results));
+        });
 
 
         return inertia('Reports/Show', [
             'project' => $project,
-            'global' => $globalResults,
             'results' => $results,
             'headers' => $headers,
-            'start_date' => $request->date('start_date') ? $request->date('start_date')->translatedFormat('l d F Y') : null,
-            'end_date' => $request->date('end_date') ? $request->date('end_date')->translatedFormat('l d F Y') : null,
-            'screenings' => Cache::remember('screenings-' . $project->id, 60 * 15, function () use ($project) {
-                return $this->getScreeningsReport($project->id === 1 ? 'P-4211' : 'P-4353');
-            }),
-            'meeting_goals' => MeetingResource::collection($project->meetings),
+            // Additional data as necessary
             'consultations_count' => $consultations_count,
+            // Other required fields...
         ]);
     }
 

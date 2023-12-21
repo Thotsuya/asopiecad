@@ -251,7 +251,7 @@ trait ReportResults
         ];
     }
 
-    public function getHeaders($results)
+    public function getHeaders(\Illuminate\Support\Collection $results)
     {
         return $results
             ->filter(function ($result) {

@@ -9,6 +9,7 @@ use App\Observers\BeneficiaryObserver;
 use App\Observers\ProjectObserver;
 use App\Policies\ProjectPolicy;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
@@ -59,6 +60,8 @@ class AppServiceProvider extends ServiceProvider
         Inertia::share('permissions', function(){
             return auth()->check() ? auth()->user()->getAllPermissions()->pluck('name') : [];
         });
+
+        DB::disableQueryLog();
 
 
     }
