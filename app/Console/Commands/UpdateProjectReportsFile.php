@@ -38,20 +38,27 @@ class UpdateProjectReportsFile extends Command
         $projects = Project::query()->cursor()->each(function ($project) {
             $this->info('=============================================================================================================================');
             $this->comment('Updating Report for Project ' . $project->project_name . '...');
+
             $goals = $project
                 ->goals()
                 ->with([
-                    'program' => [
-                        'forms',
-                        'beneficiaries' => function ($query) {
-                            $query->with([
-                                'answers.pivot.field',
-                                'appointments'
-                            ])
-                                ->whereNotNull('approved_at');
-                        },
-                        'project'
-                    ]
+                    'program' => function ($query) {
+                        $query->select('programs.id', 'program_name', /* other necessary fields */)
+                            //Sum the total appointments
+                            ->with(['forms' => function ($query) {
+                                $query->select('forms.id', 'program_id', /* other necessary fields */);
+                            }])
+                            ->with(['project' => function ($query) {
+                                $query->select('projects.id', /* other necessary fields */);
+                            }])
+                            ->with(['beneficiaries' => function ($query) {
+                                $query
+                                    ->select('benefitiaries.id', 'name','consultations_count' /* other necessary fields */)
+                                    ->whereNotNull('approved_at')
+                                    ->with(['answers.pivot.field' /* other necessary fields */])
+                                    ->withCount('appointments');
+                            }]);
+                    },
                 ])
                 ->orderBy(function ($query) {
                     $query->select('order')

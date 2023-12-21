@@ -56,7 +56,13 @@ class UpdateProjectReportTableFile extends Command
                                     }]);
                             },
                         ])
-                        ->orderBy('order');
+                        ->orderBy(function ($query) {
+                            $query->select('order')
+                                ->from('programs')
+                                ->whereColumn('programs.id', 'goals.program_id')
+                                ->orderBy('order', 'desc')
+                                ->limit(1);
+                        });
                 }
             ])
             ->first();
