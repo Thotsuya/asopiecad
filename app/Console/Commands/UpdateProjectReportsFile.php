@@ -126,6 +126,13 @@ class UpdateProjectReportsFile extends Command
                 return $this->getScreeningsReport('P-4353');
             });
 
+            unset($results, $globalResults, $newGroupedResults, $newGroupedMeetingResults, $goals, $meetings, $inventory,$project);
+
+            // Consider garbage collection if memory usage is still high
+            gc_collect_cycles();
+
+            $this->info('Results cached!');
+
         });
 
 
