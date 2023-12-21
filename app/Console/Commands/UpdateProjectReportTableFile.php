@@ -59,11 +59,9 @@ class UpdateProjectReportTableFile extends Command
         });
 
         $this->info('=============================================================================================================================');
-        dd($project);
 
         //dump the memory usage
         dd(memory_get_usage());
-
 
 
         }
