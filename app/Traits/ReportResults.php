@@ -20,7 +20,6 @@ trait ReportResults
         return $goals->map(function ($goal) use ($meetings, $inventory) {
 
             $conditionsTotal = collect($goal->conditions)
-                ->chunk(10)
                 ->map(
                     function ($condition) use ($goal) {
                         return [
@@ -68,6 +67,14 @@ trait ReportResults
                     ];
                 });
 
+
+            //Clear memory
+            $goal->program->unsetRelation('beneficiaries');
+            $goal->program->unsetRelation('forms');
+            $goal->unsetRelation('program');
+
+            //Garbage collection
+            gc_collect_cycles();
 
             return [
                 'id' => $goal->id,
