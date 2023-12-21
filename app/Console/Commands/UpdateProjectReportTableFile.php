@@ -36,7 +36,7 @@ class UpdateProjectReportTableFile extends Command
                     $query->select('id', 'project_id', 'program_id', /* other necessary fields */)
                         ->with([
                             'program' => function ($query) {
-                                $query->select('id', 'name', /* other necessary fields */)
+                                $query->select('id', 'program_name', /* other necessary fields */)
                                     ->with(['forms' => function ($query) {
                                         $query->select('id', 'program_id', /* other necessary fields */);
                                     }])
