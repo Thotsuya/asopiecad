@@ -30,32 +30,32 @@ class UpdateProjectReportTableFile extends Command
         $project = $this->option('project');
 
         $project = \App\Models\Project::query()
-            ->where('id', $project)
+            ->where('projects.id', $project)
             ->with([
                 'goals' => function ($query) {
-                    $query->select('id', 'project_id', 'program_id', /* other necessary fields */)
+                    $query->select('goals.id', 'project_id', 'program_id', /* other necessary fields */)
                         ->with([
                             'program' => function ($query) {
-                                $query->select('id', 'program_name', /* other necessary fields */)
+                                $query->select('programs.id', 'program_name', /* other necessary fields */)
                                     ->with(['forms' => function ($query) {
-                                        $query->select('id', 'program_id', /* other necessary fields */);
+                                        $query->select('forms.id', 'program_id', /* other necessary fields */);
                                     }])
                                     ->with(['project' => function ($query) {
-                                        $query->select('id', /* other necessary fields */);
+                                        $query->select('projects.id', /* other necessary fields */);
                                     }]);
                             }
                         ])
                         ->orderBy('order');
                 }
             ])
-            ->first(['id', /* other necessary fields of Project */]);
+            ->first();
 
-        // If needed, load beneficiaries separately in a more controlled manner
+         //If needed, load beneficiaries separately in a more controlled manner
         $beneficiaries = $project->goals->flatMap(function ($goal) {
             return $goal->program->beneficiaries()
                 ->whereNotNull('approved_at')
                 ->with(['answers.pivot.field', 'appointments'])
-                ->get(['id', 'program_id', /* other necessary fields */]);
+                ->cursor();
         });
 
         $this->info('=============================================================================================================================');
