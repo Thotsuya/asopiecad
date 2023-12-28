@@ -77,7 +77,7 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
 
         $global = $this->project->report->global_fields;
         $headers = $this->getHeaders(collect($results));
-        $screenings = $this->getScreeningsReport('P-4211');
+        $screenings = $this->getScreeningsReport($this->project['id'] === 2 ? 'P-4353': 'P-4211');
 
 
         $writer = SimpleExcelWriter::create(
@@ -134,7 +134,7 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
                 'goal' => $writer->addRow([
                     $result['goal_description'],
                     $result['goal_target'],
-                    $result['program']['beneficiaries_count'],
+                    $result['goal_total'],
                     $result['program']['completed_percentage'],
                     $result['goal_target'] / $this->project->project_duration,
                     ...Arr::flatten(collect($headers)->map(function ($header) use ($result) {
@@ -147,7 +147,7 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
                 'meeting', 'inventory' => $writer->addRow([
                     $result['goal_description'],
                     $result['goal_target'],
-                    $result['current_progress'],
+                    $result['goal_total'],
                     $result['completed_percentage'],
                     'N/A',
                     ...Arr::flatten(collect($headers)->map(function ($header) use ($result) {
