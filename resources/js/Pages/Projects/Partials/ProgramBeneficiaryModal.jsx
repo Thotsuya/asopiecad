@@ -8,8 +8,6 @@ export default function ProgramBeneficiaryModa({ beneficiaries, program }) {
 
     useEffect(() => {
 
-        console.log(beneficiaries)
-
         setOptions(
             beneficiaries.map((beneficiary) => ({
                 value: beneficiary.id,

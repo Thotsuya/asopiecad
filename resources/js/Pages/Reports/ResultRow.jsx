@@ -11,6 +11,10 @@ export default function ResultRow({
 
     const renderResult = () => {
 
+        if (result.id === 64) {
+            return parseInt(consultations_count) + parseInt(result.goal_total)
+        }
+
         return result.is_grouped
             ? result.program.total_grouped
             : result.goal_total
@@ -77,11 +81,13 @@ export default function ResultRow({
                         aria-valuemax="100"
                         style={{
                             width:
-                                renderResult().toString() / result.goal_target * 100 + '%',
+                            // renderResult().toString() / result.goal_target * 100 + '%',
+                                renderResult().toString() / result.goal_target * 100 > 100 ? 100 + '%' : renderResult().toString() / result.goal_target * 100 + '%',
                         }}
                     >
                                                                     <span>
-                                                                        {renderResult().toString() / result.goal_target * 100}
+                                                                        {/*{renderResult().toString() / result.goal_target * 100}*/}
+                                                                        {renderResult().toString() / result.goal_target * 100 > 100 ? 100 : renderResult().toString() / result.goal_target * 100}
                                                                         %
                                                                     </span>
                     </div>
@@ -133,18 +139,16 @@ export default function ResultRow({
             <td className="text-center text-sm padding-10">
                 <strong>
                     {
-                        result
-                            .program
-                            .total_ungrouped
+                        renderResult()
                     }
                 </strong>
             </td>
             <td className="text-center text-sm padding-10">
                 <strong>
                     {
-                        result
-                            .program
-                            .pending
+                        parseInt(renderResult()) - parseInt(result.goal_target) < 0
+                            ? (parseInt(renderResult()) - parseInt(result.goal_target)) * -1
+                            : 0
                     }
                 </strong>
             </td>
@@ -199,14 +203,30 @@ export default function ResultRow({
                     aria-valuemin="0"
                     aria-valuemax="100"
                     style={{
+                        // width:
+                        //     result
+                        //         .completed_percentage +
+                        //     '%',
                         width:
-                            result
-                                .completed_percentage +
-                            '%',
+                            parseInt(
+                                result
+                                    .completed_percentage
+                            ) > 100
+                                ? 100 + '%'
+                                : parseInt(
+                                result
+                                    .completed_percentage
+                            ) + '%',
                     }}
                 >
                     <span>
+
                         {parseInt(
+                            result
+                                .completed_percentage
+                        ) > 100
+                            ? 100
+                            : parseInt(
                             result
                                 .completed_percentage
                         )}
