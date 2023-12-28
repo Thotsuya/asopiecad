@@ -8,9 +8,12 @@ export default function ResultRow({
                                       consultations_count = 0,
                                   }) {
 
+
+    console.log('result', result)
+
     const renderResult = () => {
 
-        if (result.id === 64) {
+        if (result.id === 64 || result.id === 62){
             return parseInt(consultations_count) + parseInt(result.goal_total)
         }
 
