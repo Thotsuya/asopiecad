@@ -11,9 +11,6 @@ export default function ResultRow({
 
     const renderResult = () => {
 
-
-        if(isGrouped && result.id === 19) return consultations_count
-
         return result.is_grouped
             ? result.program.total_grouped
             : result.goal_total

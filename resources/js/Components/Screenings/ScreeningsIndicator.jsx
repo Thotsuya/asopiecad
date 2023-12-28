@@ -26,9 +26,6 @@ export default function ScreeningsRow({screenings}) {
                                                     {screenings.total_screenings}
                                                 </span>
             </td>
-            <td className="text-center text-sm padding-10">
-                N/A
-            </td>
             <td className="text-sm padding-10">
                 <div className="progress">
                     <div
