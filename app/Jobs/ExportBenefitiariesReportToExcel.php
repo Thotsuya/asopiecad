@@ -130,6 +130,10 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
                 $writer->addRow($screenings, $style);
             }
 
+            if($i == 8 && $this->project->id == 2){
+                $writer->addRow($screenings, $style);
+            }
+
             match ($result['type']){
                 'goal' => $writer->addRow([
                     $result['goal_description'],
@@ -141,7 +145,7 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
                         return Arr::get(collect($result['conditions'])->where('label', $header)->first(),'value','N/A');
                     })->toArray()),
                     $result['program']['visits'],
-                    $result['program']['beneficiaries_count'],
+                    $result['goal_total'],
                     $result['program']['pending'],
                 ], $style),
                 'meeting', 'inventory' => $writer->addRow([
