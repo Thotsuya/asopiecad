@@ -144,7 +144,7 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
                     $result['program']['beneficiaries_count'],
                     $result['program']['pending'],
                 ], $style),
-                'meeting' => $writer->addRow([
+                'meeting', 'inventory' => $writer->addRow([
                     $result['goal_description'],
                     $result['goal_target'],
                     $result['current_progress'],
