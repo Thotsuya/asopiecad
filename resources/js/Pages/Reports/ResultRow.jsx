@@ -11,16 +11,12 @@ export default function ResultRow({
 
     const renderResult = () => {
 
-        if(result.id === 19) {
-            console.log('result', result)
-        }
 
         if(isGrouped && result.id === 19) return consultations_count
 
         return result.is_grouped
             ? result.program.total_grouped
-            : result
-                .goal_total
+            : result.goal_total
     }
 
 
@@ -73,9 +69,6 @@ export default function ResultRow({
                                                                     </>
                                                                 )}
                                                             </span>
-            </td>
-            <td className="text-sm text-center padding-10">
-                {result.program.total_ungrouped}
             </td>
             <td className="text-sm padding-10">
                 <div className="progress">
@@ -199,12 +192,6 @@ export default function ResultRow({
                 result.current_progress
             }
         </span>
-        </td>
-        <td className="text-sm text-center padding-10">
-            {
-                result
-                    .current_progress
-            }
         </td>
         <td className="text-sm padding-10">
             <div className="progress">

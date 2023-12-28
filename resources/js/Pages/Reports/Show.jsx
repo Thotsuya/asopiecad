@@ -296,11 +296,6 @@ export default function Show({
                                             >
                                                 Progreso
                                             </th>
-                                            <th
-                                                className="text-center text-sm padding-10 bg-primary"
-                                            >
-                                                Total de Registros
-                                            </th>
                                             <th className="text-center text-sm padding-10 bg-primary">
                                                 Porcentaje completado
                                             </th>
@@ -408,12 +403,6 @@ export default function Show({
                                                 className="text-center text-sm padding-10 bg-primary"
                                             >
                                                 Progreso
-                                            </th>
-                                            <th
-                                                rowSpan={2}
-                                                className="text-center text-sm padding-10 bg-primary"
-                                            >
-                                                Total Registros
                                             </th>
                                             <th className="text-center text-sm padding-10 bg-primary">
                                                 Porcentaje completado
