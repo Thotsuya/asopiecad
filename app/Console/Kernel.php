@@ -38,7 +38,7 @@ class Kernel extends ConsoleKernel
             ->appendOutputTo(storage_path('logs/queue.log'));
 
         $schedule->command('asopiecad:purge-failed-reports')
-            ->everyTenMinutes()
+            ->everySixHours()
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/purge.log'));
 
