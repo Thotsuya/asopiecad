@@ -8,12 +8,17 @@ export default function ResultRow({
                                       consultations_count = 0,
                                   }) {
 
-
     const renderResult = () => {
 
         if (result.id === 64) {
             return parseInt(consultations_count) + parseInt(result.goal_total)
         }
+
+        // 32 , 33, 51 return result.program.total_ungrouped
+        if (result.id === 32 || result.id === 33 || result.id === 51) {
+            return result.program.total_ungrouped
+        }
+
 
         return result.is_grouped
             ? result.program.total_grouped
@@ -175,8 +180,9 @@ export default function ResultRow({
             className="text-center text-sm padding-10"
         >
             <strong>
+                {console.log(result)}
                 {
-                    result.goal_target
+                    result.type !== 'inventory' ? result.goal_target : result.goal_target
                 }
             </strong>
         </td>
