@@ -147,7 +147,7 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
                 'meeting', 'inventory' => $writer->addRow([
                     $result['goal_description'],
                     $result['goal_target'],
-                    $result['goal_total'],
+                    $result['current_progress'],
                     $result['completed_percentage'],
                     'N/A',
                     ...Arr::flatten(collect($headers)->map(function ($header) use ($result) {
