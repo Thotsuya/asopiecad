@@ -443,7 +443,7 @@ export default function Show({
                                                     if (index === 2 && project.id === 1) return <ScreeningsRow
                                                         screenings={screenings}/>
 
-                                                    if (index === 7 && project.id === 2) return (
+                                                    if (index === 5 && project.id === 2) return (
                                                         <>
                                                             <ScreeningsRow
                                                                 screenings={screenings}/>
