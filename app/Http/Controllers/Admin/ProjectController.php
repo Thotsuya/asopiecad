@@ -100,11 +100,6 @@ class ProjectController extends Controller
                 ->withQueryString(),
             'paginated_programs' => $project->programs()
                 ->select('id', 'program_name', 'project_id')
-//                ->with(['beneficiaries' => function ($query) use ($request) {
-//                    $query
-//                        ->select('benefitiaries.id', 'name', 'approved_at','benefitiaries.uuid')
-//                        ->whereNotNull('approved_at');
-//                }])
                 ->withCount([
                     'beneficiaries' => function ($query) use ($request) {
                         $query->whereNotNull('approved_at');

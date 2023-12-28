@@ -22,8 +22,7 @@ export default function Programs({
                                 <thead>
                                     <tr>
                                         <th>Nombre</th>
-                                        <th>Beneficiarios</th>
-                                        <th>Acciones</th>
+                                        <th>Participantes</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -32,36 +31,6 @@ export default function Programs({
                                             <td>{program.program_name}</td>
                                             <td>
                                                 {program.beneficiaries_count}
-                                            </td>
-                                            <td>
-                                                <div className="btn-group">
-                                                    <button
-                                                        title="Ver Beneficiarios"
-                                                        className="btn btn-xs btn-primary waves-effect waves-light"
-                                                        data-toggle="modal"
-                                                        data-target="#modal-program-beneficiaries"
-                                                        onClick={() =>
-                                                            setSelectedProgram(
-                                                                program
-                                                            )
-                                                        }
-                                                    >
-                                                        <i className="fa fa-eye" />
-                                                    </button>
-                                                    <button
-                                                        title="Agregar Beneficiario"
-                                                        className="btn btn-xs btn-success waves-effect waves-light"
-                                                        data-toggle="modal"
-                                                        data-target="#modal-add-beneficiary"
-                                                        onClick={() =>
-                                                            setSelectedProgram(
-                                                                program
-                                                            )
-                                                        }
-                                                    >
-                                                        <i className="fa fa-user-plus" />
-                                                    </button>
-                                                </div>
                                             </td>
                                         </tr>
                                     ))}

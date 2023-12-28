@@ -57,6 +57,9 @@ class UpdateProjectReportsFile extends Command
                                     ->whereNotNull('approved_at')
                                     ->with(['answers.pivot.field' /* other necessary fields */])
                                     ->withCount('appointments');
+                            }])
+                            ->withCount(['beneficiaries as total_beneficiaries' => function ($query) {
+                                $query->whereNotNull('approved_at');
                             }]);
                     },
                 ])

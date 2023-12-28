@@ -18,7 +18,6 @@ trait ReportResults
     public function getProjectResults(LazyCollection $goals, LazyCollection $meetings, LazyCollection $inventory)
     {
         return $goals->map(function ($goal) use ($meetings, $inventory) {
-
             $conditionsTotal = collect($goal->conditions)
                 ->map(
                     function ($condition) use ($goal) {
@@ -26,7 +25,6 @@ trait ReportResults
                             'label' => $condition['label'],
                             'value' => $goal->program->beneficiaries
                                 ->filter(function (Benefitiary $beneficiary) use ($condition, $goal) {
-
                                     $meetsCondition = true;
 
                                     foreach ($condition['conditions'] as $condition) {
@@ -69,46 +67,47 @@ trait ReportResults
 
 
             return [
-                'id' => $goal->id,
+                'id'               => $goal->id,
                 'goal_description' => $goal->goal_description,
-                'goal_target' => $goal->goal_target,
-                'visible' => $goal->visible,
-                'is_grouped' => $goal->group_every > 1,
-                'group_every' => $goal->group_every,
-                'type' => 'goal',
+                'goal_target'      => $goal->goal_target,
+                'visible'          => $goal->visible,
+                'is_grouped'       => $goal->group_every > 1,
+                'group_every'      => $goal->group_every,
+                'type'             => 'goal',
                 'goal_target_year' => $goal->goal_target / $goal->program->project->project_duration,
-                'order' => $goal->order ?? $goal->program->order,
-                'active' => $goal->program->deleted_at === null,
-                'goal_total' => $conditionsTotal->sum('value'),
-                'program' => [
-                    'id' => $goal->program->id,
-                    'program_name' => $goal->program->program_name,
-                    'beneficiaries_count' => $this->getGoalProgress($goal),
-                    'total_ungrouped' => $goal->program->beneficiaries_count,
-                    'total_grouped' => $goal->group_every > 1 ? round(
-                        $goal->program->beneficiaries_count / $goal->group_every
+                'order'            => $goal->order ?? $goal->program->order,
+                'active'           => $goal->program->deleted_at === null,
+                'goal_total'       => $conditionsTotal->sum('value'),
+                'program'          => [
+                    'id'                   => $goal->program->id,
+                    'program_name'         => $goal->program->program_name,
+                    'beneficiaries_count'  => $this->getGoalProgress($goal),
+                    'total_ungrouped'      => $goal->program->beneficiaries->count(),
+                    'total_grouped'        => $goal->group_every > 1 ? round(
+                        $goal->program->beneficiaries->count() / $goal->group_every
                     ) : 0,
-                    'completed_percentage' => min(round(
-                        $goal->program->beneficiaries_count / $goal->goal_target * 100,
-                        2
-                    ), 100),
-                    'pending' => $goal->group_every > 1 ? round(
-                        $goal->program->beneficiaries_count % $goal->group_every
-                    ) : $goal->goal_target - $goal->program->beneficiaries_count,
-                    'visits' => $goal->program->beneficiaries->map(function ($beneficiary) {
+                    'completed_percentage' => min(
+                        round(
+                            $goal->program->beneficiaries->count() / $goal->goal_target * 100,
+                            2
+                        ),
+                        100
+                    ),
+                    'pending'              => $goal->group_every > 1 ? round(
+                        $goal->program->total_beneficiaries % $goal->group_every
+                    ) : $goal->goal_target - $goal->program->beneficiaries->count(),
+                    'visits'               => $goal->program->beneficiaries->map(function ($beneficiary) {
                         return $beneficiary->appointments_count;
                     })->sum(),
                 ],
-                'conditions' => $conditionsTotal->values()->toArray(),
+                'conditions'       => $conditionsTotal->values()->toArray(),
 
             ];
         })->merge(
             $meetings->flatMap(function ($meeting) {
-
                 if ($meeting->conditions) {
                     return collect($meeting->conditions)->map(
                         function ($condition) use ($meeting) {
-
                             $total = $meeting->participants->filter(function ($participant) use ($condition) {
                                 $meetsCondition = true;
 
@@ -143,129 +142,134 @@ trait ReportResults
                             })->count();
 
                             return [
-                                'id' => $meeting->id,
-                                'goal_description' => $condition['label'],
-                                'visible' => 1,
-                                'goal_target' => $condition['target'],
-                                'current_progress' => $total,
+                                'id'                   => $meeting->id,
+                                'goal_description'     => $condition['label'],
+                                'visible'              => 1,
+                                'goal_target'          => $condition['target'],
+                                'current_progress'     => $total,
                                 'completed_percentage' => round(
                                     $total / $condition['target'] * 100,
                                     2
                                 ),
-                                'pending' => max($condition['target'] - $total, 0),
-                                'type' => 'meeting',
-                                'order' => $condition['order'],
+                                'pending'              => max($condition['target'] - $total, 0),
+                                'type'                 => 'meeting',
+                                'order'                => $condition['order'],
 
                             ];
                         }
                     )->values()->toArray();
                 } else {
-                    return [[
-                        'id' => $meeting->id,
-                        'goal_description' => $meeting->title,
-                        'visible' => 1,
-                        'goal_target' => $meeting->meeting_target,
-                        'current_progress' => $meeting->count,
-                        'completed_percentage' => round(
-                            $meeting->count / $meeting->meeting_target * 100,
-                            2
-                        ),
-                        'pending' => max($meeting->meeting_target - $meeting->count, 0),
-                        'type' => 'meeting',
-                        'order' => $meeting->order
-                    ]];
+                    return [
+                        [
+                            'id'                   => $meeting->id,
+                            'goal_description'     => $meeting->title,
+                            'visible'              => 1,
+                            'goal_target'          => $meeting->meeting_target,
+                            'current_progress'     => $meeting->count,
+                            'completed_percentage' => round(
+                                $meeting->count / $meeting->meeting_target * 100,
+                                2
+                            ),
+                            'pending'              => max($meeting->meeting_target - $meeting->count, 0),
+                            'type'                 => 'meeting',
+                            'order'                => $meeting->order
+                        ]
+                    ];
                 }
             })
         )->merge(
             $inventory->map(function ($item) {
                 return [
-                    'id' => $item->uuid,
-                    'goal_description' => $item->title,
-                    'visible' => 1,
-                    'goal_target' => $item->goal,
-                    'current_progress' => $item->inventoryItems->count(),
+                    'id'                   => $item->uuid,
+                    'goal_description'     => $item->title,
+                    'visible'              => 1,
+                    'goal_target'          => $item->goal,
+                    'current_progress'     => $item->inventoryItems->count(),
                     'completed_percentage' => round(
                         $item->inventoryItems->count() / $item->goal * 100,
                         2
                     ),
-                    'pending' => max($item->goal - $item->inventoryItems->count(), 0),
-                    'type' => 'inventory',
-                    'order' => $item->order,
+                    'pending'              => max($item->goal - $item->inventoryItems->count(), 0),
+                    'type'                 => 'inventory',
+                    'order'                => $item->order,
                 ];
             })
         )
             ->sortBy('order')->values();
     }
 
-    public function getProjectResultsOptimizedForLowMemUsage(Project $project, LazyCollection $meetings, LazyCollection $inventory)
-    {
-
+    public function getProjectResultsOptimizedForLowMemUsage(
+        Project $project,
+        LazyCollection $meetings,
+        LazyCollection $inventory
+    ) {
         return $project->goals->map(function ($goal) use ($meetings, $inventory) {
-
             return [
-                'id' => $goal->id,
-                'goal_description' => $goal->goal_description,
-                'goal_target' => $goal->goal_target,
-                'visible' => $goal->visible,
-                'is_grouped' => $goal->group_every > 1,
-                'group_every' => $goal->group_every,
-                'type' => 'goal',
-                'goal_target_year' => $goal->goal_target / ($project->project_duration ?? 1),
-                'completed_percentage' => min(round(
-                    $goal->program->beneficiaries_count / $goal->goal_target * 100,
-                    2
-                ), 100),
-                'order' => $goal->order ?? $goal->program->order,
-                'active' => $goal->program->deleted_at === null,
-                'goal_total' => $this->getGoalProgress($goal),
-                'program' => [
-                    'id' => $goal->program->id,
-                    'program_name' => $goal->program->program_name,
+                'id'                   => $goal->id,
+                'goal_description'     => $goal->goal_description,
+                'goal_target'          => $goal->goal_target,
+                'visible'              => $goal->visible,
+                'is_grouped'           => $goal->group_every > 1,
+                'group_every'          => $goal->group_every,
+                'type'                 => 'goal',
+                'goal_target_year'     => $goal->goal_target / ($project->project_duration ?? 1),
+                'completed_percentage' => min(
+                    round(
+                        $goal->program->beneficiaries_count / $goal->goal_target * 100,
+                        2
+                    ),
+                    100
+                ),
+                'order'                => $goal->order ?? $goal->program->order,
+                'active'               => $goal->program->deleted_at === null,
+                'goal_total'           => $this->getGoalProgress($goal),
+                'program'              => [
+                    'id'                  => $goal->program->id,
+                    'program_name'        => $goal->program->program_name,
                     'beneficiaries_count' => $this->getGoalProgress($goal),
-                    'total_ungrouped' => $goal->program->beneficiaries_count,
-                    'total_grouped' => $goal->group_every > 1 ? round(
+                    'total_ungrouped'     => $goal->program->beneficiaries_count,
+                    'total_grouped'       => $goal->group_every > 1 ? round(
                         $goal->program->beneficiaries_count / $goal->group_every
                     ) : 0,
-                    'pending' => $goal->group_every > 1 ? round(
+                    'pending'             => $goal->group_every > 1 ? round(
                         $goal->program->beneficiaries_count % $goal->group_every
                     ) : $goal->goal_target - $goal->program->beneficiaries_count,
-                    'visits' => $goal->program->beneficiaries->sum('appointments_count'),
+                    'visits'              => $goal->program->beneficiaries->sum('appointments_count'),
                 ],
-                'conditions' => collect($goal->conditions)->map(function ($condition) use ($goal) {
+                'conditions'           => collect($goal->conditions)->map(function ($condition) use ($goal) {
                     return [
                         'label' => $condition['label'],
-                        'value' => $goal->program->beneficiaries->filter(function (Benefitiary $beneficiary) use ($condition, $goal) {
+                        'value' => $goal->program->beneficiaries->filter(
+                            function (Benefitiary $beneficiary) use ($condition, $goal) {
+                                $meetsCondition = true;
 
-                            $meetsCondition = true;
+                                foreach ($condition['conditions'] as $condition) {
+                                    $field = $beneficiary->answers->firstWhere(
+                                        'pivot.field_id',
+                                        $condition['field_id']
+                                    );
 
-                            foreach ($condition['conditions'] as $condition) {
-                                $field = $beneficiary->answers->firstWhere(
-                                    'pivot.field_id',
-                                    $condition['field_id']
-                                );
+                                    if (!$field) {
+                                        return false;
+                                    }
 
-                                if (!$field) {
-                                    return false;
+                                    $meetsCondition = $this->is(
+                                        Str::startsWith($field->pivot->value, '["') && Str::endsWith(
+                                            $field->pivot->value,
+                                            '"]'
+                                        ) ? json_decode($field->pivot->value) : $field->pivot->value,
+                                        $condition['operand'],
+                                        $condition['field_value']
+                                    );
+
+                                    if (!$meetsCondition) {
+                                        return false;
+                                    }
                                 }
 
-                                $meetsCondition = $this->is(
-                                    Str::startsWith($field->pivot->value, '["') && Str::endsWith(
-                                        $field->pivot->value,
-                                        '"]'
-                                    ) ? json_decode($field->pivot->value) : $field->pivot->value,
-                                    $condition['operand'],
-                                    $condition['field_value']
-                                );
-
-                                if (!$meetsCondition) {
-                                    return false;
-                                }
-
+                                return $meetsCondition;
                             }
-
-                            return $meetsCondition;
-
-                        })->count(),
+                        )->count(),
                     ];
                 })->groupBy('label')->map(function ($conditions, $label) {
                     return [
@@ -276,11 +280,9 @@ trait ReportResults
             ];
         })->merge(
             $meetings->flatMap(function ($meeting) {
-
                 if ($meeting->conditions) {
                     return collect($meeting->conditions)->map(
                         function ($condition) use ($meeting) {
-
                             $total = $meeting->participants->filter(function ($participant) use ($condition) {
                                 $meetsCondition = true;
 
@@ -314,59 +316,60 @@ trait ReportResults
                             })->count();
 
                             return [
-                                'id' => $meeting->id,
-                                'goal_description' => $condition['label'],
-                                'visible' => 1,
-                                'goal_target' => $condition['target'],
-                                'current_progress' => $total,
+                                'id'                   => $meeting->id,
+                                'goal_description'     => $condition['label'],
+                                'visible'              => 1,
+                                'goal_target'          => $condition['target'],
+                                'current_progress'     => $total,
                                 'completed_percentage' => round(
                                     $total / $condition['target'] * 100,
                                     2
                                 ),
-                                'pending' => max($condition['target'] - $total, 0),
-                                'type' => 'meeting',
-                                'order' => $condition['order'],
+                                'pending'              => max($condition['target'] - $total, 0),
+                                'type'                 => 'meeting',
+                                'order'                => $condition['order'],
 
                             ];
                         }
                     )->values()->toArray();
                 } else {
-                    return [[
-                        'id' => $meeting->id,
-                        'goal_description' => $meeting->title,
-                        'visible' => 1,
-                        'goal_target' => $meeting->meeting_target,
-                        'current_progress' => $meeting->count,
-                        'completed_percentage' => round(
-                            $meeting->count / $meeting->meeting_target * 100,
-                            2
-                        ),
-                        'pending' => max($meeting->meeting_target - $meeting->count, 0),
-                        'type' => 'meeting',
-                        'order' => $meeting->order
-                    ]];
+                    return [
+                        [
+                            'id'                   => $meeting->id,
+                            'goal_description'     => $meeting->title,
+                            'visible'              => 1,
+                            'goal_target'          => $meeting->meeting_target,
+                            'current_progress'     => $meeting->count,
+                            'completed_percentage' => round(
+                                $meeting->count / $meeting->meeting_target * 100,
+                                2
+                            ),
+                            'pending'              => max($meeting->meeting_target - $meeting->count, 0),
+                            'type'                 => 'meeting',
+                            'order'                => $meeting->order
+                        ]
+                    ];
                 }
             })
         )->merge(
             $inventory->map(function ($item) {
                 return [
-                    'id' => $item->uuid,
-                    'goal_description' => $item->title,
-                    'visible' => 1,
-                    'goal_target' => $item->goal,
-                    'current_progress' => $item->inventoryItems->count(),
+                    'id'                   => $item->uuid,
+                    'goal_description'     => $item->title,
+                    'visible'              => 1,
+                    'goal_target'          => $item->goal,
+                    'current_progress'     => $item->inventoryItems->count(),
                     'completed_percentage' => round(
                         $item->inventoryItems->count() / $item->goal * 100,
                         2
                     ),
-                    'pending' => max($item->goal - $item->inventoryItems->count(), 0),
-                    'type' => 'inventory',
-                    'order' => $item->order,
+                    'pending'              => max($item->goal - $item->inventoryItems->count(), 0),
+                    'type'                 => 'inventory',
+                    'order'                => $item->order,
                 ];
             })
         )
             ->sortBy('order')->values();
-
     }
 
     public function getGlobalResults($project, $results)
@@ -382,23 +385,23 @@ trait ReportResults
             ->groupBy('label');
 
         return [
-            'goal_description' => 'Meta Global del Proyecto: ' . $project->global_goal,
-            'goal_target' => $project->global_goal,
-            'total_beneficiaries' => $project->beneficiaries->count(),
+            'goal_description'     => 'Meta Global del Proyecto: ' . $project->global_goal,
+            'goal_target'          => $project->global_goal,
+            'total_beneficiaries'  => $project->beneficiaries->count(),
             'completed_percentage' => round(
                 $project->beneficiaries->count() / $project->global_goal * 100,
                 2
             ),
-            'total_visits' => $project->beneficiaries->map(function ($beneficiary) {
+            'total_visits'         => $project->beneficiaries->map(function ($beneficiary) {
                 return $beneficiary->appointments->count();
             })->sum(),
-            'conditions' => $res->map(function ($condition) {
+            'conditions'           => $res->map(function ($condition) {
                 return [
                     'label' => $condition->first()['label'],
                     'value' => $condition->sum('value'),
                 ];
             })->values()->toArray(),
-            'current_progress' => $res->reduce(function ($carry, $condition) {
+            'current_progress'     => $res->reduce(function ($carry, $condition) {
                 return $carry + $condition->sum('value');
             }, 0),
         ];
@@ -435,20 +438,20 @@ trait ReportResults
         $screenings = Screening::where('type', $type)->get();
 
         return [
-            'title' => $this->getScreeningLabel($type),
-            'goal' => $type === 'P-4211' ? 7200 : 30000,
-            'total_screenings' => $screenings->count(),
-            'completed_percentage' => round(
+            'title'                              => $this->getScreeningLabel($type),
+            'goal'                               => $type === 'P-4211' ? 7200 : 30000,
+            'total_screenings'                   => $screenings->count(),
+            'completed_percentage'               => round(
                 $screenings->count() / ($type === 'P-4211' ? 7200 : 30000) * 100,
                 2
             ),
-            'anual_goal' => 'N/A',
-            'males_below_18_with_disabilities' => 0,
+            'anual_goal'                         => 'N/A',
+            'males_below_18_with_disabilities'   => 0,
             'females_below_18_with_disabilities' => 0,
-            'males_over_18_with_disabilities' => 0,
-            'females_over_18_with_disabilities' => 0,
+            'males_over_18_with_disabilities'    => 0,
+            'females_over_18_with_disabilities'  => 0,
 
-            'males_below_18_without_disabilities' => $screenings->filter(function ($screening) {
+            'males_below_18_without_disabilities'   => $screenings->filter(function ($screening) {
                 return floatval(
                         trim(str_replace('meses', '', $screening->age))
                     ) / 12 < 18 && $screening->gender == 'masculino';
@@ -458,19 +461,19 @@ trait ReportResults
                         trim(str_replace('meses', '', $screening->age))
                     ) / 12 < 18 && $screening->gender == 'femenino';
             })->count(),
-            'males_over_18_without_disabilities' => $screenings->filter(function ($screening) {
+            'males_over_18_without_disabilities'    => $screenings->filter(function ($screening) {
                 return floatval(
                         trim(str_replace('meses', '', $screening->age))
                     ) / 12 > 18 && $screening->gender == 'masculino';
             })->count(),
-            'females_over_18_without_disabilities' => $screenings->filter(function ($screening) {
+            'females_over_18_without_disabilities'  => $screenings->filter(function ($screening) {
                 return floatval(
                         trim(str_replace('meses', '', $screening->age))
                     ) / 12 > 18 && $screening->gender == 'femenino';
             })->count(),
-            'visits' => 'N/A',
-            'total' => $screenings->count(),
-            'pending' => 7200 - $screenings->count(),
+            'visits'                                => 'N/A',
+            'total'                                 => $screenings->count(),
+            'pending'                               => 7200 - $screenings->count(),
         ];
     }
 
@@ -489,13 +492,13 @@ trait ReportResults
             'P-4211' =>
             [
                 'Nombre de quien lo aplica' => 'registrant_name',
-                'Departamento' => 'department',
-                'Municipio' => 'municipality',
-                'Fecha de Aplicación' => 'date_of_screening',
-                'Nombre y Apellido' => 'name',
-                'Edad' => 'age',
-                'Sexo' => 'gender',
-                'Comunicación' => [
+                'Departamento'              => 'department',
+                'Municipio'                 => 'municipality',
+                'Fecha de Aplicación'       => 'date_of_screening',
+                'Nombre y Apellido'         => 'name',
+                'Edad'                      => 'age',
+                'Sexo'                      => 'gender',
+                'Comunicación'              => [
                     'communication_level_1',
                     'communication_level_2',
                     'communication_level_3',
@@ -503,7 +506,7 @@ trait ReportResults
                     'communication_level_5',
                     'communication_level_6'
                 ],
-                'Movimiento Amplio' => [
+                'Movimiento Amplio'         => [
                     'wide_movements_level_1',
                     'wide_movements_level_2',
                     'wide_movements_level_3',
@@ -511,7 +514,7 @@ trait ReportResults
                     'wide_movements_level_5',
                     'wide_movements_level_6'
                 ],
-                'Movimientos Finos' => [
+                'Movimientos Finos'         => [
                     'fine_movements_level_1',
                     'fine_movements_level_2',
                     'fine_movements_level_3',
@@ -519,7 +522,7 @@ trait ReportResults
                     'fine_movements_level_5',
                     'fine_movements_level_6'
                 ],
-                'Resolución de Problemas' => [
+                'Resolución de Problemas'   => [
                     'problem_solving_level_1',
                     'problem_solving_level_2',
                     'problem_solving_level_3',
@@ -527,7 +530,7 @@ trait ReportResults
                     'problem_solving_level_5',
                     'problem_solving_level_6'
                 ],
-                'Socio Individual' => [
+                'Socio Individual'          => [
                     'social_individual_level_1',
                     'social_individual_level_2',
                     'social_individual_level_3',
@@ -538,29 +541,29 @@ trait ReportResults
             ],
             'P-4353' =>
             [
-                'Nombre de quien lo aplica' => 'registrant_name',
-                'Departamento' => 'department',
-                'Municipio' => 'municipality',
-                'Fecha de Aplicación' => 'date_of_screening',
-                '1er Nombre' => 'first_name',
-                '2do Nombre' => 'second_name',
-                '1er Apellido' => 'first_surname',
-                '2do Apellido' => 'second_surname',
-                'Sexo' => 'gender',
-                'Edad' => 'age',
-                'Discapacidad Si / No' => 'disability_yes_no',
+                'Nombre de quien lo aplica'                          => 'registrant_name',
+                'Departamento'                                       => 'department',
+                'Municipio'                                          => 'municipality',
+                'Fecha de Aplicación'                                => 'date_of_screening',
+                '1er Nombre'                                         => 'first_name',
+                '2do Nombre'                                         => 'second_name',
+                '1er Apellido'                                       => 'first_surname',
+                '2do Apellido'                                       => 'second_surname',
+                'Sexo'                                               => 'gender',
+                'Edad'                                               => 'age',
+                'Discapacidad Si / No'                               => 'disability_yes_no',
                 'Tipo de discapacidad o alteración en el desarrollo' => 'disability_type',
-                'Fecha de Nacimiento' => 'date_of_birth',
-                'Cédula de Identidad' => 'document',
-                'Dirección' => 'address',
-                'Departamento del Tamizado' => 'screened_deparment',
-                'Municipio del Tamizado' => 'screened_municipality',
-                'Teléfono' => 'screened_phone_number',
-                'Agudeza Visual' => 'screened_visual_acuity',
-                'Referidos' => 'screened_refered',
-                'Observaciones' => 'screened_observations',
-                'Agudeza Visual Ojo Derecho' => 'screened_visual_acuity_right',
-                'Agudeza Visual Ojo Izquierdo' => 'screened_visual_acuity_left',
+                'Fecha de Nacimiento'                                => 'date_of_birth',
+                'Cédula de Identidad'                                => 'document',
+                'Dirección'                                          => 'address',
+                'Departamento del Tamizado'                          => 'screened_deparment',
+                'Municipio del Tamizado'                             => 'screened_municipality',
+                'Teléfono'                                           => 'screened_phone_number',
+                'Agudeza Visual'                                     => 'screened_visual_acuity',
+                'Referidos'                                          => 'screened_refered',
+                'Observaciones'                                      => 'screened_observations',
+                'Agudeza Visual Ojo Derecho'                         => 'screened_visual_acuity_right',
+                'Agudeza Visual Ojo Izquierdo'                       => 'screened_visual_acuity_left',
             ]
         };
     }
