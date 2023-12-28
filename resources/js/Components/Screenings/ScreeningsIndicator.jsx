@@ -1,4 +1,4 @@
-export default function ScreeningsRow({screenings}) {
+export default function ScreeningsRow({screenings,project}) {
 
     return (
         <tr>
@@ -83,7 +83,7 @@ export default function ScreeningsRow({screenings}) {
             </td>
             <td className="text-center text-sm padding-10">
                 {
-                    7200 - screenings.total_screenings
+                    (project.id === 2 ? 30000 : 7200) - screenings.total_screenings
                 }
             </td>
         </tr>

@@ -445,7 +445,9 @@ export default function Show({
                                                     if (index === 5 && project.id === 2) return (
                                                         <>
                                                             <ScreeningsRow
-                                                                screenings={screenings}/>
+                                                                screenings={screenings}
+                                                                project={project}
+                                                            />
 
                                                             <ResultRow
                                                                 key={`goal-result-${index}`}
