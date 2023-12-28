@@ -44,7 +44,7 @@ class ExportBenefitiariesCompleteReportToExcel implements ShouldQueue
         $this->filename = 'Reporte de Participantes '.now()->format('Y-m-d').time().'.xlsx';
         $this->reportResult = User::first()->excelReports()->create([
             'file_name' => $this->filename,
-            'file_path' => 'public/reports/' . $this->filename
+            'file_path' => 'reports/' . $this->filename
         ]);
         $this->request = $request;
     }
@@ -88,7 +88,7 @@ class ExportBenefitiariesCompleteReportToExcel implements ShouldQueue
 
         $headers = $beneficiaries->pluck('answers')->flatten(1)->pluck('field')->unique()->toArray();
 
-        $writer = SimpleExcelWriter::create(Storage::path('public/reports/' . $this->filename));
+        $writer = SimpleExcelWriter::create(Storage::disk('public')->path('reports/' . $this->filename));
 
         $style = (new Style())
             ->setFontSize(12)

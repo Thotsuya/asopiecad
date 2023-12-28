@@ -54,7 +54,7 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
         //Generate the report
         $this->reportResult = $this->project->excelReports()->create([
             'file_name' => $this->filename,
-            'file_path' => 'public/reports/' . $this->filename
+            'file_path' => 'reports/' . $this->filename
         ]);
     }
 
@@ -81,7 +81,7 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
 
 
         $writer = SimpleExcelWriter::create(
-            file: Storage::path('public/reports/' . $this->filename),
+            file: Storage::disk('public')->path('reports/' . $this->filename),
             configureWriter: function ($writer) {
                 $options = $writer->getOptions();
                 $options->DEFAULT_COLUMN_WIDTH=30; // set default width
