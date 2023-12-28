@@ -133,7 +133,7 @@ class ProjectFormController extends Controller
             'document_id' => $cedula,
             'internal_status' => (auth()->user()->can('Aprobar Beneficiarios') && $request->validated()['approve']) ? Benefitiary::INTERNAL_STATUSES['approved'] : Benefitiary::INTERNAL_STATUSES['pending'],
             'approved_at'     => (auth()->user()->can('Aprobar Beneficiarios') && $request->validated()['approve']) ? now() : null,
-            'created_by' => auth()->user()->id,
+            //'created_by' => auth()->user()->id,
         ]);
 
         $programs = Program::find($request->validated()['programs']);
