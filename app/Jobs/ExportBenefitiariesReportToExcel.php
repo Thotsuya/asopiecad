@@ -72,8 +72,13 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
         // The ones marked as not visible will be shown first, sort the list so that they are at the top
         $results = collect($this->project->report->fields)
                             ->unique('goal_description')
+                            ->where('visible', true)
                             ->sortBy('visible')
                             ->values();
+
+        $groupedResults = $this->project->groupedResults->load('goals','meetings');
+
+
 
         $global = $this->project->report->global_fields;
         $headers = $this->getHeaders(collect($results));
@@ -121,10 +126,33 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
         ]);
 
 
+        foreach ($groupedResults as $groupedResult){
+            foreach ($groupedResult->goals as $goal){
+
+                $goalValue = json_decode($goal->pivot->value,true);
+
+                $writer->addRow([
+                    $groupedResult['title'],
+                    $goal['goal_target'],
+                    $goal['goal_total'],
+                    $goal['program']['completed_percentage'],
+                    $goal['goal_target'] / $this->project->project_duration,
+                    ...Arr::flatten(collect($headers)->map(function ($header) use ($goalValue) {
+                        return Arr::get(collect($goalValue['conditions'])->where('label', $header)->first(),'value','N/A');
+                    })->toArray()),
+                    $goal['program']['visits'],
+                    $goal['goal_total'],
+                    $goal['program']['pending'],
+                ], $style);
+            }
+        }
+
 
         $i = 0;
 
         foreach ($results as $result){
+
+
 
             if($i == 2 && $this->project->id == 1){
                 $writer->addRow($screenings, $style);
