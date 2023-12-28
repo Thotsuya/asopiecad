@@ -133,16 +133,16 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
 
                 $writer->addRow([
                     $groupedResult['title'],
-                    $goal['goal_target'],
-                    $goal['goal_total'],
-                    $goal['program']['completed_percentage'],
-                    $goal['goal_target'] / $this->project->project_duration,
+                    $goalValue['goal_target'],
+                    $goalValue['goal_total'],
+                    $goalValue['program']['completed_percentage'],
+                    $goalValue['goal_target'] / $this->project->project_duration,
                     ...Arr::flatten(collect($headers)->map(function ($header) use ($goalValue) {
                         return Arr::get(collect($goalValue['conditions'])->where('label', $header)->first(),'value','N/A');
                     })->toArray()),
-                    $goal['program']['visits'],
-                    $goal['goal_total'],
-                    $goal['program']['pending'],
+                    $goalValue['program']['visits'],
+                    $goalValue['goal_total'],
+                    $goalValue['program']['pending'],
                 ], $style);
             }
         }
@@ -158,7 +158,7 @@ class ExportBenefitiariesReportToExcel implements ShouldQueue
                 $writer->addRow($screenings, $style);
             }
 
-            if($i == 8 && $this->project->id == 2){
+            if($i == 5 && $this->project->id == 2){
                 $writer->addRow($screenings, $style);
             }
 
