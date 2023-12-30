@@ -76,6 +76,7 @@ export default function useFilters() {
     const handleSearch = () => {
         Inertia.get(route('beneficiaries.index'), data, {
             preserveScroll: true,
+            preserveState: true,
             onSuccess: () => {
                 success('Filtro aplicado con éxito')
             },
