@@ -183,7 +183,8 @@ trait DynamicComparisons{
     {
 
         //Split the value, as it is a string, and we need to convert it to years, it comes like: "1 mes" or "2 años"
-        [$valueToConvert, $TimeUnit] = explode(' ', $value);
+        $valueToConvert = explode(' ', $value)[0];
+        $TimeUnit = explode(' ', $value)[1] ?? null;
 
         //Return the value to convert if the time unit is null or empty
         if(!$TimeUnit){
