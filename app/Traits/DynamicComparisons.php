@@ -181,14 +181,20 @@ trait DynamicComparisons{
 
     private function convertToYears($value){
 
-        $valueToConvert = Arr::first(explode(' ', $value));
-        $TimeUnit = Arr::last(explode(' ', $value));
+        //Split the value, as it is a string, and we need to convert it to years, it comes like: "1 mes" or "2 años"
+        [$valueToConvert, $TimeUnit] = explode(' ', $value);
 
+        //Return the value to convert if the time unit is null or empty
+        if(!$TimeUnit){
+            return $valueToConvert;
+        }
+
+        //Convert the value to years
         return match (strtolower($TimeUnit)) {
             'm','mes', 'meses' => $valueToConvert / 12,
             'd','día', 'días', 'dia', 'dias' => $valueToConvert / 365,
-            'a','año', 'años' => $valueToConvert,
             default => $valueToConvert,
         };
+
     }
 }
