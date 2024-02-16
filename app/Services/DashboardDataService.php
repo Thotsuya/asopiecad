@@ -104,7 +104,9 @@ class DashboardDataService
         $incoming_appointments = Benefitiary::query()
             ->incomingAppointments()
             ->with('appointments.benefitiary')
+            ->latest()
             ->get()
+            ->take(10)
             ->map(function ($beneficiary) {
                 return $beneficiary->appointments->map(function ($appointment) {
                     return [

@@ -152,7 +152,7 @@ export default function Dashboard({
                                         <td>{screening.name}</td>
                                         <td>{screening.age}</td>
                                         <td>{screening.gender}</td>
-                                        <td>{screening.user.name}</td>
+                                        <td>{screening?.user?.name}</td>
                                         <td>{screening.date_of_screening}</td>
                                     </tr>
                                 ))}
