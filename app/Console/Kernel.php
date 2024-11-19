@@ -19,7 +19,7 @@ class Kernel extends ConsoleKernel
         $schedule->command(
             'asopiecad:update-project-reports-table'
         )
-            ->everyThirtyMinutes()
+            ->everyTwoHours()
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/update-project-reports-table.log'));
 
