@@ -18,6 +18,18 @@ trait ReportResults
     public function getProjectResults(LazyCollection $goals, LazyCollection $meetings, LazyCollection $inventory)
     {
         return $goals->map(function ($goal) use ($meetings, $inventory) {
+
+            //New Code
+            // Preload conditions and beneficiaries in one query
+            $goalConditions = collect($goal->conditions);
+
+            // Group conditions by `field_id` for efficient querying
+            $fieldIds = $goalConditions->flatMap(function ($condition) {
+                return collect($condition['conditions'])->pluck('field_id');
+            })->unique();
+            //===========
+
+
             $conditionsTotal = collect($goal->conditions)
                 ->map(
                     function ($condition) use ($goal) {
@@ -203,7 +215,66 @@ trait ReportResults
         LazyCollection $meetings,
         LazyCollection $inventory
     ) {
-        return $project->goals->map(function ($goal) use ($meetings, $inventory) {
+        // Preload all necessary data
+        $goals = $project->goals()->with([
+//            'programs.beneficiaries.answers.extraFields',
+            'program.beneficiaries' => function ($query) {
+                $query->whereNotNull('approved_at')
+                    ->with(['answers.pivot.field' => function ($query) {
+                        $query->select('fields.id', 'fields.slug', 'fields.name');
+                    }]);
+            },
+        ])->get();
+
+        return $goals->map(function ($goal) use ($project) {
+            // Precompute beneficiary counts meeting conditions in bulk
+            $conditions = collect($goal->conditions);
+
+            $fieldIds = $conditions->flatMap(function ($condition) {
+                return collect($condition['conditions'])->pluck('field_id');
+            })->unique();
+
+            // Query to get all beneficiaries meeting conditions
+            $beneficiaries = DB::table('answers')
+                ->join('benefitiaries', 'answers.benefitiary_id', '=', 'benefitiaries.id')
+                ->whereIn('answers.field_id', $fieldIds)
+                ->select(
+                    'benefitiaries.id as beneficiary_id',
+                    'answers.field_id',
+                    'answers.value'
+                )
+                ->get()
+                ->groupBy('beneficiary_id');
+
+            // Calculate condition totals
+            $conditionsTotal = $conditions->map(function ($condition) use ($beneficiaries) {
+                $matchingBeneficiaries = $beneficiaries->filter(function ($beneficiaryAnswers) use ($condition) {
+                    foreach ($condition['conditions'] as $cond) {
+                        $field = $beneficiaryAnswers->firstWhere('field_id', $cond['field_id']);
+                        if (!$field) {
+                            return false;
+                        }
+
+                        $value = json_decode($field->value, true) ?? $field->value;
+                        if (!$this->is($value, $cond['operand'], $cond['field_value'])) {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+
+                return [
+                    'label' => $condition['label'],
+                    'value' => $matchingBeneficiaries->count(),
+                ];
+            })->groupBy('label')->map(function ($conditions, $label) {
+                return [
+                    'label' => $label,
+                    'value' => $conditions->sum('value'),
+                ];
+            });
+
+            // Build and return the result
             return [
                 'id'                   => $goal->id,
                 'goal_description'     => $goal->goal_description,
@@ -236,47 +307,7 @@ trait ReportResults
                     ) : $goal->goal_target - $goal->program->beneficiaries_count,
                     'visits'              => $goal->program->beneficiaries->sum('appointments_count'),
                 ],
-                'conditions'           => collect($goal->conditions)->map(function ($condition) use ($goal) {
-                    return [
-                        'label' => $condition['label'],
-                        'value' => $goal->program->beneficiaries->filter(
-                            function (Benefitiary $beneficiary) use ($condition, $goal) {
-                                $meetsCondition = true;
-
-                                foreach ($condition['conditions'] as $condition) {
-                                    $field = $beneficiary->answers->firstWhere(
-                                        'pivot.field_id',
-                                        $condition['field_id']
-                                    );
-
-                                    if (!$field) {
-                                        return false;
-                                    }
-
-                                    $meetsCondition = $this->is(
-                                        Str::startsWith($field->pivot->value, '["') && Str::endsWith(
-                                            $field->pivot->value,
-                                            '"]'
-                                        ) ? json_decode($field->pivot->value) : $field->pivot->value,
-                                        $condition['operand'],
-                                        $condition['field_value']
-                                    );
-
-                                    if (!$meetsCondition) {
-                                        return false;
-                                    }
-                                }
-
-                                return $meetsCondition;
-                            }
-                        )->count(),
-                    ];
-                })->groupBy('label')->map(function ($conditions, $label) {
-                    return [
-                        'label' => $label,
-                        'value' => $conditions->sum('value'),
-                    ];
-                })
+                'conditions'           => $conditionsTotal->values()->toArray(),
             ];
         })->merge(
             $meetings->flatMap(function ($meeting) {

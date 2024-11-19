@@ -75,13 +75,15 @@ class UpdateProjectReportsFile extends Command
             $meetings = $project->meetings()->orderBy('order')->cursor();
             $inventory = $project->inventory()->with('inventoryItems')->cursor();
 
-            $results = $this->getProjectResults($goals,$meetings,$inventory);
+//            $results = $this->getProjectResults($goals,$meetings,$inventory);
+
+            $report = $this->getProjectResultsOptimizedForLowMemUsage($project,$meetings,$inventory);
 
             $project->report()->updateOrCreate(
                 ['project_id' => $project->id],
                 [
                     'title' => $project->project_name,
-                    'fields' => $results,
+                    'fields' => $report,
                     'global_fields' => [],
                     'generated_at' => now()
                 ]

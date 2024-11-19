@@ -90,7 +90,10 @@ class Benefitiary extends Model
     }
 
     public function answers(){
-        return $this->belongsToMany(Field::class, 'answers')->using(Answer::class)->withPivot(['value'])->withTimestamps();
+        return $this->belongsToMany(Field::class, 'answers')
+            ->using(Answer::class)
+            ->withPivot(['value'])
+            ->withTimestamps();
     }
 
     public function creator()
