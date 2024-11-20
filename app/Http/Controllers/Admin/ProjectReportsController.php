@@ -48,11 +48,12 @@ class ProjectReportsController extends Controller
             return $this->getHeaders(collect($results));
         });
 
-        dd($headers, $results, $consultations_count, $project);
 
         $screenings = Cache::remember('screenings-' . $project->id, 60 * 15, function () use ($project) {
             return $this->getScreeningsReport($project->id == 1 ? 'P-4211' : 'P-4353');
         });
+
+        dd($screenings);
 
         dd($screenings, $headers, $results, $consultations_count, $project);
 
