@@ -466,9 +466,11 @@ trait ReportResults
 
     public function getScreeningsReport($type = 'P-4211')
     {
-        $screenings = Screening::where('type', $type)->get();
+        $screenings = DB::table('screenings')
+            ->select('*')
+            ->where('type', $type)
+            ->get();
 
-        dd($screenings);
         return [
             'title'                              => $this->getScreeningLabel($type),
             'goal'                               => $type === 'P-4211' ? 7200 : 30000,
