@@ -31,10 +31,10 @@ class ProjectReportsController extends Controller
             'rgba(153, 102, 255, 1)',
         ];
 
-        dd('Hi');
 // Load only necessary relationships
         $project->load(['meetings.participants', 'groupedResults.goals', 'groupedResults.meetings']);
 
+        dd($project);
 // Efficiently calculate consultations count
         $consultations_count = DB::table('benefitiaries')
             ->join('benefitiary_project', 'benefitiaries.id', '=', 'benefitiary_project.benefitiary_id')
