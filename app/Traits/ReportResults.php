@@ -466,6 +466,7 @@ trait ReportResults
 
     public function getScreeningsReport($type = 'P-4211')
     {
+        dd($type);
         $screenings = Screening::where('type', $type)->get();
 
         dd($screenings);
