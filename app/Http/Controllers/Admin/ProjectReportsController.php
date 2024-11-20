@@ -49,7 +49,7 @@ class ProjectReportsController extends Controller
         });
 
 
-        $screenings = Cache::remember('screenings-' . $project->id, 60 * 15, function () use ($project) {
+        $screenings = Cache::remember('screenings-report-' . $project->id, 60 * 15, function () use ($project) {
             return $this->getScreeningsReport($project->id == 1 ? 'P-4211' : 'P-4353');
         });
 
