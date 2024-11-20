@@ -40,11 +40,11 @@ class ProjectReportsController extends Controller
             ->where('benefitiary_project.project_id', $project->id)
             ->sum('benefitiaries.consultations_count');
 
-        dd($consultations_count);
-
         $results = Cache::remember('project-results-' . $project->id, 60 * 15, function () use ($project) {
             return $project->report->fields;
         });
+
+        dd($results);
 
         $headers = Cache::remember('headers-' . $project->id, 60 * 15, function () use ($results) {
             return $this->getHeaders(collect($results));
