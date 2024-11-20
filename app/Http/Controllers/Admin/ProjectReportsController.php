@@ -52,6 +52,8 @@ class ProjectReportsController extends Controller
             return $this->getScreeningsReport($project->id == 1 ? 'P-4211' : 'P-4353');
         });
 
+        dd($screenings, $headers, $results, $consultations_count, $project);
+
         return inertia('Reports/Show', [
             'project' => $project,
             'results' => $results,
