@@ -34,12 +34,13 @@ class ProjectReportsController extends Controller
 // Load only necessary relationships
         $project->load(['meetings.participants', 'groupedResults.goals', 'groupedResults.meetings']);
 
-        dd($project);
 // Efficiently calculate consultations count
         $consultations_count = DB::table('benefitiaries')
             ->join('benefitiary_project', 'benefitiaries.id', '=', 'benefitiary_project.benefitiary_id')
             ->where('benefitiary_project.project_id', $project->id)
             ->sum('benefitiaries.consultations_count');
+
+        dd($consultations_count);
 
         $results = Cache::remember('project-results-' . $project->id, 60 * 15, function () use ($project) {
             return $project->report->fields;
