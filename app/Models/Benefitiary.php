@@ -28,7 +28,8 @@ class Benefitiary extends Model
         'approved_by',
         'last_consultation',
         'consultations_count',
-        'created_by'
+        'created_by',
+        'answers_data'
     ];
 
     public const INTERNAL_STATUSES = [
@@ -40,6 +41,7 @@ class Benefitiary extends Model
 
     protected $casts = [
         'beneficiary_data' => 'json',
+        'answers_data' => 'collection',
     ];
 
 

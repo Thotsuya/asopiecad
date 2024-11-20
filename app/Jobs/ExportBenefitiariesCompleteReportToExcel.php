@@ -57,10 +57,6 @@ class ExportBenefitiariesCompleteReportToExcel implements ShouldQueue
     public function handle()
     {
 
-        if(!Storage::disk('public')->exists('reports/chunks')){
-            Storage::disk('public')->makeDirectory('reports/chunks');
-        }
-
         $request = new Request($this->request);
         $beneficiaries = Benefitiary::query()
             ->filter($request)
@@ -69,102 +65,66 @@ class ExportBenefitiariesCompleteReportToExcel implements ShouldQueue
             ->withCount('projects')
             ->with(['answers.pivot.field', 'answers.pivot','projects'])
             ->latest('id')
-            ->chunk(5000,function($chunk) use (&$beneficiaries){
-
-                //For each chunk, generate a chunked report
-                $beneficiaries = $chunk->map(function ($beneficiary) {
-                    return [
-                        'id'              => $beneficiary->id,
-                        'uuid'            => $beneficiary->uuid,
-                        'internal_status' => $beneficiary->internal_status,
-                        'name'            => $beneficiary->name,
-                        'projects'        => // return a string, with all the project names separated by comma
-                            $beneficiary->projects->map(function ($project) {
-                                return $project->project_name;
-                            })->implode(', '),
-                        'answers'         => $beneficiary->answers->map(function ($answer) {
-                            return [
-                                'field'  => $answer->pivot->field->name,
-                                'answer' => $this->getAnswerValue($answer),
-                            ];
-                        })->values()->toArray(),
-                    ];
-                });
-
-                $headers = $beneficiaries->pluck('answers')->flatten(1)->pluck('field')->unique()->toArray();
-
-                $chunkedFilename = 'chunk-'.now()->format('Y-m-d').time().'.xlsx';
-
-                $writer = SimpleExcelWriter::create(Storage::disk('public')
-                    ->path('reports/chunks/' . $chunkedFilename));
-
+            ->cursor()
+            ->map(function ($beneficiary) {
+                return [
+                    'id'              => $beneficiary->id,
+                    'uuid'            => $beneficiary->uuid,
+                    'internal_status' => $beneficiary->internal_status,
+                    'name'            => $beneficiary->name,
+                    'projects'        => // return a string, with all the project names separated by comma
+                        $beneficiary->projects->map(function ($project) {
+                            return $project->project_name;
+                        })->implode(', '),
+                    'answers'         => $beneficiary->answers_data,
+                ];
             });
-//            ->cursor()
-//            ->map(function ($beneficiary) {
-//                return [
-//                    'id'              => $beneficiary->id,
-//                    'uuid'            => $beneficiary->uuid,
-//                    'internal_status' => $beneficiary->internal_status,
-//                    'name'            => $beneficiary->name,
-//                    'projects'        => // return a string, with all the project names separated by comma
-//                        $beneficiary->projects->map(function ($project) {
-//                            return $project->project_name;
-//                        })->implode(', '),
-//                    'answers'         => $beneficiary->answers->map(function ($answer) {
-//                        return [
-//                            'field'  => $answer->pivot->field->name,
-//                            'answer' => $this->getAnswerValue($answer),
-//                        ];
-//                    })->values()->toArray(),
-//                ];
-//            });
 
 
-//        $headers = $beneficiaries->pluck('answers')->flatten(1)->pluck('field')->unique()->toArray();
-//
-//        $writer = SimpleExcelWriter::create(Storage::disk('public')
-//            ->path('reports/' . $this->filename));
-//
-//        $style = (new Style())
-//            ->setFontSize(12)
-//            ->setFontName('Verdana');
-//
-//        $headerStyle = (new Style())
-//            ->setFontSize(12)
-//            ->setFontName('Verdana')
-//            ->setFontColor(Color::WHITE)
-//            ->setBackgroundColor('3F51B5');
-//
-//
-//        $writer->setHeaderStyle($headerStyle);
-//
-//        $writer->addHeader(['ID', 'UUID', 'Estado Interno', 'Nombre', 'Proyectos', ...$headers]);
-//
-//        //Chunking the collection to avoid memory issues
-//
-//        $beneficiaries->each(function ($beneficiary) use ($writer, $style,$headers) {
-//
-//                $writer->addRow([
-//                    $beneficiary['id'],
-//                    $beneficiary['uuid'],
-//                    $beneficiary['internal_status'],
-//                    $beneficiary['name'],
-//                    $beneficiary['projects'],
-//                    ...Arr::flatten(collect($headers)->map(function ($header) use ($beneficiary) {
-//                        return Arr::get(collect($beneficiary['answers'])->where('field', $header)->first(), 'answer', null);
-//                    })->toArray()),
-//                ], $style);
-//
-//            //Flush the writer to avoid memory issues
-//            flush();
-//        });
-//
-//        $writer->close();
-//
-//
-//        $this->reportResult->update([
-//            'generated_at' => now(),
-//        ]);
+        $headers = $beneficiaries->pluck('answers')->flatten(1)->pluck('field')->unique()->toArray();
+
+        $writer = SimpleExcelWriter::create(Storage::disk('public')->path('reports/' . $this->filename));
+
+        $style = (new Style())
+            ->setFontSize(12)
+            ->setFontName('Verdana');
+
+        $headerStyle = (new Style())
+            ->setFontSize(12)
+            ->setFontName('Verdana')
+            ->setFontColor(Color::WHITE)
+            ->setBackgroundColor('3F51B5');
+
+
+        $writer->setHeaderStyle($headerStyle);
+
+        $writer->addHeader(['ID', 'UUID', 'Estado Interno', 'Nombre', 'Proyectos', ...$headers]);
+
+        //Chunking the collection to avoid memory issues
+
+        $beneficiaries->each(function ($beneficiary) use ($writer, $style,$headers) {
+
+                $writer->addRow([
+                    $beneficiary['id'],
+                    $beneficiary['uuid'],
+                    $beneficiary['internal_status'],
+                    $beneficiary['name'],
+                    $beneficiary['projects'],
+                    ...Arr::flatten(collect($headers)->map(function ($header) use ($beneficiary) {
+                        return Arr::get(collect($beneficiary['answers'])->where('field', $header)->first(), 'answer', null);
+                    })->toArray()),
+                ], $style);
+
+            //Flush the writer to avoid memory issues
+            flush();
+        });
+
+        $writer->close();
+
+
+        $this->reportResult->update([
+            'generated_at' => now(),
+        ]);
     }
 
     private function getAnswerValue($answer)
