@@ -31,6 +31,7 @@ class ProjectReportsController extends Controller
             'rgba(153, 102, 255, 1)',
         ];
 
+        dd('Hi');
 // Load only necessary relationships
         $project->load(['meetings.participants', 'groupedResults.goals', 'groupedResults.meetings']);
 
