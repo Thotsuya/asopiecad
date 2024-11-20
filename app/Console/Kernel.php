@@ -30,12 +30,11 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/update-project-reports-grouped-results.log'));
 
-        $schedule->command('inspire')->hourly();
         // Max execution time 10 minutes
-        $schedule->command('queue:work --stop-when-empty --tries=3 --timeout=700')
-            ->everyMinute()
-            ->withoutOverlapping()
-            ->appendOutputTo(storage_path('logs/queue.log'));
+//        $schedule->command('queue:work --stop-when-empty --tries=3 --timeout=700')
+//            ->everyMinute()
+//            ->withoutOverlapping()
+//            ->appendOutputTo(storage_path('logs/queue.log'));
 
         $schedule->command('asopiecad:purge-failed-reports')
             ->everySixHours()
@@ -48,7 +47,7 @@ class Kernel extends ConsoleKernel
             ->appendOutputTo(storage_path('logs/purge.log'));
 
         $schedule->command('asopiecad:update-beneficiaries-report-table')
-            ->everyThirtyMinutes()
+            ->everyFourHours()
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/update-beneficiaries-report-table.log'));
     }
