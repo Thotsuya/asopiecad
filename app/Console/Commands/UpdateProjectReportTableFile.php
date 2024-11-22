@@ -33,43 +33,7 @@ class UpdateProjectReportTableFile extends Command
     {
         $projectId = $this->option('project');
 
-        $project = \App\Models\Project::query()
-            ->where('projects.id', $projectId)
-            ->with([
-                'goals' => function ($query) {
-                    $query
-                        ->with([
-                            'program' => function ($query) {
-                                $query->select('programs.id', 'program_name', /* other necessary fields */)
-                                    //Sum the total appointments
-                                    ->with(['forms' => function ($query) {
-                                        $query->select('forms.id', 'program_id', /* other necessary fields */);
-                                    }])
-                                    ->with(['project' => function ($query) {
-                                        $query->select('projects.id', /* other necessary fields */);
-                                    }])
-                                    ->with(['beneficiaries' => function ($query) {
-                                        $query
-                                            ->select('benefitiaries.id', 'name', 'consultations_count' /* other necessary fields */)
-                                            ->whereNotNull('approved_at')
-                                            ->with(['answers.pivot.field' /* other necessary fields */])
-                                            ->withCount('appointments');
-                                    }]);
-                            },
-                        ])
-                        ->orderBy(function ($query) {
-                            $query->select('order')
-                                ->from('programs')
-                                ->whereColumn('programs.id', 'goals.program_id')
-                                ->orderBy('order', 'desc')
-                                ->limit(1);
-                        });
-                }
-            ])
-            ->first();
-
-        dd($project);
-
+        $project = \Cache::get('project-report-'.$projectId);
         //If needed, load beneficiaries separately in a more controlled manner
 
         $this->info('=============================================================================================================================');

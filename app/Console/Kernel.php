@@ -52,7 +52,7 @@ class Kernel extends ConsoleKernel
             ->appendOutputTo(storage_path('logs/update-beneficiaries-report-table.log'));
 
         $schedule->command('asopiecad:calculate-screenings')
-            ->everySixHours()
+            ->everyFourHours()
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/calculate-screenings.log'));
     }
