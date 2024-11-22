@@ -9,6 +9,7 @@ use Illuminate\Console\Command;
 class UpdateProjectReportTableFile extends Command
 {
     use ReportResults, DynamicComparisons;
+
     /**
      * The name and signature of the console command.
      *
@@ -49,7 +50,7 @@ class UpdateProjectReportTableFile extends Command
                                     }])
                                     ->with(['beneficiaries' => function ($query) {
                                         $query
-                                            ->select('benefitiaries.id', 'name','consultations_count' /* other necessary fields */)
+                                            ->select('benefitiaries.id', 'name', 'consultations_count' /* other necessary fields */)
                                             ->whereNotNull('approved_at')
                                             ->with(['answers.pivot.field' /* other necessary fields */])
                                             ->withCount('appointments');
@@ -67,14 +68,16 @@ class UpdateProjectReportTableFile extends Command
             ])
             ->first();
 
-         //If needed, load beneficiaries separately in a more controlled manner
+        dd($project);
+
+        //If needed, load beneficiaries separately in a more controlled manner
 
         $this->info('=============================================================================================================================');
         $this->comment('Updating Report for Project ' . $project->project_name . '...');
         $meetings = $project->meetings()->orderBy('order')->cursor();
         $inventory = $project->inventory()->with('inventoryItems')->cursor();
 
-        $results = $this->getProjectResultsOptimizedForLowMemUsage($project,$meetings,$inventory);
+        $results = $this->getProjectResultsOptimizedForLowMemUsage($project, $meetings, $inventory);
 
         $project->report()->updateOrCreate(
             ['project_id' => $project->id],
@@ -89,7 +92,5 @@ class UpdateProjectReportTableFile extends Command
         $this->info('=============================================================================================================================');
         //dump the memory usage
         dd(memory_get_usage());
-
-
-        }
+    }
 }
