@@ -55,7 +55,6 @@ class UpdateProjectReportsFile extends Command
                                 $query
                                     ->select('benefitiaries.id', 'name','consultations_count' /* other necessary fields */)
                                     ->whereNotNull('approved_at')
-                                    ->with(['answers.pivot.field' /* other necessary fields */])
                                     ->withCount('appointments');
                             }])
                             ->withCount(['beneficiaries as total_beneficiaries' => function ($query) {

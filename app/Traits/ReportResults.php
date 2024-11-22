@@ -216,17 +216,8 @@ trait ReportResults
         LazyCollection $inventory
     ) {
         // Preload all necessary data
-        $goals = $project->goals()->with([
-//            'programs.beneficiaries.answers.extraFields',
-            'program.beneficiaries' => function ($query) {
-                $query->whereNotNull('approved_at')
-                    ->with(['answers.pivot.field' => function ($query) {
-                        $query->select('fields.id', 'fields.slug', 'fields.name');
-                    }]);
-            },
-        ])->get();
 
-        return $goals->map(function ($goal) use ($project) {
+        return $project->goals->map(function ($goal) use ($project) {
             // Precompute beneficiary counts meeting conditions in bulk
             $conditions = collect($goal->conditions);
 
