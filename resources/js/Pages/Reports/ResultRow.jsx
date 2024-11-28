@@ -87,12 +87,12 @@ export default function ResultRow({
                         style={{
                             width:
                             // renderResult().toString() / result.goal_target * 100 + '%',
-                                renderResult().toString() / result.goal_target * 100 > 100 ? 100 + '%' : renderResult().toString() / result.goal_target * 100 + '%',
+                                renderResult()?.toString() / result.goal_target * 100 > 100 ? 100 + '%' : renderResult()?.toString() / result.goal_target * 100 + '%',
                         }}
                     >
                                                                     <span>
                                                                         {/*{renderResult().toString() / result.goal_target * 100}*/}
-                                                                        {renderResult().toString() / result.goal_target * 100 > 100 ? 100 : renderResult().toString() / result.goal_target * 100}
+                                                                        {renderResult()?.toString() / result.goal_target * 100 > 100 ? 100 : renderResult()?.toString() / result.goal_target * 100}
                                                                         %
                                                                     </span>
                     </div>

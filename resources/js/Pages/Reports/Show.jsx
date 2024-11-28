@@ -334,7 +334,7 @@ export default function Show({
                                                         }}
                                                         rowSpan={result.goals.length + result.meetings.length + 1}
                                                         className="text-justify text-sm padding-10">
-                                                        {result.title}
+                                                        {result?.title}
                                                     </td>
                                                 </tr>
                                                 {result.goals
