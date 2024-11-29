@@ -49,7 +49,7 @@ class ProjectReportsController extends Controller
         });
 
 
-        $screenings = Cache::get('screenings-report-' . ($project->id === 1 ? 'P-4353' : 'P-4211'));
+        $screenings = Cache::get('screenings-report-' . ($project->id === 2 ? 'P-4353' : 'P-4211'));
 
         return inertia('Reports/Show', [
             'project' => $project,
